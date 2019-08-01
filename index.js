@@ -1,6 +1,6 @@
 module.exports = {
     moogBundle : {
-        modules: ['table-schemas', 'table-widgets'],
+        modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
         directory: 'lib/modules'
     }
 }
