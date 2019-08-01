@@ -1,0 +1,40 @@
+{%- extends "apostrophe-schemas:macros.html" -%}
+
+{%- macro tableFields(fields, options = {}) -%}
+  {%- set groups = apos.schemas.toGroups(fields) -%}
+  <div data-apos-form class="apos-schema{% if groups.length > 1 %} apos-schema--with-tabs{% endif %}">
+    {%- if options.tabs != false -%}
+      <div class="apos-schema-tabs" data-schema-tabs>
+        {%- if groups.length > 1 -%}
+          {%- for group in groups -%}
+            {%- if group.fields.length -%}
+            <div class="apos-schema-tab{% if loop.first %} apos-active{% endif %}" data-apos-open-group="{{ group.name }}">
+              {{ __(group.label | d('')) }}
+            </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+    <div class="apos-schema-groups">
+      {%- for group in groups -%}
+        {%- if group.fields.length -%}
+          <div class="apos-schema-group{% if loop.first %} apos-active{% endif %}" data-apos-group="{{ group.name }}">
+            <div class="apos-schema-group-inner">
+              <div class="dynamic-table-area">
+                <table id="dynamicTable" class="dynamic-table" width="100%">
+                    {# This is where dynamic table applied #}
+                </table>
+              </div>
+              {%- for field in group.fields -%}
+                {%- if not field.contextual -%}
+                  {{ apos.schemas.field(field, options.readOnly) }}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+  </div>
+{%- endmacro -%}

@@ -1,0 +1,63 @@
+<div class="table-area">
+    {# data.table received from self.output with route post #}
+    {# Example data : 
+            data: [
+                [
+                    "data",
+                    "data",
+                    "data",
+                    "data",
+                    "data",
+                    "data"
+                ],
+                [
+                    "data",
+                    "data",
+                    "data",
+                    "data",
+                    "data",
+                    "data"
+                ]
+            ]
+            columns: [
+                {
+                    "title": "Header1",
+                    "sTitle": "Header1"
+                },
+                {
+                    "title": "Header2",
+                    "sTitle": "Header2"
+                },
+                {
+                    "title": "Header3",
+                    "sTitle": "Header3"
+                },
+                {
+                    "title": "Header4",
+                    "sTitle": "Header4"
+                },
+                {
+                    "title": "Header5",
+                    "sTitle": "Header5"
+                },
+                {
+                    "title": "Header6",
+                    "sTitle": "Header6"
+                }
+            ]
+     #}
+    {{ apos.log("Table",data.table) }}
+    {{ apos.log("Widget",data.widget) }}
+    <table id="{{ data.widget._id }}">
+        <thead>
+            <tr>
+                {% for header in data.widget.row %}
+                    <th>{{ "{{ data.widget.data[loop.index] }}" if data.widget.header else "{{ {{ apos.singleton(data.widget, 'header') }} }}" }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        {% for row in data.widget.row %}
+            
+        {% endfor %}
+    </table>
+</div>
