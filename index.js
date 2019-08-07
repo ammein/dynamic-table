@@ -7,7 +7,7 @@ module.exports = {
     seo: false,
     openGraph: false,
     moogBundle : {
-        modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
+        modules: ['dynamic-table-schemas', 'dynamic-table-widgets' , 'dynamic-table-utils'],
         directory: 'lib/modules'
     },
     beforeConstruct : function(self,options){
@@ -108,16 +108,6 @@ module.exports = {
             value: 'edit-dynamic-table',
             label: 'Edit Dynamic Table'
         });
-
-        self.pushAssets = function(){
-            superPushAssets();
-            self.pushAsset('scripts', 'utils', {
-                when: "user"
-            });
-        }
-
-        self.apos.push.browserMirrorCall('user', self , {tools : "-utils"});
-
 
         // Add Submit Route for pieces insert
         self.route('post', "submit", function(req,res){
