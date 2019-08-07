@@ -1,8 +1,11 @@
+var async = require('async');
 module.exports = {
     extend : "apostrophe-pieces",
     name : "dynamic-table",
     label : "Dynamic Table",
     alias : "dynamicTable",
+    seo: false,
+    openGraph: false,
     moogBundle : {
         modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
         directory: 'lib/modules'
@@ -45,6 +48,12 @@ module.exports = {
         }
         options.addFields = [
             {
+                name : "title",
+                type : "string",
+                label : "Title",
+                required : true
+            },
+            {
                 name: 'row',
                 label: 'Number of Row(s)',
                 type: 'integer'
@@ -80,7 +89,7 @@ module.exports = {
             {
                 name: "settings",
                 label: "Settings",
-                fields: [],
+                fields: ["title"],
                 last: true
             }
         ].concat(options.arrangeFields || []);
@@ -91,6 +100,78 @@ module.exports = {
     construct : function(self,options){
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, ["row", "column" , "data", "ajaxOptions"])
+            self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
+
+        self.apos.permissions.add({
+            value: 'edit-dynamic-table',
+            label: 'Edit Dynamic Table'
+        });
+
+
+        // Add Submit Route for pieces insert
+        self.route('post', "submit", function(req,res){
+            return self.submitTables(req, function(err){
+                if(err){
+                    return res.send({
+                        status : "error",
+                        message : err
+                    })
+                }
+
+                return res.send({
+                    status : "success",
+                    message : "Success !"
+                })
+            })
+        })
+
+        self.route("post", "update", function(req,res){
+            return self.updateTables(req, function (err) {
+                if (err) {
+                    return res.send({
+                        status: "error",
+                        message: err
+                    })
+                }
+
+                return res.send({
+                    status: "success",
+                    message: "Success !"
+                })
+            })
+        })
+
+        self.updateTables = function(req, callback){
+            return async.series([
+                convert,
+                update
+            ],callback);
+
+            function(callback){
+                var piece = {};
+                return self.apos.schemas.convert(req, self.schema, null, req.body, piece , callback);
+            }
+
+            function(callback){
+                return self.update(req, piece, {permissions : false } , callback);
+            }
+        }
+
+        self.submitTables = function(req , callback){
+            return async.series([
+                convert,
+                insert
+            ],callback);
+
+            function convert(callback){
+                var piece = {};
+                return self.apos.schemas.convert(req, self.schema, null , req.body, piece, callback);
+            }
+
+            function insert(callback){
+                return self.insert(req, piece , { permissions : false } , callback);
+            }
+        }
     }
 }
