@@ -7,7 +7,7 @@ module.exports = {
     seo: false,
     openGraph: false,
     moogBundle : {
-        modules: ['dynamic-table-schemas', 'dynamic-table-widgets' , 'dynamic-table-utils'],
+        modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
         directory: 'lib/modules'
     },
     beforeConstruct : function(self,options){
@@ -98,6 +98,7 @@ module.exports = {
         self.dynamicTableSchemas();
     },
     construct : function(self,options){
+        var superPushAssets = self.pushAssets;
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, ["row", "column" , "data", "ajaxOptions"])
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
@@ -107,6 +108,15 @@ module.exports = {
             value: 'edit-dynamic-table',
             label: 'Edit Dynamic Table'
         });
+
+        self.pushAssets = function(){
+            superPushAssets();
+            self.pushAsset('scripts', 'utils', {
+                when: "user"
+            });
+        }
+
+        self.apos.push.browserMirrorCall('user', self , {tools : "-utils"});
 
 
         // Add Submit Route for pieces insert
