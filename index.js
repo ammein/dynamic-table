@@ -148,12 +148,12 @@ module.exports = {
                 update
             ],callback);
 
-            function(callback){
+            function convert(callback) {
                 var piece = {};
                 return self.apos.schemas.convert(req, self.schema, null, req.body, piece , callback);
             }
 
-            function(callback){
+            function update(callback){
                 return self.update(req, piece, {permissions : false } , callback);
             }
         }
