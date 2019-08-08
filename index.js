@@ -1,4 +1,5 @@
-var async = require('async');
+const async = require('async');
+const _ = require("lodash");
 module.exports = {
     extend : "apostrophe-pieces",
     name : "dynamic-table",
