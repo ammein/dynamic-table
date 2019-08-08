@@ -89,7 +89,7 @@ module.exports = {
             {
                 name: "settings",
                 label: "Settings",
-                fields: ["title"],
+                fields: ["title" , "slug" , "published" , "tags" , "trash"],
                 last: true
             }
         ].concat(options.arrangeFields || []);
@@ -152,13 +152,25 @@ module.exports = {
         })
 
         self.updateTables = function(req, callback){
+            var piece = {};
             return async.series([
+                find,
                 convert,
                 update
             ],callback);
 
+            function find(callback){
+                return self.apos.docs.find(req, { _id : req.body.id }).toObject(function(err , object){
+                    if(err){
+                        return callback(err);
+                    }
+                    Object.assign(piece, object);
+                    return callback(null , object);
+                });
+            }
+
             function convert(callback) {
-                var piece = {};
+                // This one just like Object.assign
                 return self.apos.schemas.convert(req, self.schema, null, req.body, piece , callback);
             }
 
@@ -168,13 +180,14 @@ module.exports = {
         }
 
         self.submitTables = function(req , callback){
+            var piece = {};
             return async.series([
                 convert,
                 insert
             ],callback);
 
             function convert(callback){
-                var piece = {};
+                // This one just like Object.assign
                 return self.apos.schemas.convert(req, self.schema, null , req.body, piece, callback);
             }
 
