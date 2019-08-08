@@ -481,21 +481,16 @@ apos.define("dynamic-table-utils", {
         self.getTable = function(){
             return $.get("/modules/dynamic-table/fields", { id : self.$id.find("input").val() } , function(data){
                 if(data.status === "success"){
-                    debugger;
                     self.exists = true;
                     return;
                 }else if(data.status === "error"){
                     self.exists = false;
-                    return apos.notify("ERROR : " + data.message, {
-                        type: "error",
-                        dismiss: true
-                    })
                 }
             })
         }
 
         self.save = function(callback){
-            if(self.exists){
+            if(!self.exists){
                 return apos.dynamicTable.api("submit", {
                     id: self.$id.find("input").val()
                 }, function (data) {
