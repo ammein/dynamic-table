@@ -137,8 +137,8 @@ module.exports = {
 
             _.extend(options.browser, {
                 action: "/modules/dynamic-table",
-                schemas: self.table.tableSchemas,
-                group: self.table.tableSchemasGroup
+                schemas: self.tableSchemas,
+                group: self.tableSchemasGroup
             })
 
             // To push apos.modules["dynamic-table-utils"] && also other options to pass on
