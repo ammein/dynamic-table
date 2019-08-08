@@ -2,8 +2,9 @@ const async = require('async');
 const _ = require("lodash");
 module.exports = {
     extend : "apostrophe-pieces",
-    name : "dynamic-table",
+    name : "dynamic-tables",
     label : "Dynamic Table",
+    pluralLabel : "Dynamic Tables",
     alias : "dynamicTable",
     seo: false,
     openGraph: false,
