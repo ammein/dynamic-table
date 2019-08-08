@@ -7,7 +7,7 @@ module.exports = {
     seo: false,
     openGraph: false,
     moogBundle : {
-        modules: ['dynamic-table-schemas', 'dynamic-table-widgets' , 'dynamic-table-utils'],
+        modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
         directory: 'lib/modules'
     },
     beforeConstruct : function(self,options){
