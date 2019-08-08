@@ -241,7 +241,7 @@ module.exports = {
         }
 
         self.getTable = function(req, callback){
-            return self.find(req, { id : req.body.id }).toObject(function(err , object){
+            return self.find(req, { id : req.query.id }).toObject(function(err , object){
                 if(err){
                     return callback(err);
                 }
