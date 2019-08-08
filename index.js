@@ -241,7 +241,7 @@ module.exports = {
         }
 
         self.getTable = function(req, callback){
-            return self.apos.docs.find(req, { _id : req.body.id }).toObject(function(err , object){
+            return self.apos.docs.find(req, { id : req.body.id }).toObject(function(err , object){
                 if(err){
                     return callback(err);
                 }
