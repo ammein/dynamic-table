@@ -120,7 +120,7 @@ module.exports = {
             {
                 name : "getExistingTable",
                 label : "Use Existing Table",
-                fields : ["_dynamicTable"]
+                fields: ["_myWidget"]
             },
             {
                 name: "settings",
