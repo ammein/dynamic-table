@@ -100,6 +100,14 @@ module.exports = {
     construct : function(self,options){
         var superPushAssets = self.pushAssets;
 
+        self.pushAssets = function(){
+            superPushAssets();
+
+            self.pushAsset('script' , "myEditor", {
+                when : "user"
+            })
+        }
+
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, ["row", "column" , "data", "ajaxOptions"])
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
