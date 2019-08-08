@@ -93,6 +93,7 @@ module.exports = {
                 last: true
             }
         ].concat(options.arrangeFields || []);
+        debugger;
     },
     afterConstruct : function(self){
         self.dynamicTableSchemas();
@@ -101,10 +102,10 @@ module.exports = {
         var superPushAssets = self.pushAssets;
 
         // Try to manually put on self.apos.modules[self.__meta.name] = {}
-        self.on("apostrophe-service-bridge:ready", "dynamicServiceReady", function () {
+        self.on("apostrophe:modulesReady", "dynamicServiceReady", function () {
             // Try dynamically set the modules
             debugger;
-            self.apos.modules["dynamic-table-utils"] = self;
+            self.options.apos.modules["dynamic-table-utils"] = {};
         })
 
         self.dynamicTableSchemas = function(){
