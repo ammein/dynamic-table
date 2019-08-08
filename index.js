@@ -225,7 +225,12 @@ module.exports = {
                     return callback(err);
                 }
 
-                return callback(null, object);
+                if(object){
+                    return callback(null, object);
+                }
+
+                return callback("Table not found");
+
             })
         }
 

@@ -121,8 +121,6 @@ apos.define("dynamic-table-utils", {
 
         self.afterShowDynamicTable = function ($form, data) {
             self.$form = $form;
-            // Init table
-            self.getTable();
             // Let everything running on `beforeShow` above and other functions that might needed to run
             // Then call this function to run when everything is populated
             var rowInput = self.$row.find("input");
@@ -144,6 +142,8 @@ apos.define("dynamic-table-utils", {
             if(idInput.val().length === 0){
                 idInput.val(data._id)
             }
+
+            self.getTable();
         }
 
         self.mergeOptions = function(){
