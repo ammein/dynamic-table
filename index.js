@@ -93,20 +93,12 @@ module.exports = {
                 last: true
             }
         ].concat(options.arrangeFields || []);
-        debugger;
     },
     afterConstruct : function(self){
         self.dynamicTableSchemas();
     },
     construct : function(self,options){
         var superPushAssets = self.pushAssets;
-
-        // Try to manually put on self.apos.modules[self.__meta.name] = {}
-        self.on("apostrophe:modulesReady", "dynamicServiceReady", function () {
-            // Try dynamically set the modules
-            debugger;
-            self.options.apos.modules["dynamic-table-utils"] = {};
-        })
 
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, ["row", "column" , "data", "ajaxOptions"])
