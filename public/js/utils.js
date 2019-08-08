@@ -12,6 +12,7 @@ apos.define("dynamic-table-utils", {
             self.columnData = [];
             // Get the form DOM
             self.$form = $form;
+            self.getTable();
             // Can access self.$el & self.$form in here
             self.$row = apos.schemas.findFieldset(self.$form, "row");
             self.$column = apos.schemas.findFieldset(self.$form, "column");
