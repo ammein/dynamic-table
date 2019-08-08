@@ -263,7 +263,7 @@ module.exports = {
             ],callback);
 
             function find(callback){
-                return self.apos.docs.find(req, { _id : req.body.id }).toObject(function(err , object){
+                return self.apos.docs.find(req, { id : req.body.id }).toObject(function(err , object){
                     if(err){
                         return callback(err);
                     }
@@ -279,7 +279,8 @@ module.exports = {
                     row: self.apos.launder.integer(req.body.integer),
                     column: self.apos.launder.integer(req.body.integer),
                     data: self.apos.launder.string(req.body.string),
-                    url: self.apos.launder.url(req.body.url)
+                    url: self.apos.launder.url(req.body.url),
+                    published : true
                 }
                 return self.update(req, piece, {permissions : false } , callback);
             }
@@ -298,7 +299,8 @@ module.exports = {
                     row: self.apos.launder.integer(req.body.integer),
                     column: self.apos.launder.integer(req.body.integer),
                     data: self.apos.launder.string(req.body.string),
-                    url: self.apos.launder.url(req.body.url)
+                    url: self.apos.launder.url(req.body.url),
+                    published: true
                 }
                 return self.insert(req, piece , { permissions : false } , callback);
             }
