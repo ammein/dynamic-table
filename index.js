@@ -259,7 +259,6 @@ module.exports = {
             var piece = {};
             return async.series([
                 find,
-                convert,
                 update
             ],callback);
 
@@ -273,12 +272,15 @@ module.exports = {
                 });
             }
 
-            function convert(callback) {
-                // This one just like Object.assign
-                return self.apos.schemas.convert(req, self.schema, null, req.body, piece , callback);
-            }
-
             function update(callback){
+                piece = {
+                    title: self.apos.launder.string(req.body.title),
+                    id: self.apos.launder.id(req.body.id),
+                    row: self.apos.launder.integer(req.body.integer),
+                    column: self.apos.launder.integer(req.body.integer),
+                    data: self.apos.launder.string(req.body.string),
+                    url: self.apos.launder.url(req.body.url)
+                }
                 return self.update(req, piece, {permissions : false } , callback);
             }
         }
@@ -286,16 +288,18 @@ module.exports = {
         self.submitTables = function(req , callback){
             var piece = {};
             return async.series([
-                convert,
                 insert
             ],callback);
 
-            function convert(callback){
-                // This one just like Object.assign
-                return self.apos.schemas.convert(req, self.schema, null , req.body, piece, callback);
-            }
-
             function insert(callback){
+                piece = {
+                    title: self.apos.launder.string(req.body.title),
+                    id: self.apos.launder.id(req.body.id),
+                    row: self.apos.launder.integer(req.body.integer),
+                    column: self.apos.launder.integer(req.body.integer),
+                    data: self.apos.launder.string(req.body.string),
+                    url: self.apos.launder.url(req.body.url)
+                }
                 return self.insert(req, piece , { permissions : false } , callback);
             }
         }
