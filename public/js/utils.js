@@ -2,13 +2,16 @@ apos.define("dynamic-table-utils", {
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
-        self.rowData = [];
-        self.columnData = [];
-        self.$form = $([]);
-
         self.originalEditorDataTableOptions = options.editorDataTableOptions;
 
-        self.beforeShowDynamicTable = function(){
+        self.exists = false;
+
+        self.beforeShowDynamicTable = function($form , data){
+            // Reset rows & columns
+            self.rowData = [];
+            self.columnData = [];
+            // Get the form DOM
+            self.$form = $form;
             // Can access self.$el & self.$form in here
             self.$row = apos.schemas.findFieldset(self.$form, "row");
             self.$column = apos.schemas.findFieldset(self.$form, "column");
@@ -16,6 +19,7 @@ apos.define("dynamic-table-utils", {
             self.$tableHTML = self.$form.find("#dynamicTable");
             self.$ajaxOptions = apos.schemas.findFieldset(self.$form, "ajaxOptions");
             self.$divTable = self.$form.find(".dynamic-table-area");
+            self.$id = apos.schemas.findFieldset(self.$form, "id");
 
             var rowInput = self.$row.find("input");
             var columnInput = self.$column.find("input");
@@ -115,13 +119,15 @@ apos.define("dynamic-table-utils", {
             })
         }
 
-        self.afterShowDynamicTable = function() {
+        self.afterShowDynamicTable = function ($form, data) {
+            self.$form = $form;
             // Let everything running on `beforeShow` above and other functions that might needed to run
             // Then call this function to run when everything is populated
             var rowInput = self.$row.find("input");
             var columnInput = self.$column.find("input");
             var ajaxOptions = self.$ajaxOptions.find("textarea");
             var dataInput = self.$data.find("textarea");
+            var idInput = self.$id.find("input");
             // Let change event registered first, then trigger it
             if (rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxOptions.val().length === 0) {
                 // Just trigger row change event
@@ -131,6 +137,10 @@ apos.define("dynamic-table-utils", {
             if (ajaxOptions.val().length > 0) {
                 // To enable textarea auto resize
                 self.$ajaxOptions.trigger("change");
+            }
+
+            if(idInput.val().length === 0){
+                idInput.val(data._id)
             }
         }
 
@@ -464,6 +474,50 @@ apos.define("dynamic-table-utils", {
                     }
                 }
             })
+        }
+
+        self.getTable = function(){
+            return $.get("/modules/dynamic-table/fields", { id : self.$id.find("input").val() } , function(data){
+                if(data.status === "success"){
+                    debugger;
+                    self.exists = true;
+                    return;
+                }else if(data.status === "error"){
+                    self.exists = false;
+                    return apos.notify("ERROR : " + data.message, {
+                        type: "error",
+                        dismiss: true
+                    })
+                }
+            })
+        }
+
+        self.save = function(callback){
+            if(self.exists){
+                return apos.dynamicTable.api("submit", {
+                    id: self.$id.find("input").val()
+                }, function (data) {
+                    if (data.status === "success") {
+                        return callback(null);
+                    }
+
+                    return callback(data.message);
+                }, function (err) {
+                    return callback(err);
+                })
+            }else{
+                return apos.dynamicTable.api("update", {
+                    id: self.$id.find("input").val()
+                }, function (data) {
+                    if (data.status === "success") {
+                        return callback(null);
+                    }
+
+                    return callback(data.message);
+                }, function (err) {
+                    return callback(err);
+                })
+            }
         }
 
         self.registerTableEvent = function ($table) {

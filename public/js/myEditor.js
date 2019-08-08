@@ -3,9 +3,8 @@ apos.define("dynamic-table-editor-modal" , {
     construct : function(self,options){
         var superBeforeShow = self.beforeShow;
         var superAfterShow = self.afterShow;
+        var superBeforeSave = self.beforeSave;
         self.dynamicTablePieces = apos.dynamicTable;
-
-        self.EditorDataTableOptions = apos.dynamicTableUtils.EditorDataTableOptions;
 
         self.beforeShow = function (callback) {
             return superBeforeShow(function (err) {
@@ -13,15 +12,8 @@ apos.define("dynamic-table-editor-modal" , {
                     return callback(err);
                 }
 
-                // Pass to Utils
-                apos.dynamicTableUtils.$form = self.$form;
-
-                // Must always reset rowData & columnData
-                apos.dynamicTableUtils.rowData = [];
-                apos.dynamicTableUtils.columnData = [];
-
                 // Use my own utils for beforeShow
-                apos.dynamicTableUtils.beforeShowDynamicTable();
+                apos.dynamicTableUtils.beforeShowDynamicTable(self.$form, self.options.data);
 
                 return callback(null);
             });
@@ -30,7 +22,7 @@ apos.define("dynamic-table-editor-modal" , {
         self.afterShow = function () {
             superAfterShow();
 
-            apos.dynamicTableUtils.afterShowDynamicTable();
+            apos.dynamicTableUtils.afterShowDynamicTable(self.$form, self.options.data);
         }
 
     }
