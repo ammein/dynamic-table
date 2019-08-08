@@ -483,15 +483,19 @@ apos.define("dynamic-table-utils", {
         self.getTable = function(){
             return $.get("/modules/dynamic-table/fields", { id : self.$id.find("input").val() } , function(data){
                 if(data.status === "success"){
+                    self.exists = true;
                     // Get current data dynamically either from pieces-editor-modal or widgets-editor-modal
                     var allData = _.pick(data.result, apos.modules[apos.modalSupport.getLatestModal().action.replace("/modules/", "")].options.schema.reduce((init, next) => init.concat(next.name), []));
+                    // Loop allData to put on field value
                     for (var property in allData) {
                         if (allData.hasOwnProperty(property)) {
-                            apos.schemas.findField(self.$form, property).val(JSON5.parse(allData[property]))
+                            try {
+                                apos.schemas.findField(self.$form, property).val(JSON5.parse(allData[property]))
+                            } catch (e) {
+                                apos.schemas.findField(self.$form, property).val(allData[property])
+                            }
                         }
                     }
-                    self.exists = true;
-                    return;
                 }else if(data.status === "error"){
                     self.exists = false;
                 }
