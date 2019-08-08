@@ -52,7 +52,7 @@ module.exports = {
             {
                 name : "title",
                 type : "string",
-                label : "Title",
+                label : "Table Title",
                 required : true
             },
             {
@@ -74,22 +74,42 @@ module.exports = {
             },
             {
                 name : "id",
-                label : "id",
+                label : "ID",
                 type : "string",
                 help : "ID for the table",
                 required : true,
                 readOnly : true
+            },
+            {
+                name : "url",
+                label : "Link",
+                type : "slug"
             }
         ].concat(options.addFields || []);
 
         // Combine fields
         options.addFields = options.addFields.concat(originalFields);
 
+        options.addColumns = [
+            {
+                name : "url",
+                label : "Widget Location",
+                partial: function (value) {
+                    if (!value) {
+                        return '';
+                    }
+                    return self.partial('widgetLink.html', {
+                        value: value
+                    });
+                }
+            }
+        ].concat(options.addColumns || []);
+
         options.arrangeFields = [
             {
                 name: "table",
                 label: "Custom Table",
-                fields: ["row", "column", "data"]
+                fields: ["title", "row", "column", "data"]
             },
             {
                 name: "ajax",
@@ -104,7 +124,7 @@ module.exports = {
             {
                 name: "settings",
                 label: "Settings",
-                fields: ["title", "id", "slug", "published", "tags", "trash"],
+                fields: ["id", "slug", "published", "tags", "trash" , "url"],
                 last: true
             }
         ].concat(options.arrangeFields || []);
@@ -156,7 +176,7 @@ module.exports = {
 
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, 
-                ["row", "column" , "data", "ajaxOptions" , "id"])
+                ["title", "row", "column" , "data", "ajaxOptions" , "id" , "url"])
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 
@@ -216,7 +236,7 @@ module.exports = {
         })
 
         self.beforeInsert = function (req, piece, options, callback) {
-            
+            return callback(null)
         }
 
         self.getTable = function(req, callback){

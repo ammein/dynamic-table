@@ -20,6 +20,8 @@ apos.define("dynamic-table-utils", {
             self.$ajaxOptions = apos.schemas.findFieldset(self.$form, "ajaxOptions");
             self.$divTable = self.$form.find(".dynamic-table-area");
             self.$id = apos.schemas.findFieldset(self.$form, "id");
+            self.$url = apos.schemas.findFieldset(self.$form, "url");
+            self.$title = apos.schemas.findFieldset(self.$form, "title");
 
             var rowInput = self.$row.find("input");
             var columnInput = self.$column.find("input");
@@ -490,10 +492,16 @@ apos.define("dynamic-table-utils", {
         }
 
         self.save = function(callback){
+            var piece = {
+                title: self.$title.find("input").val(),
+                id: self.$id.find("input").val(),
+                row: self.$row.find("input").val(),
+                column: self.$column.find("input").val(),
+                data: self.$data.find("textarea").val(),
+                url: window.location.pathname
+            }
             if(!self.exists){
-                return apos.dynamicTable.api("submit", {
-                    id: self.$id.find("input").val()
-                }, function (data) {
+                return apos.dynamicTable.api("submit", piece, function (data) {
                     if (data.status === "success") {
                         return callback(null);
                     }
@@ -503,9 +511,7 @@ apos.define("dynamic-table-utils", {
                     return callback(err);
                 })
             }else{
-                return apos.dynamicTable.api("update", {
-                    id: self.$id.find("input").val()
-                }, function (data) {
+                return apos.dynamicTable.api("update", piece, function (data) {
                     if (data.status === "success") {
                         return callback(null);
                     }
