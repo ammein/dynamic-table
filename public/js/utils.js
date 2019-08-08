@@ -484,6 +484,11 @@ apos.define("dynamic-table-utils", {
             return $.get("/modules/dynamic-table/fields", { id : self.$id.find("input").val() } , function(data){
                 if(data.status === "success"){
                     var allData = _.pick(data.result, apos.modules["dynamic-table-widgets"].schema.reduce((init, next) => init.concat(next.name), []));
+                    for (var property in allData) {
+                        if (allData.hasOwnProperty(property)) {
+                            apos.schemas.findField(self.$form, property).val(allData[property])
+                        }
+                    }
                     self.exists = true;
                     return;
                 }else if(data.status === "error"){
