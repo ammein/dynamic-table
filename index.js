@@ -276,9 +276,9 @@ module.exports = {
                 piece = {
                     title: self.apos.launder.string(req.body.title),
                     id: self.apos.launder.id(req.body.id),
-                    row: self.apos.launder.integer(req.body.integer),
-                    column: self.apos.launder.integer(req.body.integer),
-                    data: self.apos.launder.string(req.body.string),
+                    row: self.apos.launder.integer(req.body.row),
+                    column: self.apos.launder.integer(req.body.column),
+                    data: self.apos.launder.string(req.body.data),
                     url: self.apos.launder.url(req.body.url),
                     published : true
                 }
@@ -296,9 +296,9 @@ module.exports = {
                 piece = {
                     title: self.apos.launder.string(req.body.title),
                     id: self.apos.launder.id(req.body.id),
-                    row: self.apos.launder.integer(req.body.integer),
-                    column: self.apos.launder.integer(req.body.integer),
-                    data: self.apos.launder.string(req.body.string),
+                    row: self.apos.launder.integer(req.body.row),
+                    column: self.apos.launder.integer(req.body.column),
+                    data: self.apos.launder.string(req.body.data),
                     url: self.apos.launder.url(req.body.url),
                     published: true
                 }

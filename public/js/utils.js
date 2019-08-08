@@ -142,7 +142,7 @@ apos.define("dynamic-table-utils", {
             }
 
             if(idInput.val().length === 0){
-                idInput.val(data._id)
+                idInput.val(data ? data._id : "")
             }
 
             self.getTable();
@@ -483,10 +483,11 @@ apos.define("dynamic-table-utils", {
         self.getTable = function(){
             return $.get("/modules/dynamic-table/fields", { id : self.$id.find("input").val() } , function(data){
                 if(data.status === "success"){
-                    var allData = _.pick(data.result, apos.modules["dynamic-table-widgets"].schema.reduce((init, next) => init.concat(next.name), []));
+                    // Get current data dynamically either from pieces-editor-modal or widgets-editor-modal
+                    var allData = _.pick(data.result, apos.modules[apos.modalSupport.getLatestModal().action.replace("/modules/", "")].options.schema.reduce((init, next) => init.concat(next.name), []));
                     for (var property in allData) {
                         if (allData.hasOwnProperty(property)) {
-                            apos.schemas.findField(self.$form, property).val(allData[property])
+                            apos.schemas.findField(self.$form, property).val(JSON5.parse(allData[property]))
                         }
                     }
                     self.exists = true;
