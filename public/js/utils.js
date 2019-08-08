@@ -12,7 +12,6 @@ apos.define("dynamic-table-utils", {
             self.columnData = [];
             // Get the form DOM
             self.$form = $form;
-            self.getTable();
             // Can access self.$el & self.$form in here
             self.$row = apos.schemas.findFieldset(self.$form, "row");
             self.$column = apos.schemas.findFieldset(self.$form, "column");
@@ -122,6 +121,8 @@ apos.define("dynamic-table-utils", {
 
         self.afterShowDynamicTable = function ($form, data) {
             self.$form = $form;
+            // Init table
+            self.getTable();
             // Let everything running on `beforeShow` above and other functions that might needed to run
             // Then call this function to run when everything is populated
             var rowInput = self.$row.find("input");
