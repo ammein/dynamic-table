@@ -144,8 +144,6 @@ apos.define("dynamic-table-utils", {
             if(idInput.val().length === 0){
                 idInput.val(data ? data._id : "")
             }
-
-            self.getTable();
         }
 
         self.mergeOptions = function(){
@@ -478,60 +476,6 @@ apos.define("dynamic-table-utils", {
                     }
                 }
             })
-        }
-
-        self.getTable = function(){
-            return $.get("/modules/dynamic-table/fields", { id : self.$id.find("input").val() } , function(data){
-                if(data.status === "success"){
-                    self.exists = true;
-                    // Get current data dynamically either from pieces-editor-modal or widgets-editor-modal
-                    var allData = _.pick(data.result, apos.modules[apos.modalSupport.getLatestModal().action.replace("/modules/", "")].options.schema.reduce((init, next) => init.concat(next.name), []));
-                    // Loop allData to put on field value
-                    for (var property in allData) {
-                        if (allData.hasOwnProperty(property)) {
-                            try {
-                                apos.schemas.findField(self.$form, property).val(JSON5.parse(allData[property]))
-                            } catch (e) {
-                                apos.schemas.findField(self.$form, property).val(allData[property])
-                            }
-                        }
-                    }
-                }else if(data.status === "error"){
-                    self.exists = false;
-                }
-            })
-        }
-
-        self.save = function(callback){
-            var piece = {
-                title: self.$title.find("input").val(),
-                id: self.$id.find("input").val(),
-                row: self.$row.find("input").val(),
-                column: self.$column.find("input").val(),
-                data: self.$data.find("textarea").val(),
-                url: window.location.pathname
-            }
-            if(!self.exists){
-                return apos.dynamicTable.api("submit", piece, function (data) {
-                    if (data.status === "success") {
-                        return callback(null);
-                    }
-
-                    return callback(data.message);
-                }, function (err) {
-                    return callback(err);
-                })
-            }else{
-                return apos.dynamicTable.api("update", piece, function (data) {
-                    if (data.status === "success") {
-                        return callback(null);
-                    }
-
-                    return callback(data.message);
-                }, function (err) {
-                    return callback(err);
-                })
-            }
         }
 
         self.registerTableEvent = function ($table) {
