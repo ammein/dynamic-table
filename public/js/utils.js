@@ -595,7 +595,7 @@ apos.define("dynamic-table-utils", {
                         return apos.utils.warn("Dynamic Table Piece not found");
                     }
 
-                    self.link("apos-save", null, function($button , id){
+                    apos.ui.link("apos-save", null, function($button , id){
                         if (getChoiceId !== getNewChoiceId) {
                             // Update previous piece
                             return self.updateFields({
