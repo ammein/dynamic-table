@@ -538,7 +538,11 @@ apos.define("dynamic-table-utils", {
                 if (result.hasOwnProperty(property)) {
                     switch (property) {
                         case "ajaxOptions":
-                            self.executeAjax(JSON5.parse(result[property]))
+                            try {
+                                self.executeAjax(JSON5.parse(result[property]))                            
+                            } catch (e) {
+                                // Leave the error alone
+                            }
                             break;
 
                         case "data":
