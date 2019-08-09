@@ -524,7 +524,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.updateFields = function(query,callback){
-            return self.api("update", query , function(data){
+            return apos.modules["dynamic-table"].api("update", query , function(data){
                 if(data.status === "success"){
                     return callback(null , data.message)
                 }
@@ -572,6 +572,7 @@ apos.define("dynamic-table-utils", {
                     }
 
                     if(getChoiceId !== getNewChoiceId){
+                        // Update previous piece
                         return self.updateFields({
                             id: getChoiceId,
                             url: undefined
@@ -580,6 +581,7 @@ apos.define("dynamic-table-utils", {
                                 return apos.utils.warn("Cannot update url for previous piece");
                             }
 
+                            // Update latest piece
                             return self.updateFields({
                                 id : getNewChoiceId,
                                 url : window.location.pathname
