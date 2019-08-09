@@ -184,9 +184,8 @@ apos.define("dynamic-table-utils", {
         }
 
         self.mergeOptions = function(){
-            self.EditorDataTableOptions = {};
-            // Deep Clone
-            self.EditorDataTableOptions = JSON.parse(JSON.stringify(self.originalEditorDataTableOptions));
+            self.EditorDataTableOptions = self.EditorDataTableOptions || {};
+            Object.assign(self.EditorDataTableOptions , self.originalEditorDataTableOptions);
         }
 
         self.executeAjax = function (options) {
@@ -484,6 +483,10 @@ apos.define("dynamic-table-utils", {
                             delete apos.schemas.dt.vanillaJSTable;
                         }
 
+                        delete self.EditorDataTableOptions.ajax;
+                        delete self.EditorDataTableOptions.data;
+                        delete self.EditorDataTableOptions.columns;
+
                         $(self.$tableHTML[i]).empty();
                     } else {
                         if ($.fn.DataTable.isDataTable($(self.$tableHTML[i]))) {
@@ -493,8 +496,14 @@ apos.define("dynamic-table-utils", {
                                 // Leave the error alone. Nothing to display
                             }
                             $(self.$tableHTML[i]).empty();
-                            return;
                         }
+
+                        // Reset Options
+                        delete self.EditorDataTableOptions.ajax;
+                        delete self.EditorDataTableOptions.data;
+                        delete self.EditorDataTableOptions.aaData;
+                        delete self.EditorDataTableOptions.columns;
+                        delete self.EditorDataTableOptions.aoColumns;
                     }
                 }
             })
