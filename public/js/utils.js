@@ -574,6 +574,9 @@ apos.define("dynamic-table-utils", {
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             var getChoiceId;
 
+            // Destroy table and its options first to avoid DataTablesJQuery Problem
+            self.destroyTable()
+
             if($chooser.choices.length > 0){
                 getChoiceId = $chooser.choices[0].value;
             }
@@ -608,7 +611,7 @@ apos.define("dynamic-table-utils", {
                     self.getResultAndInitTable(result);
 
                     // When user is confirm click save, update the url
-                    self.$form.find("[data-apos-save]").on("click", function(e){
+                    $("[data-apos-save]").on("click", function(e){
                         if (getChoiceId !== getNewChoiceId) {
                             // Update previous piece
                             self.updateFields({
