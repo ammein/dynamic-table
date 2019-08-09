@@ -560,7 +560,11 @@ apos.define("dynamic-table-utils", {
         self.getJoin = function($chooser){
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
-            var getChoiceId = $chooser.choices[0].value;
+            var getChoiceId;
+            
+            if($chooser.choices.length > 0){
+                getChoiceId = $chooser.choices[0].value;
+            }
 
             if(getChoiceId){
                 // Get fields first and start
