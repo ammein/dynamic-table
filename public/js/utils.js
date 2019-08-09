@@ -22,6 +22,7 @@ apos.define("dynamic-table-utils", {
             self.$id = apos.schemas.findFieldset(self.$form, "id");
             self.$url = apos.schemas.findFieldset(self.$form, "url");
             self.$title = apos.schemas.findFieldset(self.$form, "title");
+            self.$join = apos.schemas.findFieldset(self.$form , "_dynamicTable");
 
             var rowInput = self.$row.find("input");
             var columnInput = self.$column.find("input");
@@ -29,9 +30,13 @@ apos.define("dynamic-table-utils", {
             var ajaxOptions = self.$ajaxOptions.find("textarea");
 
             // Disabled first by default
-            if (rowInput.val().length < 1) {
+            if (rowInput.length > 0 && rowInput.val().length < 1) {
                 columnInput.attr("disabled", true);
             }
+
+            self.$join.on("change", function(e){
+                
+            })
 
             self.$row.on("change", function (e) {
                 var num = parseInt(e.currentTarget.querySelector("input").value);
@@ -127,17 +132,24 @@ apos.define("dynamic-table-utils", {
             var dataInput = self.$data.find("textarea");
             var idInput = self.$id.find("input");
             // Let change event registered first, then trigger it
-            if (rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxOptions.val().length === 0) {
+            if (
+                rowInput.length > 0 &&
+                columnInput.length > 0 &&
+                ajaxOptions.length > 0 &&
+                rowInput.val().length > 0 && 
+                columnInput.val().length > 0 && 
+                ajaxOptions.val().length === 0) 
+            {
                 // Just trigger row change event
                 self.$row.trigger("change");
             }
 
-            if (ajaxOptions.val().length > 0) {
+            if (ajaxOptions.length > 0 && ajaxOptions.val().length > 0) {
                 // To enable textarea auto resize
                 self.$ajaxOptions.trigger("change");
             }
 
-            if(idInput.val().length === 0){
+            if (idInput.length > 0 && idInput.val().length === 0) {
                 idInput.val(data ? data._id : "")
             }
         }
