@@ -84,7 +84,16 @@ module.exports = {
             {
                 name : "url",
                 label : "Link",
-                type : "slug"
+                type : "array",
+                titleField : "urls",
+                schema : [
+                    {
+                        name : "widgetLocation",
+                        type : "slug",
+                        label : "Widget Location On Page",
+                        page : true
+                    }
+                ]
             }
         ].concat(options.addFields || []);
 
@@ -223,7 +232,11 @@ module.exports = {
                 var newPiece = _.cloneDeep(result);
 
                 newPiece.id = req.body.id;
-                newPiece.url = req.body.url;
+                if(result.url.length > 0){
+                    var filter = result.url.filter((val , i) => val.widgetLocation === req.body.url);
+                    newPiece.url = filter && filter.length > 0 ? newPiece.url.reduce((init, next, i) => init.concat(next.widgetLocation !== req.body.url) , []) : newPiece.url.concat(req.body.url);
+                }
+                newPiece.published = result.url.length > 0 ? true : false;
 
                 return self.update(req, newPiece, {permissions : false} , callback);
             })
