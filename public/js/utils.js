@@ -532,14 +532,14 @@ apos.define("dynamic-table-utils", {
             })
         }
 
-        self.getResultAndInitTable = function(result){
-            // Loop result object
-            for (let property of Object.keys(result)) {
-                if (result.hasOwnProperty(property)) {
+        self.getResultAndInitTable = function(ajaxResult){
+            // Loop ajaxResult object
+            for (let property of Object.keys(ajaxResult)) {
+                if (ajaxResult.hasOwnProperty(property)) {
                     switch (property) {
                         case "ajaxOptions":
                             try {
-                                self.executeAjax(JSON5.parse(result[property]))                            
+                                self.executeAjax(JSON5.parse(reajaxResultsult[property]))
                             } catch (e) {
                                 // Leave the error alone
                             }
@@ -547,7 +547,7 @@ apos.define("dynamic-table-utils", {
 
                         case "data":
                             try {
-                                self.updateRowsAndColumns(JSON5.parse(result[property]));                            
+                                self.updateRowsAndColumns(JSON5.parse(ajaxResult[property]));
                             } catch (e) {
                                 // Leave the error alone
                             }
@@ -595,10 +595,13 @@ apos.define("dynamic-table-utils", {
                         return apos.utils.warn("Dynamic Table Piece not found");
                     }
 
-                    apos.ui.link("apos-save", null, function($button , id){
+                    self.getResultAndInitTable(result);
+
+                    // When user is confirm click save, update the url
+                    self.$form.find("[data-apos-save]").on("click", function(e){
                         if (getChoiceId !== getNewChoiceId) {
                             // Update previous piece
-                            return self.updateFields({
+                            self.updateFields({
                                 id: getChoiceId,
                                 url: undefined
                             }, function (err) {
@@ -616,11 +619,11 @@ apos.define("dynamic-table-utils", {
                                     }
                                     // reset choice value
                                     getChoiceId = getNewChoiceId;
-                                    // Update Table
-                                    return self.getResultAndInitTable(result);
                                 })
                             })
                         }
+
+                        return false;
                     })
                 })
                 
