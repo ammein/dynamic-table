@@ -462,6 +462,9 @@ apos.define("dynamic-table-utils", {
             // Refresh Existing Table
             self.$tableHTML = self.$form.find("table#dynamicTable");
 
+            // Reset options
+            self.EditorDataTableOptions = self.originalEditorDataTableOptions;
+
             // Safe method. Table may display many
             self.$tableHTML.each(function (i, val) {
                 // When table is visible
@@ -477,9 +480,6 @@ apos.define("dynamic-table-utils", {
                             delete apos.schemas.dt.vanillaJSTable;
                         }
 
-                        delete self.EditorDataTableOptions.data
-                        delete self.EditorDataTableOptions.columns;
-
                         $(self.$tableHTML[i]).empty();
                     } else {
                         if ($.fn.DataTable.isDataTable($(self.$tableHTML[i]))) {
@@ -489,11 +489,6 @@ apos.define("dynamic-table-utils", {
                                 // Leave the error alone. Nothing to display
                             }
                             $(self.$tableHTML[i]).empty();
-
-                            delete self.EditorDataTableOptions.aaData
-                            delete self.EditorDataTableOptions.aoColumns;
-                            delete self.EditorDataTableOptions.data
-                            delete self.EditorDataTableOptions.columns;
                             return;
                         }
                     }
@@ -588,6 +583,8 @@ apos.define("dynamic-table-utils", {
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
                 var getNewChoiceId = $chooser.choices[0].value;
+                // Destroy table befor reinitialization
+                selt.destroyTable();
 
                 // Get field first
                 return self.getFields({ id: getNewChoiceId }, function (err, result) {
