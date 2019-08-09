@@ -6,6 +6,32 @@ apos.define("dynamic-table-utils", {
 
         self.exists = false;
 
+        self.updateRowsAndColumns = function(object){
+            self.rowData = object.data;
+            self.columnData = object.columns;
+
+            // Update to options
+            self.EditorDataTableOptions.data = self.rowData;
+            self.EditorDataTableOptions.columns = self.columnData;
+        }
+
+        self.resetCustomTable = function(){
+            var rowInput = apos.schemas.findFieldset(self.$form, "row").find("input");
+            var columnInput = apos.schemas.findFieldset(self.$form, "column").find("input");
+            var dataInput = apos.schemas.findFieldset(self.$form, "data").find("textarea");
+            if (dataInput.length > 0) {
+                dataInput.val("");
+            }
+            if (rowInput.length > 0) {
+                rowInput.val("")
+            }
+            
+            if(columnInput.length > 0){
+                columnInput.val("");
+                columnInput.attr("disabled", true);
+            }
+        }
+
         self.beforeShowDynamicTable = function($form , data){
             // Reset rows & columns
             self.rowData = [];
@@ -97,16 +123,16 @@ apos.define("dynamic-table-utils", {
                         return item;
                     });
 
-                    self.rowData = data.data;
-                    self.columnData = data.columns;
-
-                    // Update to options
-                    self.EditorDataTableOptions.data = self.rowData;
-                    self.EditorDataTableOptions.columns = self.columnData;
+                    self.updateRowsAndColumns(data);
 
                     // Update to inputs
-                    rowInput.val(data.data.length);
-                    columnInput.val(data.columns.length);
+                    if(rowInput.length > 0){
+                        rowInput.val(data.data.length);
+                    }
+
+                    if(columnInput.length > 0){
+                        columnInput.val(data.columns.length);
+                    }
                     self.executeRow(data.data.length);
                     self.executeColumn(data.columns.length);
 
@@ -181,13 +207,7 @@ apos.define("dynamic-table-utils", {
             }
             // Merge Options
             Object.assign(self.EditorDataTableOptions, options);
-            var rowInput = apos.schemas.findFieldset(self.$form, "row").find("input");
-            var columnInput = apos.schemas.findFieldset(self.$form, "column").find("input");
-            var dataInput = apos.schemas.findFieldset(self.$form, "data").find("textarea");
-            dataInput.val("");
-            rowInput.val("")
-            columnInput.val("");
-            columnInput.attr("disabled", true);
+            self.resetCustomTable();
             self.initTable();
             return;
         }
@@ -269,7 +289,7 @@ apos.define("dynamic-table-utils", {
             var isNaN = window.isNaN(value);
             var columnInput = apos.schemas.findFieldset(self.$form, "column").find("input");
             if (!isNaN && value !== 0) {
-                if (columnInput.attr("disabled") === "disabled") {
+                if (columnInput.length > 0 && columnInput.attr("disabled") === "disabled") {
                     columnInput.attr("disabled", false);
                 }
 
@@ -290,7 +310,9 @@ apos.define("dynamic-table-utils", {
             }
 
             if (value === 0) {
-                columnInput.attr("disabled", true);
+                if(columnInput.length > 0){
+                    columnInput.attr("disabled", true);
+                }
                 self.destroyTable();
             }
 
@@ -432,14 +454,7 @@ apos.define("dynamic-table-utils", {
 
             // For Schema Auto Insert
             if (self.rowData.length !== 0 && self.columnData.length !== 0) {
-                var convertData = apos.schemas.findFieldset(self.$form, "data").find("textarea");
-                convertData.val(JSON5.stringify({
-                    data: self.rowData,
-                    columns: self.columnData
-                }, {
-                    space: 2
-                }));
-                self.executeAutoResize(convertData.get(0));
+                self.convertData()
             }
         }
 
@@ -486,6 +501,19 @@ apos.define("dynamic-table-utils", {
             })
         }
 
+        self.convertData = function(){
+            var convertData = apos.schemas.findFieldset(self.$form, "data").find("textarea");
+            if(convertData.length > 0){
+                convertData.val(JSON5.stringify({
+                    data: self.rowData,
+                    columns: self.columnData
+                }, {
+                    space: 2
+                }));
+                self.executeAutoResize(convertData.get(0));
+            }
+        }
+
         self.getFields = function(query, callback){
             return $.get("/modules/dynamic-table/fields" , query , function(data){
                 if(data.status === "success"){
@@ -504,34 +532,78 @@ apos.define("dynamic-table-utils", {
             })
         }
 
+        self.getResultAndInitTable = function(result){
+            // Loop result object
+            for (let property of Object.keys(result)) {
+                if (result.hasOwnProperty(property)) {
+                    switch (property) {
+                        case "ajaxOptions":
+                            self.executeAjax(JSON5.parse(result[property]))
+                            break;
+
+                        case "data":
+                            self.updateRowsAndColumns(JSON5.parse(result[property]));
+                            break;
+
+                    }
+                }
+            }
+
+            // Start the table
+            self.initTable();
+        }
+
         self.getJoin = function($chooser){
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
+            var getChoiceId = $chooser.choices[0].value;
 
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
-                var getChoiceId = $chooser.choices[0].value;
-                return self.updateFields({ id : getChoiceId } , function(err ,result){
-                    if(err){
-                        return apos.log.warn("Dynamic Table Piece not found");
+                var getNewChoiceId = $chooser.choices[0].value;
+                // Get field first
+                return self.getFields({ id: getNewChoiceId }, function (err, result) {
+                    if (err) {
+                        return apos.utils.warn("Dynamic Table Piece not found");
                     }
 
-                    debugger;
+                    if(getChoiceId !== getNewChoiceId){
+                        return self.updateFields({
+                            id: getChoiceId,
+                            url: undefined
+                        }, function (err) {
+                            if (err) {
+                                return apos.utils.warn("Cannot update url for previous piece");
+                            }
 
+                            return self.updateFields({
+                                id : getNewChoiceId,
+                                url : window.location.pathname
+                            },function(err){
+                                if(err){
+                                    return apos.utils.warn("Unable to update new piece save");
+                                }
+                                // reset choice value
+                                getChoiceId = getNewChoiceId;
+                                // Update Table
+                                return self.getResultAndInitTable(result);
+                            })
+                        })
+                    }
                 })
+                
             }
 
             $chooser.afterManagerCancel = function(){
                 superAfterManagerCancel();
-                var getChoiceId = $chooser.choices[0].value;
                 self.destroyTable();
 
                 return self.getFields({ id : getChoiceId }, function(err, result){
                     if(err){
-                        return apos.log.warn("Dynamic Table Piece not found");
+                        return apos.utils.warn("Dynamic Table Piece not found");
                     }
 
-                    debugger;
+                    return self.getResultAndInitTable(result);
                 })
             }
         }
