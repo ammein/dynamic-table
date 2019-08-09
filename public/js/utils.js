@@ -532,7 +532,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.updateFields = function(query,callback){
-            return apos.modules["dynamic-table"].api("update", query , function(data){
+            return $.post("/modules/dynamic-table/update", query , function(data){
                 if(data.status === "success"){
                     return callback(null , data.message)
                 }
