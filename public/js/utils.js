@@ -546,7 +546,11 @@ apos.define("dynamic-table-utils", {
                             break;
 
                         case "data":
-                            self.updateRowsAndColumns(JSON5.parse(result[property]));
+                            try {
+                                self.updateRowsAndColumns(JSON5.parse(result[property]));                            
+                            } catch (e) {
+                                // Leave the error alone
+                            }
                             break;
 
                     }
@@ -561,7 +565,7 @@ apos.define("dynamic-table-utils", {
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             var getChoiceId;
-            
+
             if($chooser.choices.length > 0){
                 getChoiceId = $chooser.choices[0].value;
             }
@@ -584,37 +588,40 @@ apos.define("dynamic-table-utils", {
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
                 var getNewChoiceId = $chooser.choices[0].value;
+
                 // Get field first
                 return self.getFields({ id: getNewChoiceId }, function (err, result) {
                     if (err) {
                         return apos.utils.warn("Dynamic Table Piece not found");
                     }
 
-                    if(getChoiceId !== getNewChoiceId){
-                        // Update previous piece
-                        return self.updateFields({
-                            id: getChoiceId,
-                            url: undefined
-                        }, function (err) {
-                            if (err) {
-                                return apos.utils.warn("Cannot update url for previous piece");
-                            }
-
-                            // Update latest piece
+                    self.link("apos-save", null, function($button , id){
+                        if (getChoiceId !== getNewChoiceId) {
+                            // Update previous piece
                             return self.updateFields({
-                                id : getNewChoiceId,
-                                url : window.location.pathname
-                            },function(err){
-                                if(err){
-                                    return apos.utils.warn("Unable to update new piece save");
+                                id: getChoiceId,
+                                url: undefined
+                            }, function (err) {
+                                if (err) {
+                                    return apos.utils.warn("Cannot update url for previous piece");
                                 }
-                                // reset choice value
-                                getChoiceId = getNewChoiceId;
-                                // Update Table
-                                return self.getResultAndInitTable(result);
+
+                                // Update latest piece
+                                return self.updateFields({
+                                    id: getNewChoiceId,
+                                    url: window.location.pathname
+                                }, function (err) {
+                                    if (err) {
+                                        return apos.utils.warn("Unable to update new piece save");
+                                    }
+                                    // reset choice value
+                                    getChoiceId = getNewChoiceId;
+                                    // Update Table
+                                    return self.getResultAndInitTable(result);
+                                })
                             })
-                        })
-                    }
+                        }
+                    })
                 })
                 
             }

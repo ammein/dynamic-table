@@ -215,7 +215,7 @@ module.exports = {
                 _id: req.query.id
             };
 
-            return self.find(req, criteria, allowFilterSchemas).toObject(function (err, result) {
+            return self.find(req, criteria, Object.assign(allowFilterSchemas , { url : 1 })).toObject(function (err, result) {
                 if (err) {
                     return callback(err);
                 }
