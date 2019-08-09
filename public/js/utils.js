@@ -184,7 +184,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.mergeOptions = function(){
-            self.EditorDataTableOptions = self.EditorDataTableOptions || {};
+            self.EditorDataTableOptions = {};
             Object.assign(self.EditorDataTableOptions , self.originalEditorDataTableOptions);
         }
 
