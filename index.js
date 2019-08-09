@@ -212,7 +212,7 @@ module.exports = {
             var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
 
             var criteria = {
-                _id: req.query.id
+                _id: req.body.id
             };
 
             return self.find(req, criteria, Object.assign(allowFilterSchemas , { url : 1 })).toObject(function (err, result) {
@@ -222,7 +222,7 @@ module.exports = {
 
                 var newPiece = _.cloneDeep(result);
 
-                newPiece.id = req.query.id;
+                newPiece.id = req.body.id;
                 newPiece.url = req.body.url;
 
                 return self.update(req, newPiece, {permissions : false} , callback);
