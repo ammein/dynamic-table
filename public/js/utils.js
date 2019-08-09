@@ -510,7 +510,7 @@ apos.define("dynamic-table-utils", {
 
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
-                var getChoiceId = this.choices[0].value;
+                var getChoiceId = $chooser.choices[0].value;
                 return self.updateFields({ id : getChoiceId } , function(err ,result){
                     if(err){
                         return apos.log.warn("Dynamic Table Piece not found");
@@ -523,7 +523,7 @@ apos.define("dynamic-table-utils", {
 
             $chooser.afterManagerCancel = function(){
                 superAfterManagerCancel();
-                var getChoiceId = this.choices[0].value;
+                var getChoiceId = $chooser.choices[0].value;
                 self.destroyTable();
 
                 return self.getFields({ id : getChoiceId }, function(err, result){
