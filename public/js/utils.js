@@ -562,6 +562,21 @@ apos.define("dynamic-table-utils", {
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             var getChoiceId = $chooser.choices[0].value;
 
+            if(getChoiceId){
+                // Get fields first and start
+                self.getFields({
+                    id: getChoiceId
+                }, function (err, result) {
+                    if (err) {
+                        return apos.notify("Unable to get the table piece. Are you sure it saves correctly ?", {
+                            type : "error",
+                            dismiss : true
+                        })
+                    }
+                    return self.getResultAndInitTable(result);
+                })
+            }
+
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
                 var getNewChoiceId = $chooser.choices[0].value;
