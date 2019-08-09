@@ -22,7 +22,7 @@ apos.define("dynamic-table-utils", {
             self.$id = apos.schemas.findFieldset(self.$form, "id");
             self.$url = apos.schemas.findFieldset(self.$form, "url");
             self.$title = apos.schemas.findFieldset(self.$form, "title");
-            self.$join = apos.schemas.findFieldset(self.$form , "_dynamicTable");
+            self.$join = apos.schemas.findFieldset(self.$form , "_dynamicTable").data("aposChooser");
 
             var rowInput = self.$row.find("input");
             var columnInput = self.$column.find("input");
@@ -131,6 +131,7 @@ apos.define("dynamic-table-utils", {
             var ajaxOptions = self.$ajaxOptions.find("textarea");
             var dataInput = self.$data.find("textarea");
             var idInput = self.$id.find("input");
+            self.chooser = apos.schemas.findFieldset(self.$form, "_dynamicTable").data("aposChooser");
             // Let change event registered first, then trigger it
             if (
                 rowInput.length > 0 &&
@@ -152,6 +153,10 @@ apos.define("dynamic-table-utils", {
             if (idInput.length > 0 && idInput.val().length === 0) {
                 idInput.val(data ? data._id : "")
             }
+            if(self.chooser){
+                self.getJoin(self.chooser);
+            }
+
         }
 
         self.mergeOptions = function(){
@@ -484,6 +489,56 @@ apos.define("dynamic-table-utils", {
                     }
                 }
             })
+        }
+
+        self.getFields = function(query, callback){
+            return $.get(self.action + "/fields" , query , function(data){
+                if(data.status === "success"){
+                    return callback(null , data.message);
+                }
+                return callback(data.message);
+            })
+        }
+
+        self.updateFields = function(query,callback){
+            return self.api("update", query , function(data){
+                if(data.status === "success"){
+                    return callback(null , data.message)
+                }
+                return callback(data.message);
+            })
+        }
+
+        self.getJoin = function($chooser){
+            var superAfterManagerSave = $chooser.afterManagerSave;
+            var superAfterManagerCancel = $chooser.afterManagerCancel;
+
+            $chooser.afterManagerSave = function(){
+                superAfterManagerSave();
+                var getChoiceId = this.choices[0].value;
+                return self.updateFields({ id : getChoiceId } , function(err ,result){
+                    if(err){
+                        return apos.log.warn("Dynamic Table Piece not found");
+                    }
+
+                    debugger;
+
+                })
+            }
+
+            $chooser.afterManagerCancel = function(){
+                superAfterManagerCancel();
+                var getChoiceId = this.choices[0].value;
+                self.destroyTable();
+
+                return self.getFields({ id : getChoiceId }, function(err, result){
+                    if(err){
+                        return apos.log.warn("Dynamic Table Piece not found");
+                    }
+
+                    debugger;
+                })
+            }
         }
 
         self.registerTableEvent = function ($table) {

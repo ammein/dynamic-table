@@ -176,6 +176,76 @@ module.exports = {
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 
+        self.route("post", "update", function(req, res){
+            return self.routes.updateFields(req, function(err){
+                if(err){
+                    return res.send({
+                        status : "error",
+                        message : err
+                    })
+                }
+
+                return res.send({
+                    status : "success",
+                    message : "Piece updated !"
+                })
+            })
+        })
+
+        self.route("get", "fields", function(req, res){
+            return self.routes.getFields(req, function(err ,result){
+                if(err){
+                    return res.send({
+                        status : "error",
+                        message : err
+                    })
+                }
+
+                return res.send({
+                    status : "success",
+                    message : result
+                })
+            })
+        })
+
+        self.routes.updateFields = function(req, callback){
+            var allowFilterSchemas = self.tableSchemas.reduce(function (init, next, i) {
+                return init[next.name] = 1;
+            }, {});
+
+            var criteria = {
+                _id: req.query.id
+            };
+
+            return self.find(req, criteria, allowFilterSchemas).toObject(function (err, result) {
+                if (err) {
+                    return callback(err);
+                }
+
+                var newPiece = _.cloneDeep(result);
+
+                newPiece.id = req.query.id;
+                newPiece.url = req.body.url;
+
+                return self.update(req, newPiece, {permissions : false} , callback);
+            })
+        }
+
+        self.routes.getFields = function(req, callback){
+            var allowFilterSchemas = self.tableSchemas.reduce(function(init , next , i){
+                return init[next.name] = 1;
+            },{});
+
+            var criteria = { _id: req.query.id };
+
+            return self.find(req, criteria , allowFilterSchemas).toObject(function(err , result){
+                if(err){
+                    return callback(err);
+                }
+                return callback(null ,result)
+            })
+        }
+
         self.apos.permissions.add({
             value: 'edit-dynamic-table',
             label: 'Edit Dynamic Table'
