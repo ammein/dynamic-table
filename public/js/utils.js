@@ -4,7 +4,7 @@ apos.define("dynamic-table-utils", {
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
-            self.originalEditorDataTableOptions = options.editorDataTableOptions;
+            self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
         }
 
         self.exists = false;
