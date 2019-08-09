@@ -209,9 +209,7 @@ module.exports = {
         })
 
         self.routes.updateFields = function(req, callback){
-            var allowFilterSchemas = self.tableSchemas.reduce(function (init, next, i) {
-                return init[next.name] = 1;
-            }, {});
+            var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
 
             var criteria = {
                 _id: req.query.id
@@ -232,9 +230,7 @@ module.exports = {
         }
 
         self.routes.getFields = function(req, callback){
-            var allowFilterSchemas = self.tableSchemas.reduce(function(init , next , i){
-                return init[next.name] = 1;
-            },{});
+            var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
 
             var criteria = { _id: req.query.id };
 
