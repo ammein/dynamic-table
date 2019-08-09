@@ -22,7 +22,6 @@ apos.define("dynamic-table-utils", {
             self.$id = apos.schemas.findFieldset(self.$form, "id");
             self.$url = apos.schemas.findFieldset(self.$form, "url");
             self.$title = apos.schemas.findFieldset(self.$form, "title");
-            self.$join = apos.schemas.findFieldset(self.$form , "_dynamicTable").data("aposChooser");
 
             var rowInput = self.$row.find("input");
             var columnInput = self.$column.find("input");
@@ -33,10 +32,6 @@ apos.define("dynamic-table-utils", {
             if (rowInput.length > 0 && rowInput.val().length < 1) {
                 columnInput.attr("disabled", true);
             }
-
-            self.$join.on("change", function(e){
-                
-            })
 
             self.$row.on("change", function (e) {
                 var num = parseInt(e.currentTarget.querySelector("input").value);
@@ -131,7 +126,7 @@ apos.define("dynamic-table-utils", {
             var ajaxOptions = self.$ajaxOptions.find("textarea");
             var dataInput = self.$data.find("textarea");
             var idInput = self.$id.find("input");
-            self.chooser = apos.schemas.findFieldset(self.$form, "_dynamicTable").data("aposChooser");
+            self.$chooser = apos.schemas.findFieldset(self.$form, "_dynamicTable").data("aposChooser");
             // Let change event registered first, then trigger it
             if (
                 rowInput.length > 0 &&
@@ -153,8 +148,8 @@ apos.define("dynamic-table-utils", {
             if (idInput.length > 0 && idInput.val().length === 0) {
                 idInput.val(data ? data._id : "")
             }
-            if(self.chooser){
-                self.getJoin(self.chooser);
+            if(self.$chooser){
+                self.getJoin(self.$chooser);
             }
 
         }
