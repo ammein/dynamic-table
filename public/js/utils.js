@@ -2,7 +2,10 @@ apos.define("dynamic-table-utils", {
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
-        self.originalEditorDataTableOptions = options.editorDataTableOptions;
+        // This only allow editorDataTableOptions from server options to be passed on
+        if(options.editorDataTableOptions){
+            self.originalEditorDataTableOptions = options.editorDataTableOptions;
+        }
 
         self.exists = false;
 
