@@ -569,22 +569,52 @@ apos.define("dynamic-table-utils", {
             self.initTable();
         }
 
+        self.beforeSave = function(callback){
+            if (self.getChoiceId !== self.getNewChoiceId) {
+                // Update previous piece
+                return self.updateFields({
+                    id: self.getChoiceId,
+                    url: undefined
+                }, function (err) {
+                    if (err) {
+                        apos.utils.warn("Cannot update url for previous piece");
+                    }
+                    // Update latest piece
+                    return self.updateFields({
+                        id: self.getNewChoiceId,
+                        url: window.location.pathname
+                    }, function (err) {
+                        if (err) {
+                            apos.utils.warn("Unable to update new piece save");
+                            return callback(err)
+                        }
+                        // reset choice value
+                        self.getChoiceId = self.getNewChoiceId;
+
+                        return callback(null);
+                    })
+                })
+            }
+
+            return callback(null);
+        }
+
         self.getJoin = function($chooser){
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
-            var getChoiceId;
+            self.getChoiceId;
 
             // Destroy table and its options first to avoid DataTablesJQuery Problem
             self.destroyTable()
 
             if($chooser.choices.length > 0){
-                getChoiceId = $chooser.choices[0].value;
+                self.getChoiceId = $chooser.choices[0].value;
             }
 
-            if(getChoiceId){
+            if(self.getChoiceId){
                 // Get fields first and start
                 self.getFields({
-                    id: getChoiceId
+                    id: self.getChoiceId
                 }, function (err, result) {
                     if (err) {
                         return apos.notify("Unable to get the table piece. Are you sure it saves correctly ?", {
@@ -598,46 +628,17 @@ apos.define("dynamic-table-utils", {
 
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
-                var getNewChoiceId = $chooser.choices[0].value;
+                self.getNewChoiceId = $chooser.choices[0].value;
                 // Destroy table befor reinitialization
                 self.destroyTable();
 
                 // Get field first
-                return self.getFields({ id: getNewChoiceId }, function (err, result) {
+                return self.getFields({ id: self.getNewChoiceId }, function (err, result) {
                     if (err) {
                         return apos.utils.warn("Dynamic Table Piece not found");
                     }
 
-                    self.getResultAndInitTable(result);
-
-                    // When user is confirm click save, update the url
-                    $("[data-apos-save]").on("click", function(e){
-                        if (getChoiceId !== getNewChoiceId) {
-                            // Update previous piece
-                            self.updateFields({
-                                id: getChoiceId,
-                                url: undefined
-                            }, function (err) {
-                                if (err) {
-                                    return apos.utils.warn("Cannot update url for previous piece");
-                                }
-
-                                // Update latest piece
-                                return self.updateFields({
-                                    id: getNewChoiceId,
-                                    url: window.location.pathname
-                                }, function (err) {
-                                    if (err) {
-                                        return apos.utils.warn("Unable to update new piece save");
-                                    }
-                                    // reset choice value
-                                    getChoiceId = getNewChoiceId;
-                                })
-                            })
-                        }
-
-                        return false;
-                    })
+                    return self.getResultAndInitTable(result);
                 })
                 
             }
@@ -646,7 +647,7 @@ apos.define("dynamic-table-utils", {
                 superAfterManagerCancel();
                 self.destroyTable();
 
-                return self.getFields({ id : getChoiceId }, function(err, result){
+                return self.getFields({ id : self.getChoiceId }, function(err, result){
                     if(err){
                         return apos.utils.warn("Dynamic Table Piece not found");
                     }
