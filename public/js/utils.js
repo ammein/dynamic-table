@@ -584,7 +584,7 @@ apos.define("dynamic-table-utils", {
                 superAfterManagerSave();
                 var getNewChoiceId = $chooser.choices[0].value;
                 // Destroy table befor reinitialization
-                selt.destroyTable();
+                self.destroyTable();
 
                 // Get field first
                 return self.getFields({ id: getNewChoiceId }, function (err, result) {
