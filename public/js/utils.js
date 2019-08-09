@@ -185,7 +185,8 @@ apos.define("dynamic-table-utils", {
 
         self.mergeOptions = function(){
             self.EditorDataTableOptions = {};
-            Object.assign(self.EditorDataTableOptions , self.originalEditorDataTableOptions);
+            // Deep Clone
+            self.EditorDataTableOptions = JSON.parse(JSON.stringify(self.originalEditorDataTableOptions));
         }
 
         self.executeAjax = function (options) {
