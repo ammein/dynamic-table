@@ -523,7 +523,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.getFields = function(query, callback){
-            return $.get("/modules/dynamic-table/fields" , query , function(data){
+            return $.get("/modules/dynamic-table/get-fields" , query , function(data){
                 if(data.status === "success"){
                     return callback(null , data.message);
                 }
@@ -532,7 +532,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.updateFields = function(query,callback){
-            return $.post("/modules/dynamic-table/update", query , function(data){
+            return apos.modules["dynamic-table"].api("update-fields", query, function (data) {
                 if(data.status === "success"){
                     return callback(null , data.message)
                 }

@@ -176,7 +176,7 @@ module.exports = {
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 
-        self.route("post", "update", function(req, res){
+        self.route("post", "update-fields", function(req, res){
             return self.routes.updateFields(req, function(err){
                 if(err){
                     return res.send({
@@ -192,7 +192,7 @@ module.exports = {
             })
         })
 
-        self.route("get", "fields", function(req, res){
+        self.route("get", "get-fields", function(req, res){
             return self.routes.getFields(req, function(err ,result){
                 if(err){
                     return res.send({
