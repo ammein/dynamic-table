@@ -487,7 +487,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.getFields = function(query, callback){
-            return $.get(self.action + "/fields" , query , function(data){
+            return $.get("/modules/dynamic-table/fields" , query , function(data){
                 if(data.status === "success"){
                     return callback(null , data.message);
                 }
