@@ -28,12 +28,6 @@ apos.define("dynamic-table-utils", {
             var dataInput = self.$data.find("textarea");
             var ajaxOptions = self.$ajaxOptions.find("textarea");
 
-            // Register Textarea auto resize
-            if(dataInput && ajaxOptions){
-                self.textareaAutoResize(dataInput.get(0));
-                self.textareaAutoResize(ajaxOptions.get(0));
-            }
-
             // Disabled first by default
             if (rowInput.val().length < 1) {
                 columnInput.attr("disabled", true);
