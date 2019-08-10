@@ -42,11 +42,12 @@ apos.define("dynamic-table-utils", {
         self.resetDataOptions = function(){
             self.rowData = [];
             self.columnData = [];
-            delete apos.schemas.dt.vanillaJSTable.options.ajax;
-            delete apos.schemas.dt.vanillaJSTable.options.load;
-            delete apos.schemas.dt.vanillaJSTable.options.content;
-            delete apos.schemas.dt.vanillaJSTable.options.data;
-            // Delete additional data on options when initialized
+            if (apos.schemas.dt.vanillaJSTable && apos.schemas.dt.vanillaJSTable.options){
+                delete apos.schemas.dt.vanillaJSTable.options.ajax;
+                delete apos.schemas.dt.vanillaJSTable.options.load;
+                delete apos.schemas.dt.vanillaJSTable.options.content;
+                delete apos.schemas.dt.vanillaJSTable.options.data;
+            }
             delete self.EditorDataTableOptions.aaData;
             delete self.EditorDataTableOptions.data;
             delete self.EditorDataTableOptions.ajax;
