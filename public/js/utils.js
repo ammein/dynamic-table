@@ -61,6 +61,9 @@ apos.define("dynamic-table-utils", {
             var dataInput = self.$data.find("textarea");
             var ajaxOptions = self.$ajaxOptions.find("textarea");
 
+            // Destroy table if exists
+            self.destroyTable();
+
             // Disabled first by default
             if (rowInput.length > 0 && rowInput.val().length < 1) {
                 columnInput.attr("disabled", true);
@@ -98,15 +101,15 @@ apos.define("dynamic-table-utils", {
                     self.executeAjax(options);
 
                     // Stringify for better user reading
-                    ajaxOptions.val(JSON5.stringify(e.currentTarget.querySelector("textarea").value, {
+                    ajaxOptions.val(JSON5.parse(e.currentTarget.querySelector("textarea").value, {
                         space: 2
                     }));
-                } catch (e) {
+                } catch (error) {
                     // Stringify for better user reading
-                    ajaxOptions.val(JSON5.stringify(e.currentTarget.querySelector("textarea").value, {
+                    ajaxOptions.val(JSON5.parse(e.currentTarget.querySelector("textarea").value, {
                         space: 2
                     }));
-                    console.warn(e);
+                    console.warn(error);
                 }
             })
 
