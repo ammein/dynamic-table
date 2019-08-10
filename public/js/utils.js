@@ -372,7 +372,7 @@ apos.define("dynamic-table-utils", {
 
         self.initTable = function () {
             // Refresh Existing Table
-            self.$tableHTML = self.$form.find("table#dynamicTable");
+            self.$tableHTML = $("table#dynamicTable");
 
             // Safe method. Table may display many
             self.$tableHTML.each(function (i, val) {
