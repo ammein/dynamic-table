@@ -53,15 +53,15 @@ apos.define("dynamic-table-utils", {
             }
 
             if(self.EditorDataTableOptions){
-                var i = 0;
                 for (let property of Object.keys(self.EditorDataTableOptions)) {
-                    if (self.keyOptions[i][0] !== property) {
+                    var notMatch = self.keyOptions.filter((val , i) => val[0] !== property)
+                    var match = self.keyOptions.filter((val , i) => val[0] === property)
+                    if (notMatch) {
                         delete self.EditorDataTableOptions[property];
                         delete self.originalEditorDataTableOptions[property];
-                    } else if (self.keyOptions[i][0] === property) {
-                        self.originalEditorDataTableOptions[self.keyOptions[i][0]] = self.keyOptions[i][1];
+                    } else if (match) {
+                        self.originalEditorDataTableOptions[match[0][0]] = match[0][1];
                     }
-                    i++;
                 }
             }
         }
