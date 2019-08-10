@@ -507,7 +507,8 @@ apos.define("dynamic-table-utils", {
             self.$tableHTML = self.$form.find("table#dynamicTable");
 
             // Reset options
-            self.EditorDataTableOptions = self.originalEditorDataTableOptions;
+            self.resetDataOptions();
+            self.mergeOptions();
 
             // Safe method. Table may display many
             self.$tableHTML.each(function (i, val) {
