@@ -725,5 +725,87 @@ apos.define("dynamic-table-utils", {
         self.registerTableEvent = function ($table) {
 
         }
+
+        self.changeTabRebuildTable = function(val){
+            if (apos.assets.options.lean) {
+                // Destroy first
+                if (apos.schemas.dt.vanillaJSTable) {
+                    if (!apos.schemas.dt.settings.ajax && apos.schemas.dt.vanillaJSTable.options.ajax) {
+                        delete apos.schemas.dt.vanillaJSTable.options.ajax;
+                        delete apos.schemas.dt.vanillaJSTable.options.load;
+                        delete apos.schemas.dt.vanillaJSTable.options.content;
+                    }
+                    // Always delete data and clear datatables
+                    delete apos.schemas.dt.vanillaJSTable.options.data;
+                    apos.schemas.dt.vanillaJSTable.clear()
+                    try {
+                        apos.schemas.dt.vanillaJSTable.destroy()
+                    } catch (e) {
+                        // Leave the error alone. Nothing to display
+                    }
+                    delete apos.schemas.dt.vanillaJSTable;
+                }
+
+                // Always convert
+                if (apos.schemas.dt.settings.data && apos.schemas.dt.settings.columns) {
+                    var data = apos.schemas.dt.settings.data;
+                    var columns = apos.schemas.dt.settings.columns;
+
+                    var obj = {
+                        headings: [],
+                        data: data
+                    };
+
+                    obj.headings = columns.reduce(function (init, next, i, arr) {
+                        return init.concat(next.title);
+                    }, []);
+                }
+
+                // Empty the table to reinitialization
+                $(val).empty()
+
+                // Append the table clone node
+                $(val).append(apos.schemas.dt.getTable.cloneNode());
+
+                apos.schemas.dt.vanillaJSTable = new simpleDatatables.DataTable(val.querySelector("#dynamicTable"), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
+                    data: obj
+                });
+
+                // Apply Event
+                apos.dynamicTableWidgetsEditor.registerTableEvent(apos.schemas.dt.vanillaJSTable);
+            } else {
+                // If the table use DataTablesJS, destroy it first
+                if ($.fn.DataTable.isDataTable($(val).find("#dynamicTable"))) {
+                    try {
+                        $(val).find("#dynamicTable").DataTable().clear().destroy();
+                    } catch (error) {
+                        // Leave the error alone. Nothing to display
+                    }
+                }
+
+                // Delete additional data on options when initialized
+                delete apos.schemas.dt.settings.aaData
+                delete apos.schemas.dt.settings.aoColumns;
+
+                // Empty the table to reinitialization
+                $(val).empty()
+
+                // Append the table clone node
+                $(val).append(apos.schemas.dt.getTable.cloneNode());
+                try {
+                    // Try if success
+                    $(val).find("#dynamicTable").DataTable(apos.schemas.dt.settings);
+
+                    // Apply Event
+                    apos.dynamicTableUtils.registerTableEvent($(val).find("#dynamicTable"));
+                } catch (e) {
+                    // If not, destroy it ! It will output a console error and the table won't even respond
+                    // on change input for row & column
+                    $(val).find("#dynamicTable").DataTable().clear();
+                    // Just remove dataTable class
+                    $(val).find("#dynamicTable").removeClass("dataTable");
+                }
+            }
+        }
     }
 })
