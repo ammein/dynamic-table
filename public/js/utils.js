@@ -8,6 +8,7 @@ apos.define("dynamic-table-utils", {
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
+            self.keyOptions = Object.keys(options.editorDataTableOptions);
             self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
         }
 
@@ -48,11 +49,14 @@ apos.define("dynamic-table-utils", {
                 delete apos.schemas.dt.vanillaJSTable.options.content;
                 delete apos.schemas.dt.vanillaJSTable.options.data;
             }
-            delete self.EditorDataTableOptions.aaData;
-            delete self.EditorDataTableOptions.data;
-            delete self.EditorDataTableOptions.ajax;
-            delete self.EditorDataTableOptions.aoColumns;
-            delete self.EditorDataTableOptions.columns;
+            self.keyOptions.forEach(function(value , i ,arr){
+                for(let property of Object.keys(self.EditorDataTableOptions)){
+                    if (!self.EditorDataTableOptions[value]) {
+                        delete self.EditorDataTableOptions[property];
+                        delete self.originalEditorDataTableOptions[property];
+                    }
+                }
+            })
         }
 
         self.beforeShowDynamicTable = function($form , data){
