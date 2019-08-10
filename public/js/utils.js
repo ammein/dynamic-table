@@ -53,16 +53,16 @@ apos.define("dynamic-table-utils", {
             }
 
             if(self.EditorDataTableOptions){
-                self.keyOptions.forEach(function (value, i, arr) {
-                    for (let property of Object.keys(self.EditorDataTableOptions)) {
-                        if (value[0] !== property) {
-                            delete self.EditorDataTableOptions[property];
-                            delete self.originalEditorDataTableOptions[property];
-                        } else if (value[0] === property) {
-                            self.originalEditorDataTableOptions[value[0]] = value[1];
-                        }
+                var i = 0;
+                for (let property of Object.keys(self.EditorDataTableOptions)) {
+                    if (self.keyOptions[i][0] !== property) {
+                        delete self.EditorDataTableOptions[property];
+                        delete self.originalEditorDataTableOptions[property];
+                    } else if (self.keyOptions[i][0] === property) {
+                        self.originalEditorDataTableOptions[self.keyOptions[i][0]] = self.keyOptions[i][1];
                     }
-                })
+                    i++;
+                }
             }
         }
 
