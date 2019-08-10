@@ -616,6 +616,7 @@ apos.define("dynamic-table-utils", {
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             self.getChoiceId = undefined;
+            self.getNewChoiceId = undefined;
 
             // Destroy table and its options first to avoid DataTablesJQuery Problem
             self.destroyTable()
