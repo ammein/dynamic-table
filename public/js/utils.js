@@ -372,7 +372,7 @@ apos.define("dynamic-table-utils", {
 
         self.initTable = function () {
             // Refresh Existing Table
-            self.$tableHTML = $("table#dynamicTable");
+            self.$tableHTML = self.$form.find("table#dynamicTable");
 
             // Safe method. Table may display many
             self.$tableHTML.each(function (i, val) {
@@ -616,6 +616,9 @@ apos.define("dynamic-table-utils", {
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             self.getChoiceId;
+
+            // Refresh Table
+            self.$form = $chooser.$choices.parent().parent().parent().find("table#dynamicTable");
 
             // Destroy table and its options first to avoid DataTablesJQuery Problem
             self.destroyTable()
