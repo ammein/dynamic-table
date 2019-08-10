@@ -617,9 +617,6 @@ apos.define("dynamic-table-utils", {
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             self.getChoiceId;
 
-            // Refresh Table
-            self.$form = $chooser.$choices.parent().parent().parent().find("table#dynamicTable");
-
             // Destroy table and its options first to avoid DataTablesJQuery Problem
             self.destroyTable()
 
@@ -644,6 +641,8 @@ apos.define("dynamic-table-utils", {
 
             $chooser.afterManagerSave = function(){
                 superAfterManagerSave();
+                // Refresh Form
+                self.$form = $chooser.$choices.parent().parent().parent();
                 self.getNewChoiceId = $chooser.choices[0].value;
                 // Destroy table before reinitialization
                 self.destroyTable();
