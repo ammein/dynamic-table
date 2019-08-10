@@ -8,8 +8,8 @@ apos.define("dynamic-table-utils", {
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
-            self.keyOptions = Object.keys(obj).map(function (key) {
-                return [Number(key), obj[key]];
+            self.keyOptions = Object.keys(options.editorDataTableOptions).map(function (key) {
+                return [Number(key), options.editorDataTableOptions[key]];
             });
             self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
         }
