@@ -462,6 +462,12 @@ apos.define("dynamic-table-utils", {
                         }
                         return;
                     }
+                }else{
+                    // ALways delete the table and append new to it
+                    var $parent = $(val).parent();
+                    $parent.empty()
+                    $parent.append(apos.schemas.dt.getTable.cloneNode());
+                    return;
                 }
             });
 
