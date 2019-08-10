@@ -101,14 +101,10 @@ apos.define("dynamic-table-utils", {
                     self.executeAjax(options);
 
                     // Stringify for better user reading
-                    ajaxOptions.val(JSON5.parse(e.currentTarget.querySelector("textarea").value, {
-                        space: 2
-                    }));
+                    ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector("textarea").value, undefined , 2)));
                 } catch (error) {
                     // Stringify for better user reading
-                    ajaxOptions.val(JSON5.parse(e.currentTarget.querySelector("textarea").value, {
-                        space: 2
-                    }));
+                    ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector("textarea").value, undefined, 2)));
                     console.warn(error);
                 }
             })
