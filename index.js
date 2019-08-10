@@ -233,7 +233,7 @@ module.exports = {
 
                 newPiece.id = req.body.id;
                 var filter = result.url.filter((val , i) => val && val.widgetLocation === req.body.url);
-                newPiece.url = filter && filter.length > 0 ? newPiece.url.reduce((init, next, i) => init.concat(next.widgetLocation !== req.body.url), []) : newPiece.url.concat({
+                newPiece.url = filter && filter.length > 0 ? newPiece.url.reduce((init, next, i) => init.concat(next.widgetLocation !== req.body.url ? next.widgetLocation : undefined), []).filter((val , i) => val) : newPiece.url.concat({
                     id: self.apos.utils.generateId(),
                     widgetLocation: req.body.url
                 });
