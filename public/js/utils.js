@@ -1,4 +1,8 @@
 apos.define("dynamic-table-utils", {
+    afterConstruct : function(self){
+        // To let others extend it
+        self.allWidgetsTrashedListener();
+    },
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
@@ -612,6 +616,12 @@ apos.define("dynamic-table-utils", {
             }
 
             return callback(null);
+        }
+
+        self.allWidgetsTrashedListener = function(){
+            apos.on("apostrophe-areas-editor:widgetTrashed" , function($widget){
+                debugger;
+            })
         }
 
         self.getJoin = function($chooser){
