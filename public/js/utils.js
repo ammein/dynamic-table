@@ -98,8 +98,14 @@ apos.define("dynamic-table-utils", {
                     self.executeAjax(options);
 
                     // Stringify for better user reading
-                    ajaxOptions.val(JSON5.stringify(options , { space : 2 }));
+                    ajaxOptions.val(JSON5.stringify(e.currentTarget.querySelector("textarea").value, {
+                        space: 2
+                    }));
                 } catch (e) {
+                    // Stringify for better user reading
+                    ajaxOptions.val(JSON5.stringify(e.currentTarget.querySelector("textarea").value, {
+                        space: 2
+                    }));
                     console.warn(e);
                 }
             })
@@ -635,12 +641,11 @@ apos.define("dynamic-table-utils", {
         self.allWidgetsTrashedListener = function(){
             apos.on("widgetTrashed" , function($widget){
                 if ($widget.data() && $widget.data().aposWidget === "dynamic-table"){
-                    var pieceId = apos.modules["dynamic-table-widgets"].getData($widget);
+                    var pieceId = apos.modules["dynamic-table-widgets"].getData($widget).dynamicTableId;
                     self.removeUrls({ id : pieceId, url : window.location.pathname } , function(err){
                         if(err){
                             return apos.utils.warn("Unable to remove widget location.");
                         }
-
                         return apos.utils.log("Successful remove widget location.");
                     })
                 }
