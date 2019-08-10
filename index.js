@@ -185,6 +185,22 @@ module.exports = {
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 
+        self.route("post", "remove-urls" , function(req,res){
+            return self.routes.removeUrls(req ,function(err){
+                if(err){
+                    return res.send({
+                        status : "error",
+                        message : err
+                    })
+                }
+
+                return res.send({
+                    status : "success",
+                    message : "Successfully remove widget location"
+                })
+            })
+        })
+
         self.route("post", "update-fields", function(req, res){
             return self.routes.updateFields(req, function(err){
                 if(err){
@@ -217,6 +233,28 @@ module.exports = {
             })
         })
 
+        self.routes.removeUrls = function(req,callback){
+            var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
+
+            var criteria = {
+                _id: req.body.id
+            };
+
+            return self.find(req, criteria , Object.assign(allowFilterSchemas , { url : 1 })).toObject(function(err, result){
+                if(err){
+                    return callback(url);
+                }
+
+                var newPiece = _.cloneDeep(result);
+                newPiece.id = req.body.id;
+                var filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url);
+                newPiece.url = filter;
+                newPiece.published = true;
+
+                return self.update(req, newPiece, { permissions : false }, callback);
+            })
+        }
+
         self.routes.updateFields = function(req, callback){
             var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
 
@@ -230,13 +268,12 @@ module.exports = {
                 }
 
                 var newPiece = _.cloneDeep(result);
-
                 newPiece.id = req.body.id;
                 var filter = result.url.filter((val , i) => val && val.widgetLocation === req.body.url);
-                newPiece.url = filter && filter.length > 0 ? newPiece.url.reduce((init, next, i) => init.concat(next.widgetLocation !== req.body.url ? next.widgetLocation : undefined), []).filter((val , i) => val) : newPiece.url.concat({
-                    id: self.apos.utils.generateId(),
-                    widgetLocation: req.body.url
-                });
+                newPiece.url = filter && filter.length > 0 ? newPiece.url : _.uniq(_.union(newPiece.url, [{
+                    id : self.apos.utils.generateId(),
+                    widgetLocation : req.body.url
+                }]), "url")
                 newPiece.published = true;
 
                 return self.update(req, newPiece, {permissions : false} , callback);

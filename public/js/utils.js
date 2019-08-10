@@ -181,6 +181,7 @@ apos.define("dynamic-table-utils", {
             if (idInput.length > 0 && idInput.val().length === 0) {
                 idInput.val(data ? data._id : "")
             }
+            
             if(self.$chooser){
                 self.getJoin(self.$chooser);
             }
@@ -544,6 +545,16 @@ apos.define("dynamic-table-utils", {
             })
         }
 
+        self.removeUrls = function(query, callback){
+            return apos.modules["dynamic-table"].api("remove-urls" , query, function(data){
+                if(data.status === "success"){
+                    return callback(null, data.message);
+                }
+
+                return callback(data.message);
+            })
+        }
+
         self.getResultAndInitTable = function(ajaxResult){
             // Loop ajaxResult object
             for (let property of Object.keys(ajaxResult)) {
@@ -619,8 +630,17 @@ apos.define("dynamic-table-utils", {
         }
 
         self.allWidgetsTrashedListener = function(){
-            apos.on("apostrophe-areas-editor:widgetTrashed" , function($widget){
-                debugger;
+            apos.on("widgetTrashed" , function($widget){
+                if ($widget.data() && $widget.data().aposWidget === "dynamic-table"){
+                    var pieceId = apos.modules["dynamic-table-widgets"].getData($widget);
+                    self.removeUrls({ id : pieceId, url : window.location.pathname } , function(err){
+                        if(err){
+                            return apos.utils.warn("Unable to remove widget location.");
+                        }
+
+                        return apos.utils.log("Successful remove widget location.");
+                    })
+                }
             })
         }
 
