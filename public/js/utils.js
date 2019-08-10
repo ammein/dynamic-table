@@ -51,16 +51,19 @@ apos.define("dynamic-table-utils", {
                 delete apos.schemas.dt.vanillaJSTable.options.content;
                 delete apos.schemas.dt.vanillaJSTable.options.data;
             }
-            self.keyOptions.forEach(function(value , i ,arr){
-                for(let property of Object.keys(self.EditorDataTableOptions)){
-                    if (value[0] !== property) {
-                        delete self.EditorDataTableOptions[property];
-                        delete self.originalEditorDataTableOptions[property];
-                    }else if(value[0] === property){
-                        self.originalEditorDataTableOptions[value[0]] = value[1];
+
+            if(self.EditorDataTableOptions){
+                self.keyOptions.forEach(function (value, i, arr) {
+                    for (let property of Object.keys(self.EditorDataTableOptions)) {
+                        if (value[0] !== property) {
+                            delete self.EditorDataTableOptions[property];
+                            delete self.originalEditorDataTableOptions[property];
+                        } else if (value[0] === property) {
+                            self.originalEditorDataTableOptions[value[0]] = value[1];
+                        }
                     }
-                }
-            })
+                })
+            }
         }
 
         self.beforeShowDynamicTable = function($form , data){
