@@ -643,10 +643,9 @@ apos.define("dynamic-table-utils", {
                     id: self.getChoiceId
                 }, function (err, result) {
                     if (err) {
-                        return apos.notify("Unable to get the table piece. Are you sure it saves correctly ?", {
-                            type : "error",
-                            dismiss : true
-                        })
+                        // Reset self.getChoiceId
+                        self.getChoiceId = undefined;
+                        return apos.utils.warn("Unable to get the table piece. Are you sure it saves correctly ?")
                     }
                     return self.getResultAndInitTable(result);
                 })
