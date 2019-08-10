@@ -245,7 +245,11 @@ module.exports = {
 
                 var newPiece = _.cloneDeep(result);
                 newPiece.id = req.body.id;
-                var filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url);
+                if(Array.isArray(req.body.url)){
+                    var filter = req.body.url.filter((val, i) => result.url[i].widgetLocation !== val);
+                }else{
+                    var filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url);
+                }
                 newPiece.url = filter;
                 newPiece.published = true;
 

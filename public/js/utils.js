@@ -595,12 +595,12 @@ apos.define("dynamic-table-utils", {
         self.beforeSave = function(callback){
             if (self.getChoiceId !== self.getNewChoiceId && self.getChoiceId) {
                 // Update previous piece
-                return self.updateFields({
+                return self.removeUrls({
                     id: self.getChoiceId,
-                    url: undefined
+                    url: window.location.pathname
                 }, function (err) {
                     if (err) {
-                        apos.utils.warn("Cannot update url for previous piece");
+                        apos.utils.warn("Cannot remove url on previous piece");
                     }
                     // Update latest piece
                     return self.updateFields({
