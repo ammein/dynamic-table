@@ -39,10 +39,24 @@ apos.define("dynamic-table-utils", {
             }
         }
 
-        self.beforeShowDynamicTable = function($form , data){
-            // Reset rows & columns
+        self.resetDataOptions = function(){
             self.rowData = [];
             self.columnData = [];
+            delete apos.schemas.dt.vanillaJSTable.options.ajax;
+            delete apos.schemas.dt.vanillaJSTable.options.load;
+            delete apos.schemas.dt.vanillaJSTable.options.content;
+            delete apos.schemas.dt.vanillaJSTable.options.data;
+            // Delete additional data on options when initialized
+            delete self.EditorDataTableOptions.aaData;
+            delete self.EditorDataTableOptions.data;
+            delete self.EditorDataTableOptions.ajax;
+            delete self.EditorDataTableOptions.aoColumns;
+            delete self.EditorDataTableOptions.columns;
+        }
+
+        self.beforeShowDynamicTable = function($form , data){
+            // Reset rows & columns
+            self.resetDataOptions();
             // Get the form DOM
             self.$form = $form;
             // Can access self.$el & self.$form in here
@@ -727,6 +741,7 @@ apos.define("dynamic-table-utils", {
         }
 
         self.changeTabRebuildTable = function(val){
+
             if (apos.assets.options.lean) {
                 // Destroy first
                 if (apos.schemas.dt.vanillaJSTable) {
