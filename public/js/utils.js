@@ -51,7 +51,7 @@ apos.define("dynamic-table-utils", {
             }
             self.keyOptions.forEach(function(value , i ,arr){
                 for(let property of Object.keys(self.EditorDataTableOptions)){
-                    if (!self.EditorDataTableOptions[value]) {
+                    if (value !== property) {
                         delete self.EditorDataTableOptions[property];
                         delete self.originalEditorDataTableOptions[property];
                     }
