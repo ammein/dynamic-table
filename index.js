@@ -82,12 +82,6 @@ module.exports = {
                 readOnly : true
             },
             {
-                name : "published",
-                type : "boolean",
-                label : "Published",
-                def : false
-            },
-            {
                 name : "url",
                 label : "Link",
                 type : "array",
@@ -238,14 +232,12 @@ module.exports = {
                 var newPiece = _.cloneDeep(result);
 
                 newPiece.id = req.body.id;
-                if(result.url.length > 0){
-                    var filter = result.url.filter((val , i) => val.widgetLocation === req.body.url);
-                    newPiece.url = filter && filter.length > 0 ? newPiece.url.reduce((init, next, i) => init.concat(next.widgetLocation !== req.body.url), []) : newPiece.url.concat({
-                        id: self.apos.utils.generateId(),
-                        widgetLocation: req.body.url
-                    });
-                }
-                newPiece.published = result.url.length > 0 ? true : false;
+                var filter = result.url.filter((val , i) => val && val.widgetLocation === req.body.url);
+                newPiece.url = filter && filter.length > 0 ? newPiece.url.reduce((init, next, i) => init.concat(next.widgetLocation !== req.body.url), []) : newPiece.url.concat({
+                    id: self.apos.utils.generateId(),
+                    widgetLocation: req.body.url
+                });
+                newPiece.published = true;
 
                 return self.update(req, newPiece, {permissions : false} , callback);
             })
