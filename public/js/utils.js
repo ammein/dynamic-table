@@ -8,7 +8,9 @@ apos.define("dynamic-table-utils", {
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
-            self.keyOptions = Object.keys(options.editorDataTableOptions);
+            self.keyOptions = Object.keys(obj).map(function (key) {
+                return [Number(key), obj[key]];
+            });
             self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
         }
 
@@ -51,9 +53,11 @@ apos.define("dynamic-table-utils", {
             }
             self.keyOptions.forEach(function(value , i ,arr){
                 for(let property of Object.keys(self.EditorDataTableOptions)){
-                    if (value !== property) {
+                    if (value[0] !== property) {
                         delete self.EditorDataTableOptions[property];
                         delete self.originalEditorDataTableOptions[property];
+                    }else if(value[0] === property){
+                        self.originalEditorDataTableOptions[value[0]] = value[1];
                     }
                 }
             })
