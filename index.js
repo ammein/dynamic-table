@@ -252,7 +252,12 @@ module.exports = {
                 if(err){
                     return callback(err);
                 }
-                return callback(null ,result)
+
+                if(result){
+                    return callback(null, result)
+                }
+
+                return callback("Table Not Matched");
             })
         }
 
