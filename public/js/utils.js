@@ -594,22 +594,24 @@ apos.define("dynamic-table-utils", {
                         return callback(null);
                     })
                 })
+            }else if(self.getNewChoiceId && !self.getChoiceId){
+                 // Update latest piece
+                 return self.updateFields({
+                     id: self.getNewChoiceId,
+                     url: window.location.pathname
+                 }, function (err) {
+                     if (err) {
+                         apos.utils.warn("Unable to update new piece save");
+                         return callback(err)
+                     }
+                     // reset choice value
+                     self.getChoiceId = self.getNewChoiceId;
+
+                     return callback(null);
+                 })
             }
 
-            // Update latest piece
-            return self.updateFields({
-                id: self.getNewChoiceId,
-                url: window.location.pathname
-            }, function (err) {
-                if (err) {
-                    apos.utils.warn("Unable to update new piece save");
-                    return callback(err)
-                }
-                // reset choice value
-                self.getChoiceId = self.getNewChoiceId;
-
-                return callback(null);
-            })
+            return callback(null);
         }
 
         self.getJoin = function($chooser){
