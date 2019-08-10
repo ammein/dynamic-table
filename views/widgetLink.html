@@ -1,2 +1,8 @@
 {{ apos.log("widgetLink.html : ",data) }}
-<a class="apos-manage-link fa fa-external-link" href="{{ data.value }}"></a>
+{% if data.value.length > 0 %}
+    {% for link in data.value %}
+        <a class="apos-manage-link" href="{{ link.widgetLocation }}">{{ link.widgetLocation }}</a>        
+    {% endfor %}
+    {% else %}
+        <p>Table Unused</p>
+{% endif %}
