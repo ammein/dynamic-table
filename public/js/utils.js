@@ -96,6 +96,9 @@ apos.define("dynamic-table-utils", {
                     // Use custom JSON5 to beautifully parse the value without double quotes JSON
                     var options = JSON5.parse(e.currentTarget.querySelector("textarea").value);
                     self.executeAjax(options);
+
+                    // Stringify for better user reading
+                    ajaxOptions.val(JSON5.stringify(options , { space : 2 }));
                 } catch (e) {
                     console.warn(e);
                 }
@@ -181,7 +184,7 @@ apos.define("dynamic-table-utils", {
             if (idInput.length > 0 && idInput.val().length === 0) {
                 idInput.val(data ? data._id : "")
             }
-            
+
             if(self.$chooser){
                 self.getJoin(self.$chooser);
             }

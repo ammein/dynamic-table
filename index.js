@@ -234,13 +234,11 @@ module.exports = {
         })
 
         self.routes.removeUrls = function(req,callback){
-            var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
-
             var criteria = {
                 _id: req.body.id
             };
 
-            return self.find(req, criteria , Object.assign(allowFilterSchemas , { url : 1 })).toObject(function(err, result){
+            return self.find(req, criteria).toObject(function(err, result){
                 if(err){
                     return callback(url);
                 }
@@ -256,13 +254,12 @@ module.exports = {
         }
 
         self.routes.updateFields = function(req, callback){
-            var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
 
             var criteria = {
                 _id: req.body.id
             };
 
-            return self.find(req, criteria, Object.assign(allowFilterSchemas , { url : 1 })).toObject(function (err, result) {
+            return self.find(req, criteria).toObject(function (err, result) {
                 if (err) {
                     return callback(err);
                 }
