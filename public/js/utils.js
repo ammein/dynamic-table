@@ -857,7 +857,7 @@ apos.define("dynamic-table-utils", {
                     for(var column = 0; column < self.columnData.length; column++){
                         arrayItems[column] = {
                             id : apos.utils.generateId(),
-                            columnContent: self.columnData[i].title,
+                            columnContent: self.columnData[column].title,
                             ["_ordinal"]: column
                         }
                     }
