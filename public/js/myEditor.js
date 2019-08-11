@@ -25,9 +25,5 @@ apos.define("dynamic-table-editor-modal" , {
             apos.dynamicTableUtils.afterShowDynamicTable(self.$form, self.options.data);
         }
 
-        self.afterConvert = function(piece,callback){
-            return superAfterConvert(apos.dynamicTableUtils.afterConvert(piece) ,callback);
-        }
-
     }
 })
