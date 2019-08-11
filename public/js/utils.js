@@ -1,7 +1,7 @@
 apos.define("dynamic-table-utils", {
     afterConstruct : function(self){
         // To let others extend it
-        self.allWidgetsTrashedListener();
+        self.allListener();
     },
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
@@ -670,7 +670,7 @@ apos.define("dynamic-table-utils", {
             return callback(null);
         }
 
-        self.allWidgetsTrashedListener = function(){
+        self.allListener = function(){
             apos.on("widgetTrashed" , function($widget){
                 if ($widget.data() && $widget.data().aposWidget === "dynamic-table"){
                     var pieceId = apos.modules["dynamic-table-widgets"].getData($widget).dynamicTableId;
@@ -847,8 +847,7 @@ apos.define("dynamic-table-utils", {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: self.rowData[row].join(self.tableDelimiter),
-                            ["_ordinal"] : row
+                            rowContent: self.rowData[row].join(self.tableDelimiter)
                         }
                     }
                     break;
@@ -857,8 +856,7 @@ apos.define("dynamic-table-utils", {
                     for(var column = 0; column < self.columnData.length; column++){
                         arrayItems[column] = {
                             id : apos.utils.generateId(),
-                            columnContent: self.columnData[column].title,
-                            ["_ordinal"]: column
+                            columnContent: self.columnData[column].title
                         }
                     }
                     break;
