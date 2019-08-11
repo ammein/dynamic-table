@@ -848,7 +848,7 @@ apos.define("dynamic-table-utils", {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: self.rowData[row].join(self.tableDelimiter)
+                            rowContent: self.rowData[row].join(/(?<!\\)self.tableDelimiter/g)
                         }
                     }
                     break;
@@ -875,7 +875,7 @@ apos.define("dynamic-table-utils", {
             switch (fieldName) {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
-                        self.rowData[row] = arrayItems[row].rowContent.split(self.tableDelimiter);
+                        self.rowData[row] = arrayItems[row].rowContent.split(/(?<!\\)self.tableDelimiter/g);
                     }
                     break;
 
