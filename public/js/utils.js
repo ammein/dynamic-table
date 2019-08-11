@@ -204,6 +204,7 @@ apos.define("dynamic-table-utils", {
                 ajaxOptions.val().length === 0) 
             {
                 self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
+                self.initTable();
             }
 
             if (ajaxOptions.length > 0 && ajaxOptions.val().length > 0) {
