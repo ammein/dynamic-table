@@ -898,8 +898,6 @@ apos.define("dynamic-table-utils", {
 
             // Update to make convert enabled
             self.updateRowsAndColumns();
-            // Trigger Event
-            self.$data.trigger("change");
         }
 
         // End of Utils
