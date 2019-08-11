@@ -901,52 +901,6 @@ apos.define("dynamic-table-utils", {
             self.updateRowsAndColumns();
         }
 
-        // This is for editor-pieces-modal
-        // ajaxOptions: ""
-        // column: "4"
-        // data: "{↵  data: [↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵  ],↵  columns: [↵    {↵      title: 'Header 1',↵      sTitle: 'Header 1',↵    },↵    {↵      title: 'Header 2',↵      sTitle: 'Header 2',↵    },↵    {↵      title: 'Header 3',↵      sTitle: 'Header 3',↵    },↵    {↵      title: 'Header 4',↵      sTitle: 'Header 4',↵    },↵  ],↵}"
-        // published: "1"
-        // row: "4"
-        // slug: "my-gallery-2"
-        // tags: []
-        // title: "My Gallery"
-        // trash: "0"
-        // url: []
-        // _id: "cjz5kxp73004gew3dx3qiau6o"
-        self.afterConvert = function (piece) {
-            // Always update array schema here
-            // Check data attribute
-            if(self.rowData.length > 0 && self.columnData.length > 0){
-                for (let property of Object.keys(piece)) {
-                    if (piece.hasOwnProperty(property)) {
-                        switch (property) {
-                            case "adjustRow":
-                                    for (var row = 0; row < self.rowData.length; row++){
-                                        piece[property][row] = {
-                                            id : apos.utils.generateId(),
-                                            rowContent: JSON5.parse(piece["data"])[row].join(self.tableDelimiter),
-                                            ["_ordinal"] : row
-                                        }
-                                    }
-                                break;
-
-                            case "adjustColumn":
-                                    for (var column = 0; column < self.rowData.length; column++) {
-                                        piece[property][column] = {
-                                            id: apos.utils.generateId(),
-                                            columnContent: JSON5.parse(piece["data"])[column].title,
-                                            ["_ordinal"]: column
-                                        }
-                                    }
-                                break;
-                        }
-                    }
-                }
-            }
-
-            return piece;
-        }
-
         // End of Utils
     }
 })
