@@ -895,8 +895,8 @@ apos.define("dynamic-table-utils", {
                     }
                     break;
             }
-
-            self.updateRowsAndColumns();
+            // Update Data
+            self.$data.trigger("change");
         }
 
         // End of Utils
