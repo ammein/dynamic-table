@@ -886,7 +886,10 @@ apos.define("dynamic-table-utils", {
                             // In Column, there will be an object, so loop it !
                             for(let property of Object.keys(value)){
                                 if(value.hasOwnProperty(property)){
-                                    value[property] = arrayItems[column].columnContent;
+                                    // Make sure its on same array
+                                    if(i === column){
+                                        value[property] = arrayItems[column].columnContent;
+                                    }
                                 }
                             }
                             return value;
