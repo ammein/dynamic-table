@@ -6,7 +6,7 @@ apos.define("dynamic-table-utils", {
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
-        self.tableDelimiter = options.tableDelimiter || ",";
+        self.tableDelimiter = options.tableDelimiter ? new RegExp(options.tableDelimiter + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)") : new RegExp(",?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
@@ -848,7 +848,7 @@ apos.define("dynamic-table-utils", {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: self.rowData[row].join(/(?<!\\)self.tableDelimiter/g)
+                            rowContent: self.rowData[row].join(self.tableDelimiter)
                         }
                     }
                     break;
@@ -875,7 +875,7 @@ apos.define("dynamic-table-utils", {
             switch (fieldName) {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
-                        self.rowData[row] = arrayItems[row].rowContent.split(/(?<!\\)self.tableDelimiter/g);
+                        self.rowData[row] = arrayItems[row].rowContent.split(self.tableDelimiter);
                     }
                     break;
 

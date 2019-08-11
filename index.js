@@ -105,7 +105,7 @@ module.exports = {
                         name : "rowContent",
                         type : "string",
                         label : "Row Content",
-                        help : "Default limiter is \",\". If you already configure your own delimiter, please do your own."
+                        help : "To escape delimiter, you should wrap your content like this. Say \",\" is your delimiter. To escape -> \"This will , be , ignored.\""
                     }
                 ]
             },
