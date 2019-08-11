@@ -105,7 +105,7 @@ module.exports = {
                         name : "rowContent",
                         type : "string",
                         label : "Row Content",
-                        help : "To escape delimiter, you should wrap your content like this. Say \",\" is your delimiter. To escape -> \"This will , be , ignored.\""
+                        help : "To escape delimiter, you should wrap your content with double qoute string on delimiter :\nNow\",\" everything look cool"
                     }
                 ]
             },
