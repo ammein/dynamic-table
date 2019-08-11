@@ -6,6 +6,8 @@ apos.define("dynamic-table-utils", {
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
+        self.tableDelimiter = options.tableDelimiter || ",";
+
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
             self.keyOptions = Object.keys(options.editorDataTableOptions).map(function (key) {
@@ -17,8 +19,10 @@ apos.define("dynamic-table-utils", {
         self.exists = false;
 
         self.updateRowsAndColumns = function(object){
-            self.rowData = object.data;
-            self.columnData = object.columns;
+            if(object){
+                self.rowData = object.data;
+                self.columnData = object.columns;
+            }
 
             // Update to options
             self.EditorDataTableOptions.data = self.rowData;
@@ -838,15 +842,60 @@ apos.define("dynamic-table-utils", {
         self.arrayFieldsArrange = function(arrayItems , fieldName){
             // Just pass the array items from rowData & columnData
             switch (fieldName) {
-                case "row":
-                    self.executeRow()
+                case "adjustRow":
+                    for(var row = 0; row < self.rowData.length; row++){
+                        // Always replace value and re-edit id
+                        arrayItems[row] = {
+                            id : apos.utils.generateId(),
+                            rowContent: self.rowData[row].join(self.tableDelimiter),
+                            ["_ordinal"] : row
+                        }
+                    }
+                    break;
+
+                case "adjustColumn":
+                    for(var column = 0; column < self.columnData.length; column++){
+                        arrayItems[column] = {
+                            id : apos.utils.generateId(),
+                            columnContent: self.columnData[i].title,
+                            ["_ordinal"]: column
+                        }
+                    }
                     break;
             
                 default:
+                    arrayItems = arrayItems;
                     break;
             }
 
             return arrayItems;
+        }
+
+        self.updateFromArrayFields = function(arrayItems, fieldName){
+            // Just pass the array items from rowData & columnData
+            switch (fieldName) {
+                case "adjustRow":
+                    for (var row = 0; row < arrayItems.length; row++) {
+                        self.rowData[row] = arrayItems[row].rowContent.split(self.tableDelimiter);
+                    }
+                    break;
+
+                case "adjustColumn":
+                    for (var column = 0; column < arrayItems.length; column++) {
+                        self.columnData.map(function(value , i , arr){
+                            // In Column, there will be an object, so loop it !
+                            for(let property of Object.keys(value)){
+                                if(value.hasOwnProperty(property)){
+                                    value[property] = arrayItems[column].columnContent;
+                                }
+                            }
+                            return value;
+                        })
+                    }
+                    break;
+            }
+
+            self.updateRowsAndColumns();
         }
 
         // This is for editor-pieces-modal
@@ -862,7 +911,36 @@ apos.define("dynamic-table-utils", {
         // url: []
         // _id: "cjz5kxp73004gew3dx3qiau6o"
         self.afterConvert = function (piece) {
-            
+            // Always update array schema here
+            // Check data attribute
+            if(self.rowData.length > 0 && self.columnData.length > 0){
+                for (let property of Object.keys(piece)) {
+                    if (piece.hasOwnProperty(property)) {
+                        switch (property) {
+                            case "adjustRow":
+                                    for (var row = 0; row < self.rowData.length; row++){
+                                        piece[property][row] = {
+                                            id : apos.utils.generateId(),
+                                            rowContent: JSON5.parse(piece["data"])[row].join(self.tableDelimiter),
+                                            ["_ordinal"] : row
+                                        }
+                                    }
+                                break;
+
+                            case "adjustColumn":
+                                    for (var column = 0; column < self.rowData.length; column++) {
+                                        piece[property][column] = {
+                                            id: apos.utils.generateId(),
+                                            columnContent: JSON5.parse(piece["data"])[column].title
+                                            ["_ordinal"]: column
+                                        }
+                                    }
+                                break;
+                        }
+                    }
+                }
+            }
+
             return piece;
         }
 

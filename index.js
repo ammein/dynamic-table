@@ -94,6 +94,33 @@ module.exports = {
                         page : true
                     }
                 ]
+            },
+            {
+                name : "adjustRow",
+                label : "Adjust Your Row Content Here",
+                type : "array",
+                titleField : "adjustRows",
+                schema : [
+                    {
+                        name : "rowContent",
+                        type : "string",
+                        label : "Row Content",
+                        help : "Default limiter is \",\". If you already configure your own delimiter, please do your own."
+                    }
+                ]
+            },
+            {
+                name : "adjustColumn",
+                label : "Adjust Your Column Content Here",
+                type : "array",
+                titleField: "adjustColumns",
+                schema : [
+                    {
+                        name : "columnContent",
+                        type : "string",
+                        label : "Column Content"
+                    }
+                ]
             }
         ].concat(options.addFields || []);
 
@@ -119,7 +146,7 @@ module.exports = {
             {
                 name: "table",
                 label: "Custom Table",
-                fields: ["title", "row", "column", "data"]
+                fields: ["title", "row", "column", "data" , "adjustRow" , "adjustColumn"]
             },
             {
                 name: "ajax",
