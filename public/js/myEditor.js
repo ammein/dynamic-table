@@ -3,7 +3,7 @@ apos.define("dynamic-table-editor-modal" , {
     construct : function(self,options){
         var superBeforeShow = self.beforeShow;
         var superAfterShow = self.afterShow;
-        var superbeforeConvert = self.beforeConvert;
+        var superAfterConvert = self.afterConvert;
         self.dynamicTablePieces = apos.dynamicTable;
 
         self.beforeShow = function (callback) {
@@ -25,8 +25,8 @@ apos.define("dynamic-table-editor-modal" , {
             apos.dynamicTableUtils.afterShowDynamicTable(self.$form, self.options.data);
         }
 
-        self.beforeConvert = function(piece,callback){
-            return superbeforeConvert(apos.dynamicTableUtils.beforeConvert(piece) ,callback);
+        self.afterConvert = function(piece,callback){
+            return superAfterConvert(apos.dynamicTableUtils.afterConvert(piece) ,callback);
         }
 
     }

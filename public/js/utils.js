@@ -835,12 +835,21 @@ apos.define("dynamic-table-utils", {
 
 
         // To always send the data that has schema type of array
-        self.arrayFieldsArrange = function(piece , data){
+        self.arrayFieldsArrange = function(arrayItems , fieldName){
+            switch (fieldName) {
+                case "row":
+                    self.executeRow()
+                    break;
+            
+                default:
+                    break;
+            }
 
+            return arrayItems;
         }
 
         // This is for editor-pieces-modal
-        self.beforeConvert = function(piece){
+        self.afterConvert = function (piece) {
             
             return piece;
         }
