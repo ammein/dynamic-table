@@ -246,7 +246,7 @@ module.exports = {
                 var newPiece = _.cloneDeep(result);
                 newPiece.id = req.body.id;
                 if(Array.isArray(req.body.url)){
-                    var filter = req.body.url.filter((val, i) => result.url[i].widgetLocation !== val);
+                    var filter = result.url.reduce((init, next , i) => init.concat({ id : next.id , widgetLocation : req.body.url.filter((val,i)=> next.widgetLocation === val )[0]}) , []).filter((val,i) => val.widgetLocation);
                 }else{
                     var filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url);
                 }

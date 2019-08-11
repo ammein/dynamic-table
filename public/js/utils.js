@@ -745,11 +745,12 @@ apos.define("dynamic-table-utils", {
             }
         }
 
+        // Any table event is allowed
         self.registerTableEvent = function ($table) {
 
         }
 
-        self.changeTabRebuildTable = function(val){
+        self.changeTabRebuildTable = function(element){
 
             if (apos.assets.options.lean) {
                 // Destroy first
@@ -786,22 +787,22 @@ apos.define("dynamic-table-utils", {
                 }
 
                 // Empty the table to reinitialization
-                $(val).empty()
+                $(element).empty()
 
                 // Append the table clone node
-                $(val).append(apos.schemas.dt.getTable.cloneNode());
+                $(element).append(apos.schemas.dt.getTable.cloneNode());
 
-                apos.schemas.dt.vanillaJSTable = new simpleDatatables.DataTable(val.querySelector("#dynamicTable"), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
+                apos.schemas.dt.vanillaJSTable = new simpleDatatables.DataTable(element.querySelector("#dynamicTable"), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
                     data: obj
                 });
 
                 // Apply Event
-                apos.dynamicTableWidgetsEditor.registerTableEvent(apos.schemas.dt.vanillaJSTable);
+                self.registerTableEvent(apos.schemas.dt.vanillaJSTable);
             } else {
                 // If the table use DataTablesJS, destroy it first
-                if ($.fn.DataTable.isDataTable($(val).find("#dynamicTable"))) {
+                if ($.fn.DataTable.isDataTable($(element).find("#dynamicTable"))) {
                     try {
-                        $(val).find("#dynamicTable").DataTable().clear().destroy();
+                        $(element).find("#dynamicTable").DataTable().clear().destroy();
                     } catch (error) {
                         // Leave the error alone. Nothing to display
                     }
@@ -812,24 +813,38 @@ apos.define("dynamic-table-utils", {
                 delete apos.schemas.dt.settings.aoColumns;
 
                 // Empty the table to reinitialization
-                $(val).empty()
+                $(element).empty()
 
                 // Append the table clone node
-                $(val).append(apos.schemas.dt.getTable.cloneNode());
+                $(element).append(apos.schemas.dt.getTable.cloneNode());
                 try {
                     // Try if success
-                    $(val).find("#dynamicTable").DataTable(apos.schemas.dt.settings);
+                    $(element).find("#dynamicTable").DataTable(apos.schemas.dt.settings);
 
                     // Apply Event
-                    apos.dynamicTableUtils.registerTableEvent($(val).find("#dynamicTable"));
+                    self.registerTableEvent($(element).find("#dynamicTable"));
                 } catch (e) {
                     // If not, destroy it ! It will output a console error and the table won't even respond
                     // on change input for row & column
-                    $(val).find("#dynamicTable").DataTable().clear();
+                    $(element).find("#dynamicTable").DataTable().clear();
                     // Just remove dataTable class
-                    $(val).find("#dynamicTable").removeClass("dataTable");
+                    $(element).find("#dynamicTable").removeClass("dataTable");
                 }
             }
         }
+
+
+        // To always send the data that has schema type of array
+        self.arrayFieldsArrange = function(piece , data){
+
+        }
+
+        // This is for editor-pieces-modal
+        self.beforeConvert = function(piece){
+            
+            return piece;
+        }
+
+        // End of Utils
     }
 })
