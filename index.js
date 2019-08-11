@@ -178,6 +178,14 @@ module.exports = {
             self.pushAsset('script', 'utils', {
                 when: "user"
             });
+
+            self.pushAsset("script", "vendor/papaparse/papaparse.min",{
+                when : "user"
+            })
+
+            self.pushAsset("script", 'vendor/json5/json5', {
+                when: "always"
+            })
         }
 
         self.allBrowserCalls = function () {

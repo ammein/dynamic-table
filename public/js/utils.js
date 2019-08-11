@@ -6,7 +6,8 @@ apos.define("dynamic-table-utils", {
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
-        self.tableDelimiter = options.tableDelimiter ? new RegExp(options.tableDelimiter + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)") : new RegExp(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ",";
+        self.tableEscapeChar = options.tableEscapeChar;
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
@@ -848,7 +849,10 @@ apos.define("dynamic-table-utils", {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: self.rowData[row].join(self.tableDelimiter)
+                            rowContent: self.rowData[row].map(function(val, i ,arr){
+                                val.replace(`${self.tableDelimiter}`, `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
+                                return val;
+                            }).join(self.tableDelimiter)
                         }
                     }
                     break;
@@ -872,10 +876,16 @@ apos.define("dynamic-table-utils", {
 
         self.updateFromArrayFields = function(arrayItems, fieldName){
             // Just pass the array items from rowData & columnData
+            var config = {
+                delimiter : self.tableDelimiter
+            }
+            if(self.tableEscapeChar){
+                config.escapeChar = self.tableEscapeChar;
+            }
             switch (fieldName) {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
-                        self.rowData[row] = arrayItems[row].rowContent.split(self.tableDelimiter);
+                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent,config).data[0]
                     }
                     break;
 
