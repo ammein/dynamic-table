@@ -205,6 +205,7 @@ apos.define("dynamic-table-utils", {
             {
                 // Just trigger row change event
                 self.$row.trigger("change");
+                self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
             }
 
             if (ajaxOptions.length > 0 && ajaxOptions.val().length > 0) {
@@ -255,10 +256,11 @@ apos.define("dynamic-table-utils", {
         }
 
         self.loadLeanDataTables = function (xhr) {
+            var constructorDatatable = this;
             if (
-                options.ajax.dataSrc &&
-                options.ajax.dataSrc.length > 0 &&
-                options.ajax.dataSrc !== ""
+                constructorDatatable.options.ajax.dataSrc &&
+                constructorDatatable.options.ajax.dataSrc.length > 0 &&
+                constructorDatatable.options.ajax.dataSrc !== ""
             ) {
                 var data = JSON.findNested(options.ajax.dataSrc, JSON.parse(xhr.responseText));
             } else {
@@ -270,8 +272,8 @@ apos.define("dynamic-table-utils", {
             for (let i = 0; i < data.length; i++) {
                 for (let property in data[i]) {
                     // If options.columns
-                    if (options.columns) {
-                        var filter = options.columns.filter((val, i) => val.data === property);
+                    if (constructorDatatable.options.columns) {
+                        var filter = constructorDatatable.options.columns.filter((val, i) => val.data === property);
                         if (filter[0]) {
                             // If filter success
                             var getDataPos = filter[0].data;
