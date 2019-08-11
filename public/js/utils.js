@@ -885,7 +885,7 @@ apos.define("dynamic-table-utils", {
             switch (fieldName) {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
-                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent,config).data[0]
+                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent, config).data[0].map((val) => val.replace(`${self.tableEscapeChar || "\""},${self.tableEscapeChar || "\""}`, `${self.tableDelimiter}`))
                     }
                     break;
 
