@@ -396,6 +396,10 @@ apos.define("dynamic-table-utils", {
                     }
                     // Delete unecessary rows data based on columns
                     if (self.rowData[row].length !== self.columnData.length) {
+                        apos.notify(`Error : Number of rows isn't based on number of columns. Row ${row} affected` , {
+                            type : "error",
+                            dismiss : true
+                        })
                         self.rowData[row] = self.rowData[row].slice(0, self.columnData.length)
                     }
                 }
