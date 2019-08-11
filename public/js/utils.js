@@ -203,8 +203,6 @@ apos.define("dynamic-table-utils", {
                 columnInput.val().length > 0 && 
                 ajaxOptions.val().length === 0) 
             {
-                // Just trigger row change event
-                self.$row.trigger("change");
                 self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
             }
 
