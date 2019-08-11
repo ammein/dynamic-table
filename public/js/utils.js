@@ -6,7 +6,7 @@ apos.define("dynamic-table-utils", {
     construct : function(self,options){
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
-        self.tableDelimiter = options.tableDelimiter ? new RegExp(options.tableDelimiter + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)") : new RegExp(",?=([^\"]*\"[^\"]*\")*[^\"]*$)");
+        self.tableDelimiter = options.tableDelimiter ? new RegExp(options.tableDelimiter + "(?=([^\"]*\"[^\"]*\")*[^\"]*$)") : new RegExp(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)");
 
         // This only allow editorDataTableOptions from server options to be passed on
         if(options.editorDataTableOptions){
