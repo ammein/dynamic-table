@@ -836,6 +836,7 @@ apos.define("dynamic-table-utils", {
 
         // To always send the data that has schema type of array
         self.arrayFieldsArrange = function(arrayItems , fieldName){
+            // Just pass the array items from rowData & columnData
             switch (fieldName) {
                 case "row":
                     self.executeRow()
@@ -849,6 +850,17 @@ apos.define("dynamic-table-utils", {
         }
 
         // This is for editor-pieces-modal
+        // ajaxOptions: ""
+        // column: "4"
+        // data: "{↵  data: [↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵    [↵      'untitled',↵      'untitled',↵      'untitled',↵      'untitled',↵    ],↵  ],↵  columns: [↵    {↵      title: 'Header 1',↵      sTitle: 'Header 1',↵    },↵    {↵      title: 'Header 2',↵      sTitle: 'Header 2',↵    },↵    {↵      title: 'Header 3',↵      sTitle: 'Header 3',↵    },↵    {↵      title: 'Header 4',↵      sTitle: 'Header 4',↵    },↵  ],↵}"
+        // published: "1"
+        // row: "4"
+        // slug: "my-gallery-2"
+        // tags: []
+        // title: "My Gallery"
+        // trash: "0"
+        // url: []
+        // _id: "cjz5kxp73004gew3dx3qiau6o"
         self.afterConvert = function (piece) {
             
             return piece;
