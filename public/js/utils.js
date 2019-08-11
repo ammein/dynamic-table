@@ -853,7 +853,7 @@ apos.define("dynamic-table-utils", {
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
                             rowContent: self.rowData[row].map(function(val, i ,arr){
-                                return val.replace(`${self.tableDelimiter}`, `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
+                                return val.replace(new RegExp(`${self.tableDelimiter}`,"g"), `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
                             }).join(self.tableDelimiter)
                         }
                     }
@@ -887,7 +887,7 @@ apos.define("dynamic-table-utils", {
             switch (fieldName) {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
-                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent, config).data[0].map((val) => val.replace(`${self.tableEscapeChar || "\""},${self.tableEscapeChar || "\""}`, `${self.tableDelimiter}`))
+                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent, config).data[0].map((val) => val.replace(new RegExp(`${self.tableEscapeChar || "\""},${self.tableEscapeChar || "\""}`, "g"), `${self.tableDelimiter}`))
                     }
                     break;
 
