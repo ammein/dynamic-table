@@ -28,6 +28,9 @@ apos.define("dynamic-table-utils", {
             // Update to options
             self.EditorDataTableOptions.data = self.rowData;
             self.EditorDataTableOptions.columns = self.columnData;
+
+            self.executeRow(self.rowData.length);
+            self.executeColumn(self.columnData.length);
         }
 
         self.resetCustomTable = function(){
@@ -850,8 +853,7 @@ apos.define("dynamic-table-utils", {
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
                             rowContent: self.rowData[row].map(function(val, i ,arr){
-                                val.replace(`${self.tableDelimiter}`, `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
-                                return val;
+                                return val.replace(`${self.tableDelimiter}`, `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
                             }).join(self.tableDelimiter)
                         }
                     }
