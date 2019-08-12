@@ -273,6 +273,7 @@ apos.define("dynamic-table-utils", {
         self.loadLeanDataTables = function (xhr) {
             var constructorDatatable = this;
             if (
+                constructorDatatable.options.ajax && 
                 constructorDatatable.options.ajax.dataSrc &&
                 constructorDatatable.options.ajax.dataSrc.length > 0 &&
                 constructorDatatable.options.ajax.dataSrc !== ""
