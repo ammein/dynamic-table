@@ -852,10 +852,8 @@ apos.define("dynamic-table-utils", {
             // Just pass the array items from rowData & columnData
             switch (fieldName) {
                 case "adjustRow":
-                    var storeArray = []
                     for(var row = 0; row < self.rowData.length; row++){
                         // Always replace value and re-edit id
-                        storeArray[row].push(arrayItems[row].rowContent)
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
                             rowContent: self.rowData[row].map(function(val, i ,arr){
