@@ -105,7 +105,7 @@ module.exports = {
                         name : "rowContent",
                         type : "string",
                         label : "Row Content",
-                        help : "To escape delimiter, you should wrap your content with double qoute string on delimiter :\nNow\",\" everything look cool"
+                        htmlHelp: `To escape delimiter, you should wrap your content with double qoute string on delimiter : <br><code style="font-family: monospace;background-color: #EEE;padding: 5px;font: 300 12px monospace;">First"," column row, another column row</code><br> To escape double quote string, simply put <code style="font-family: monospace;background-color: #EEE;padding: 5px;font: 300 12px monospace;">\\"</code>`
                     }
                 ]
             },
