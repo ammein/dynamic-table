@@ -105,8 +105,7 @@ module.exports = {
                         name : "rowContent",
                         type : "string",
                         label : "Row Content",
-                        htmlHelp: `To escape delimiter, you should wrap your content with double qoute string on delimiter : <br><br><code style="font-family: monospace;background-color: #EEE;padding: 5px;font: 300 12px monospace;">First"," column row, another column row</code><br><br> To escape double quote string, simply use backslash character : <br><br><code style="font-family: monospace;background-color: #EEE;padding: 10px;font: 300 12px monospace;display:block;">Escape double quote string : \\"
-                        Escape using backslash to use the backslash string : \\\\</code>`
+                        htmlHelp: `To escape delimiter, you should wrap your content with double qoute string on delimiter : <br><br><code style="font-family: monospace;background-color: #EEE;padding: 5px;font: 300 12px monospace;">First"," column row, another column row</code><br><br> To escape double quote string, simply use backslash character : <br><br><code style="font-family: monospace;background-color: #EEE;padding: 10px;font: 300 12px monospace;display:block;">Escape double quote string : \\"<br>Escape using backslash to use the backslash string : \\\\</code>`
                     }
                 ]
             },
