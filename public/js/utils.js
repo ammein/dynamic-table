@@ -892,7 +892,7 @@ apos.define("dynamic-table-utils", {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
                         // Tough parsing but it works !
-                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent.replace(new RegExp(`\\\\"(?:\)`, "g"), "\\\\"), config).data[0].map((val) => val.replace(new RegExp(`${self.tableEscapeChar || "\""},${self.tableEscapeChar || "\""}`, "g"), `${self.tableDelimiter}`).replace(new RegExp("\\\\\\\\"), '"'))
+                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent.replace(new RegExp(`\\\\${self.tableEscapeChar}(?:\)`, "g"), "\\\\"), config).data[0].map((val) => val.replace(new RegExp(`${self.tableEscapeChar || "\""},${self.tableEscapeChar || "\""}`, "g"), `${self.tableDelimiter}`).replace(new RegExp("\\\\\\\\" , "g"), '"'))
                     }
                     break;
 
