@@ -900,7 +900,7 @@ apos.define("dynamic-table-utils", {
                                 store = store.replace(new RegExp(`\\(([\s\S])|(${self.tableEscapeChar || '"'})`, "g"), "$1");
                                 return store;
                             }
-                        })
+                        }).data[0]
 
                     }
                     break;
