@@ -897,7 +897,7 @@ apos.define("dynamic-table-utils", {
                             transform: function (value) {
                                 var store = value;
                                 // Replace the quote value to normal
-                                store = store.replace(new RegExp(`\\(([\s\S])|(${self.tableEscapeChar || '"'})`, "g"), "$1");
+                                store = store.replace(new RegExp(`\\\\([\\s\\S])|(${self.tableEscapeChar || '"'})`, "g"), "$1")
                                 return store;
                             }
                         }).data[0]
