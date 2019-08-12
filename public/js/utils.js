@@ -265,7 +265,7 @@ apos.define("dynamic-table-utils", {
                 constructorDatatable.options.ajax.dataSrc.length > 0 &&
                 constructorDatatable.options.ajax.dataSrc !== ""
             ) {
-                var data = JSON.findNested(options.ajax.dataSrc, JSON.parse(xhr.responseText));
+                var data = JSON.findNested(constructorDatatable.options.ajax.dataSrc, JSON.parse(xhr.responseText));
             } else {
                 var data = JSON.parse(xhr.responseText);
             }
@@ -857,7 +857,7 @@ apos.define("dynamic-table-utils", {
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
                             rowContent: self.rowData[row].map(function(val, i ,arr){
-                                return val.replace(new RegExp(`${self.tableDelimiter}`,"g"), `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
+                                return JSON.parse(JSON.stringify(val)).replace(new RegExp(`${self.tableDelimiter}`,"g"), `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
                             }).join(self.tableDelimiter)
                         }
                     }
