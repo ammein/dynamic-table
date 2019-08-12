@@ -31,22 +31,34 @@ apos.define("dynamic-table-utils", {
 
             self.executeRow(self.rowData.length);
             self.executeColumn(self.columnData.length);
+
+            if(self.rowData.length > 0 && self.columnData.length > 0){
+                apos.schemas.findField(self.$form, "row").val(self.rowData.length);
+                apos.schemas.findField(self.$form, "column").val(self.columnData.length);
+            }
         }
 
         self.resetCustomTable = function(){
             var rowInput = apos.schemas.findFieldset(self.$form, "row").find("input");
             var columnInput = apos.schemas.findFieldset(self.$form, "column").find("input");
             var dataInput = apos.schemas.findFieldset(self.$form, "data").find("textarea");
-            if (dataInput.length > 0) {
+            if (dataInput.val().length > 0) {
                 dataInput.val("");
             }
-            if (rowInput.length > 0) {
+            if (rowInput.val().length > 0) {
                 rowInput.val("")
             }
             
-            if(columnInput.length > 0){
+            if(columnInput.val().length > 0){
                 columnInput.val("");
                 columnInput.attr("disabled", true);
+            }
+        }
+
+        self.resetAjaxTable = function(){
+            var ajaxOptions = apos.schemas.findFieldset(self.$form, "ajaxOptions").find("textarea");
+            if(ajaxOptions.val().length > 0){
+                ajaxOptions.val("");
             }
         }
 
@@ -932,6 +944,11 @@ apos.define("dynamic-table-utils", {
 
             // Update to make convert enabled
             self.updateRowsAndColumns();
+
+            // If no rowData and ColumnData at all, must be the ajax. If not, just do nothing
+            if (self.$ajaxOptions.find("textarea").val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+                self.$ajaxOptions.trigger("change");
+            }
         }
 
         // End of Utils
