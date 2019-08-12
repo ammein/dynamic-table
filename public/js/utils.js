@@ -251,7 +251,7 @@ apos.define("dynamic-table-utils", {
             self.rowData = [];
             self.columnData = [];
             if (apos.assets.options.lean) {
-                if (typeof options.ajax === "string") {
+                if (options && typeof options.ajax === "string") {
                     options.ajax = {
                         url: options.ajax
                     };
@@ -943,7 +943,12 @@ apos.define("dynamic-table-utils", {
                     break;
             }
 
-                        // If no rowData and ColumnData at all, must be the ajax. If not, just do nothing
+            if(self.rowData.length > 0 && self.columnData.length > 0){
+                // Update to make convert enabled
+                self.updateRowsAndColumns();
+            }
+
+            // If no rowData and ColumnData at all, must be the ajax. If not, just do nothing
             if (self.$ajaxOptions.find("textarea").val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
                 self.$ajaxOptions.trigger("change");
             }
@@ -951,9 +956,6 @@ apos.define("dynamic-table-utils", {
             if(self.$ajaxOptions.find("textarea").val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0){
                 self.$ajaxOptions.find("textarea").val("")
             }
-
-            // Update to make convert enabled
-            self.updateRowsAndColumns();
         }
 
         // End of Utils
