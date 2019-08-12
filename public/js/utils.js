@@ -862,8 +862,11 @@ apos.define("dynamic-table-utils", {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: Papa.unparse(self.rowData,{newLine : "\r\n" , quotes : true}).split("\r\n").map((val) => val.replace(/(^")|("$)/g,""))[row]
+                            rowContent: Papa.unparse(self.rowData,{newLine : "\r\n" , quotes : true}).split("\r\n").map((val) => val.replace(/(",")/g, "|").replace(/(^")|("$)/g,"").replace(/,/g , "\",\"").replace(/\|/g , ","))[row]
                         }
+                        // Chaining replace due to Papa Unparse bug where '\",\"' is become ',' on very first row
+                        // While ',' is become '\",\"'
+                        // So in order to fix that, we have to replace so many string
                     }
                     break;
 
