@@ -649,6 +649,8 @@ apos.define("dynamic-table-utils", {
         }
 
         self.beforeSave = function(callback){
+            // Should always return callback null. Because if you put an error to it, it will never be save.
+            // We don't want that
             if (self.getChoiceId !== self.getNewChoiceId && self.getChoiceId) {
                 // Update previous piece
                 return self.removeUrls({
@@ -665,7 +667,7 @@ apos.define("dynamic-table-utils", {
                     }, function (err) {
                         if (err) {
                             apos.utils.warn("Unable to update new piece save");
-                            return callback(err)
+                            return callback(null);
                         }
                         // reset choice value
                         self.getChoiceId = self.getNewChoiceId;
@@ -681,7 +683,7 @@ apos.define("dynamic-table-utils", {
                  }, function (err) {
                      if (err) {
                          apos.utils.warn("Unable to update new piece save");
-                         return callback(err)
+                         return callback(null)
                      }
                      // reset choice value
                      self.getChoiceId = self.getNewChoiceId;
