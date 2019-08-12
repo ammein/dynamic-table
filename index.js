@@ -285,6 +285,11 @@ module.exports = {
         })
 
         self.routes.getQuery = function(req,callback){
+
+            if (!req.query.id) {
+                return callback("Id not found")
+            }
+
             var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
             var criteria = {
                 _id : req.query.id
@@ -305,6 +310,11 @@ module.exports = {
         }
 
         self.routes.removeUrls = function(req,callback){
+
+            if (!req.body.id) {
+                return callback("Id not found")
+            }
+
             var criteria = {
                 _id: req.body.id
             };
@@ -330,6 +340,10 @@ module.exports = {
 
         self.routes.updateFields = function(req, callback){
 
+            if(!req.body.id){
+                return callback("Id not found")
+            }
+
             var criteria = {
                 _id: req.body.id
             };
@@ -353,6 +367,11 @@ module.exports = {
         }
 
         self.routes.getFields = function(req, callback){
+
+            if (!req.query.id) {
+                return callback("Id not found")
+            }
+
             var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
 
             var criteria = { _id: req.query.id };

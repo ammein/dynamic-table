@@ -65,12 +65,10 @@ apos.define("dynamic-table-utils", {
         self.resetDataOptions = function(){
             self.rowData = [];
             self.columnData = [];
-            if (apos.schemas.dt.vanillaJSTable && apos.schemas.dt.vanillaJSTable.options){
-                delete apos.schemas.dt.vanillaJSTable.options.ajax;
-                delete apos.schemas.dt.vanillaJSTable.options.load;
-                delete apos.schemas.dt.vanillaJSTable.options.content;
-                delete apos.schemas.dt.vanillaJSTable.options.data;
-            }
+            delete apos.schemas.dt.vanillaJSTable.options.ajax;
+            delete apos.schemas.dt.vanillaJSTable.options.load;
+            delete apos.schemas.dt.vanillaJSTable.options.content;
+            delete apos.schemas.dt.vanillaJSTable.options.data;
 
             if(self.EditorDataTableOptions){
                 delete self.EditorDataTableOptions;
