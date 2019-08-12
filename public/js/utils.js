@@ -942,13 +942,17 @@ apos.define("dynamic-table-utils", {
                     break;
             }
 
-            // Update to make convert enabled
-            self.updateRowsAndColumns();
-
-            // If no rowData and ColumnData at all, must be the ajax. If not, just do nothing
+                        // If no rowData and ColumnData at all, must be the ajax. If not, just do nothing
             if (self.$ajaxOptions.find("textarea").val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
                 self.$ajaxOptions.trigger("change");
             }
+
+            if(self.$ajaxOptions.find("textarea").val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0){
+                self.$ajaxOptions.find("textarea").val("")
+            }
+
+            // Update to make convert enabled
+            self.updateRowsAndColumns();
         }
 
         // End of Utils
