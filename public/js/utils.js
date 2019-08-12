@@ -850,15 +850,19 @@ apos.define("dynamic-table-utils", {
         // To always send the data that has schema type of array
         self.arrayFieldsArrange = function(arrayItems , fieldName){
             // Just pass the array items from rowData & columnData
+            var config = {
+                delimiter: self.tableDelimiter
+            }
+            if (self.tableEscapeChar) {
+                config.escapeChar = self.tableEscapeChar;
+            }
             switch (fieldName) {
                 case "adjustRow":
                     for(var row = 0; row < self.rowData.length; row++){
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: self.rowData[row].map(function(val, i ,arr){
-                                return val.replace(new RegExp(`${self.tableDelimiter}`,"g"), `${self.tableEscapeChar || "\""}${self.tableDelimiter}${self.tableEscapeChar || "\""}`)
-                            }).join(self.tableDelimiter)
+                            rowContent: Papa.unparse(self.rowData).split("\n")[row]
                         }
                     }
                     break;
