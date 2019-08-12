@@ -862,7 +862,7 @@ apos.define("dynamic-table-utils", {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
-                            rowContent: Papa.unparse(self.rowData).split("\n")[row]
+                            rowContent: Papa.unparse(self.rowData,{newLine : "\r\n" , quotes : true}).split("\r\n").map((val) => val.replace(/(^")|("$)/g,""))[row]
                         }
                     }
                     break;
