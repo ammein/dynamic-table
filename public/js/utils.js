@@ -852,8 +852,10 @@ apos.define("dynamic-table-utils", {
             // Just pass the array items from rowData & columnData
             switch (fieldName) {
                 case "adjustRow":
+                    var storeArray = []
                     for(var row = 0; row < self.rowData.length; row++){
                         // Always replace value and re-edit id
+                        storeArray[row].push(arrayItems[row].rowContent)
                         arrayItems[row] = {
                             id : apos.utils.generateId(),
                             rowContent: self.rowData[row].map(function(val, i ,arr){
@@ -892,7 +894,15 @@ apos.define("dynamic-table-utils", {
                 case "adjustRow":
                     for (var row = 0; row < arrayItems.length; row++) {
                         // Tough parsing but it works !
-                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent.replace(new RegExp(`\\\\${self.tableEscapeChar}(?:\)`, "g"), "\\\\"), config).data[0].map((val) => val.replace(new RegExp(`${self.tableEscapeChar || "\""},${self.tableEscapeChar || "\""}`, "g"), `${self.tableDelimiter}`).replace(new RegExp("\\\\\\\\" , "g"), '"'))
+                        self.rowData[row] = Papa.parse(arrayItems[row].rowContent, {
+                            transform: function (value) {
+                                var store = value;
+                                // Replace the quote value to normal
+                                store = store.replace(new RegExp(`\\([\s\S])|(${self.tableEscapeChar})` , "g"), "$1");
+                                return store;
+                            }
+                        })
+
                     }
                     break;
 
