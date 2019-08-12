@@ -221,7 +221,7 @@ module.exports = {
         };
 
         self.route("get", "get-query", function(req,res){
-            return self.getQuery(req, function(err,result){
+            return self.routes.getQuery(req, function(err,result){
                 if(err){
                     return res.send({
                         status : "error",
