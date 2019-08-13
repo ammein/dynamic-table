@@ -287,7 +287,7 @@ apos.define('dynamic-table-utils', {
                 });
               }
 
-              return [];
+              return null;
             });
 
             if (filter[0]) {

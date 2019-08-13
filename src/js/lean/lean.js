@@ -93,7 +93,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                                     if (val.data.split('.').length > 1) {
                                         return val.data.split('.').filter((val) => val === property)
                                     }
-                                    return [];
+                                    return null;
                                 });
                                 if (filter[0]) {
                                     // If filter success
