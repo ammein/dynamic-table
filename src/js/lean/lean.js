@@ -3,11 +3,11 @@
 // eslint-disable-next-line no-undef
 import { DataTable } from 'simple-datatables';
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
-    var myTable = null;
     // Use object so that devs can extend or
     let utils = {};
     let table = {}
     table['el'] = el.querySelector('table#' + data._id);
+    table.cloneTable = table.el.cloneNode();
 
     if (apos.dynamicTableLean && apos.dynamicTableLean[data._id]) {
         delete apos.dynamicTableLean[data._id];
@@ -43,7 +43,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             data: obj
         }, {})
 
-        myTable = new DataTable(table.el, options)
+        table.dataTable = new DataTable(table.el, options)
 
         // Delete previous table from ajax that cause duplication
         if (table.dataTable.options.ajax) {
@@ -53,11 +53,11 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             table.dataTable.init(options)
         }
 
-        utils.registerEvent(myTable);
+        utils.registerEvent(table.dataTable);
     }
 
     function initAjaxTable() {
-        myTable = new DataTable(table.el, {
+        table.dataTable = new DataTable(table.el, {
             // Bug on Simpledatatable. Make data undefined. If not, it will load previous data from another table
             data: undefined,
             ajax: {
@@ -120,7 +120,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             }
         });
 
-        utils.registerEvent(myTable);
+        utils.registerEvent(table.dataTable);
     }
 
     // Thanks to Dinesh Pandiyan , Source : https://hackernoon.com/accessing-nested-objects-in-javascript-f02f1bd6387f
@@ -128,10 +128,6 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
         return path.split('.').reduce(function (xs, x) {
             return (xs && xs[x]) ? xs[x] : null
         }, data);
-    }
-
-    utils.getTable = function(){
-        return myTable;
     }
 
     apos.utils.onReady(function () {

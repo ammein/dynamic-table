@@ -2,3 +2,4 @@
 /lib/modules/**/*.js
 monitor-config.js
 index.js
+gulpfile.babel.js
