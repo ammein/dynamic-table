@@ -32,6 +32,7 @@ apos.define('dynamic-table-utils', {
       self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
     }
 
+    self.DataTableLean = _simpleDatatables.DataTable;
     self.exists = false;
 
     self.updateRowsAndColumns = function (object) {
@@ -393,7 +394,7 @@ apos.define('dynamic-table-utils', {
 
 
         for (var row = 0; row < self.rowData.length; row++) {
-          for (column = 0; column < self.columnData.length; column++) {
+          for (var column = 0; column < self.columnData.length; column++) {
             if (self.rowData[row][column]) {
               continue;
             }
@@ -874,10 +875,10 @@ apos.define('dynamic-table-utils', {
           break;
 
         case 'adjustColumn':
-          for (var _column = 0; _column < self.columnData.length; _column++) {
-            arrayItems[_column] = {
+          for (var column = 0; column < self.columnData.length; column++) {
+            arrayItems[column] = {
               id: apos.utils.generateId(),
-              columnContent: self.columnData[_column].title
+              columnContent: self.columnData[column].title
             };
           }
 
