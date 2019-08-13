@@ -90,7 +90,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                             // If options.columns
                             if (table.ajaxOptions.columns) {
                                 let filter = table.ajaxOptions.columns.filter((val, i) => {
-                                    if (val.data.split('.') > 0) {
+                                    if (val.data.split('.').length > 0) {
                                         return val.data.split('.').filter((val) => val === property)
                                     }
                                     return [];

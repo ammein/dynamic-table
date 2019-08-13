@@ -295,7 +295,7 @@ apos.define('dynamic-table-utils', {
                     // If options.columns
                     if (constructorDatatable.options.columns) {
                         let filter = constructorDatatable.options.columns.filter((val, i) => {
-                            if (val.data.split('.') > 0) {
+                            if (val.data.split('.').length > 0) {
                                 return val.data.split('.').filter((val) => val === property)
                             }
                             return [];
