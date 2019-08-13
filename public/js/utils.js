@@ -636,7 +636,7 @@ apos.define('dynamic-table-utils', {
     self.beforeSave = function (callback) {
       // Should always return callback null. Because if you put an error to it, it will never be save.
       // We don't want that
-      if (self.getChoiceId !== self.getNewChoiceId && self.getChoiceId) {
+      if (self.getChoiceId !== self.getNewChoiceId && self.getNewChoiceId) {
         // Update previous piece
         return self.removeUrls({
           id: self.getChoiceId,
