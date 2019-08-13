@@ -1,4 +1,4 @@
 # In Lib Modules
 /lib/modules/**/*.js
 monitor-config.js
-app.js
+index.js
