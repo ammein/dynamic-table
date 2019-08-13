@@ -46,9 +46,7 @@ gulp.task('browser-sync', ['server'], function () {
 
 gulp.task('js', () => {
     JS.map(function(file){
-        return gulp.src([
-            file.src + ".js"
-        ])
+        return gulp.src(file.src + ".js")
         .pipe(browserify(`${file.src}/${file.name}.js`))
         .transform(babelify, { presets: ['@babel/preset-env'] })
         .bundle()
