@@ -143,25 +143,21 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                 })
             }
             table['result'] = result;
-
-            // Make timeout, seems to have duplication from other table
-            setTimeout(() => {
-                if (result.ajaxOptions && result.ajaxOptions.length > 0) {
-                    try {
-                        table['ajaxOptions'] = JSON5.parse(result.ajaxOptions);
-                        initAjaxTable();
-                    } catch (e) {
-                        console.warn(e);
-                    }
-                } else if (result.data && result.data.length > 0) {
-                    initTable();
-                } else {
-                    apos.notify('There is no data to initialize the table. Table ID : ' + data.dynamicTableId, {
-                        type: 'warn',
-                        dismiss: true
-                    })
+            if (result.ajaxOptions && result.ajaxOptions.length > 0) {
+                try {
+                    table['ajaxOptions'] = JSON5.parse(result.ajaxOptions);
+                    initAjaxTable();
+                } catch (e) {
+                    console.warn(e);
                 }
-            }, 1000);
+            } else if (result.data && result.data.length > 0) {
+                initTable();
+            } else {
+                apos.notify('There is no data to initialize the table. Table ID : ' + data.dynamicTableId, {
+                    type: 'warn',
+                    dismiss: true
+                })
+            }
         })
     })
 
