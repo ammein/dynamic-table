@@ -43,14 +43,18 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             data: obj
         }, {})
 
-        table.dataTable = new DataTable(el.querySelector('table#' + data._id), options)
+        table.dataTable = new DataTable(table.el, options)
 
         // Delete previous table from ajax that cause duplication
         if (table.dataTable.options.ajax) {
             delete table.dataTable.options.ajax
             table.dataTable.clear();
             table.dataTable.destroy();
-            table.dataTable.init(options)
+            let parent = table.el.parentElement;
+            parent.innerHTML = '';
+            table['el'] = table.cloneTable.cloneNode();
+            parent.appendChild(table.el);
+            table.dataTable = new DataTable(table.el, options)
         }
 
         utils.registerEvent(table.dataTable);
