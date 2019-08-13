@@ -281,9 +281,13 @@ apos.define('dynamic-table-utils', {
           // If options.columns
           if (constructorDatatable.options.columns) {
             var filter = constructorDatatable.options.columns.filter(function (val, i) {
-              return val.data.split('.').filter(function (val) {
-                return val === property;
-              });
+              if (val.data.split('.') > 0) {
+                return val.data.split('.').filter(function (val) {
+                  return val === property;
+                });
+              }
+
+              return [];
             });
 
             if (filter[0]) {

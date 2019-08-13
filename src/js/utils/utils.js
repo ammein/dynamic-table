@@ -294,7 +294,12 @@ apos.define('dynamic-table-utils', {
                 for (let property in data[i]) {
                     // If options.columns
                     if (constructorDatatable.options.columns) {
-                        let filter = constructorDatatable.options.columns.filter((val, i) => val.data.split('.').filter((val) => val === property));
+                        let filter = constructorDatatable.options.columns.filter((val, i) => {
+                            if (val.data.split('.') > 0) {
+                                return val.data.split('.').filter((val) => val === property)
+                            }
+                            return [];
+                        });
                         if (filter[0]) {
                             // If filter success
                             let getDataPos = filter[0].data;

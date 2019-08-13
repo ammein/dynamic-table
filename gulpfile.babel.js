@@ -54,7 +54,7 @@ gulp.task('js', (done) => {
         .pipe(buffer())
         .pipe(gulp.dest(`${file.dest}`))
         .pipe(bs.stream())
-        .pipe(notify('scripts task ' + file.name + ' complete'));
+        .pipe(notify('scripts task ' + file.name + '.js complete'));
     })
     done();
 });
