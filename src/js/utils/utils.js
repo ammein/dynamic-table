@@ -1,16 +1,17 @@
-apos.define("dynamic-table-utils", {
-    afterConstruct : function(self){
+import DataTable from "simple-datatables";
+apos.define('dynamic-table-utils', {
+    afterConstruct: function (self) {
         // To let others extend it
         self.allListener();
     },
-    construct : function(self,options){
+    construct: function (self, options) {
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
         self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ",";
         self.tableEscapeChar = options.tableEscapeChar;
 
         // This only allow editorDataTableOptions from server options to be passed on
-        if(options.editorDataTableOptions){
+        if (options.editorDataTableOptions) {
             self.keyOptions = Object.keys(options.editorDataTableOptions).map(function (key) {
                 return [key, options.editorDataTableOptions[key]];
             });
@@ -19,8 +20,8 @@ apos.define("dynamic-table-utils", {
 
         self.exists = false;
 
-        self.updateRowsAndColumns = function(object){
-            if(object){
+        self.updateRowsAndColumns = function (object) {
+            if (object) {
                 self.rowData = object.data;
                 self.columnData = object.columns;
             }
@@ -32,13 +33,13 @@ apos.define("dynamic-table-utils", {
             self.executeRow(self.rowData.length);
             self.executeColumn(self.columnData.length);
 
-            if(self.rowData.length > 0 && self.columnData.length > 0){
+            if (self.rowData.length > 0 && self.columnData.length > 0) {
                 apos.schemas.findField(self.$form, "row").val(self.rowData.length);
                 apos.schemas.findField(self.$form, "column").val(self.columnData.length);
             }
         }
 
-        self.resetCustomTable = function(){
+        self.resetCustomTable = function () {
             var rowInput = apos.schemas.findFieldset(self.$form, "row").find("input");
             var columnInput = apos.schemas.findFieldset(self.$form, "column").find("input");
             var dataInput = apos.schemas.findFieldset(self.$form, "data").find("textarea");
@@ -48,42 +49,42 @@ apos.define("dynamic-table-utils", {
             if (rowInput.val().length > 0) {
                 rowInput.val("")
             }
-            
-            if(columnInput.val().length > 0){
+
+            if (columnInput.val().length > 0) {
                 columnInput.val("");
                 columnInput.attr("disabled", true);
             }
         }
 
-        self.resetAjaxTable = function(){
+        self.resetAjaxTable = function () {
             var ajaxOptions = apos.schemas.findFieldset(self.$form, "ajaxOptions").find("textarea");
-            if(ajaxOptions.val().length > 0){
+            if (ajaxOptions.val().length > 0) {
                 ajaxOptions.val("");
             }
         }
 
-        self.resetDataOptions = function(){
+        self.resetDataOptions = function () {
             self.rowData = [];
             self.columnData = [];
 
-            if (apos.schemas.dt.vanillaJSTable && apos.schemas.dt.vanillaJSTable.options){
+            if (apos.schemas.dt.vanillaJSTable && apos.schemas.dt.vanillaJSTable.options) {
                 delete apos.schemas.dt.vanillaJSTable.options.ajax;
                 delete apos.schemas.dt.vanillaJSTable.options.load;
                 delete apos.schemas.dt.vanillaJSTable.options.content;
                 delete apos.schemas.dt.vanillaJSTable.options.data;
             }
 
-            if(self.EditorDataTableOptions){
+            if (self.EditorDataTableOptions) {
                 delete self.EditorDataTableOptions;
                 delete self.originalEditorDataTableOptions;
                 self.originalEditorDataTableOptions = {}
-                self.keyOptions.forEach(function(value , i ,arr){
+                self.keyOptions.forEach(function (value, i, arr) {
                     self.originalEditorDataTableOptions[value[0]] = value[1];
                 })
             }
         }
 
-        self.beforeShowDynamicTable = function($form , data){
+        self.beforeShowDynamicTable = function ($form, data) {
             // Reset rows & columns
             self.resetDataOptions();
             // Get the form DOM
@@ -144,7 +145,7 @@ apos.define("dynamic-table-utils", {
                     self.executeAjax(options);
 
                     // Stringify for better user reading
-                    ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector("textarea").value, undefined , 2)));
+                    ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector("textarea").value, undefined, 2)));
                 } catch (error) {
                     // Stringify for better user reading
                     ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector("textarea").value, undefined, 2)));
@@ -184,11 +185,11 @@ apos.define("dynamic-table-utils", {
                     self.updateRowsAndColumns(data);
 
                     // Update to inputs
-                    if(rowInput.length > 0){
+                    if (rowInput.length > 0) {
                         rowInput.val(data.data.length);
                     }
 
-                    if(columnInput.length > 0){
+                    if (columnInput.length > 0) {
                         columnInput.val(data.columns.length);
                     }
                     self.executeRow(data.data.length);
@@ -216,10 +217,9 @@ apos.define("dynamic-table-utils", {
                 rowInput.length > 0 &&
                 columnInput.length > 0 &&
                 ajaxOptions.length > 0 &&
-                rowInput.val().length > 0 && 
-                columnInput.val().length > 0 && 
-                ajaxOptions.val().length === 0) 
-            {
+                rowInput.val().length > 0 &&
+                columnInput.val().length > 0 &&
+                ajaxOptions.val().length === 0) {
                 self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
                 self.initTable();
             }
@@ -233,15 +233,15 @@ apos.define("dynamic-table-utils", {
                 idInput.val(data ? data._id : "")
             }
 
-            if(self.$chooser){
+            if (self.$chooser) {
                 self.getJoin(self.$chooser);
             }
 
         }
 
-        self.mergeOptions = function(){
+        self.mergeOptions = function () {
             self.EditorDataTableOptions = self.EditorDataTableOptions || {};
-            Object.assign(self.EditorDataTableOptions , self.originalEditorDataTableOptions);
+            Object.assign(self.EditorDataTableOptions, self.originalEditorDataTableOptions);
         }
 
         self.executeAjax = function (options) {
@@ -276,7 +276,7 @@ apos.define("dynamic-table-utils", {
         self.loadLeanDataTables = function (xhr) {
             var constructorDatatable = this;
             if (
-                constructorDatatable.options.ajax && 
+                constructorDatatable.options.ajax &&
                 constructorDatatable.options.ajax.dataSrc &&
                 constructorDatatable.options.ajax.dataSrc.length > 0 &&
                 constructorDatatable.options.ajax.dataSrc !== ""
@@ -373,7 +373,7 @@ apos.define("dynamic-table-utils", {
             }
 
             if (value === 0) {
-                if(columnInput.length > 0){
+                if (columnInput.length > 0) {
                     columnInput.attr("disabled", true);
                 }
                 self.destroyTable();
@@ -412,9 +412,9 @@ apos.define("dynamic-table-utils", {
                     }
                     // Delete unecessary rows data based on columns
                     if (self.rowData[row].length !== self.columnData.length) {
-                        apos.notify(`Error : Number of rows isn't based on number of columns. Row ${row} affected` , {
-                            type : "error",
-                            dismiss : true
+                        apos.notify(`Error : Number of rows isn't based on number of columns. Row ${row} affected`, {
+                            type: "error",
+                            dismiss: true
                         })
                         self.rowData[row] = self.rowData[row].slice(0, self.columnData.length)
                     }
@@ -480,7 +480,7 @@ apos.define("dynamic-table-utils", {
                         $parent.empty();
                         // Append the table clone node
                         $parent.append(apos.schemas.dt.getTable.cloneNode());
-                        apos.schemas.dt.vanillaJSTable = new simpleDatatables.DataTable($parent.find("#dynamicTable").get(0), self.EditorDataTableOptions.ajax ? self.EditorDataTableOptions : {
+                        apos.schemas.dt.vanillaJSTable = new DataTable($parent.find("#dynamicTable").get(0), self.EditorDataTableOptions.ajax ? self.EditorDataTableOptions : {
                             data: obj
                         })
 
@@ -513,7 +513,7 @@ apos.define("dynamic-table-utils", {
                         }
                         return;
                     }
-                }else{
+                } else {
                     // ALways delete the table and append new to it
                     var $parent = $(val).parent();
                     $parent.empty()
@@ -580,40 +580,40 @@ apos.define("dynamic-table-utils", {
             })
         }
 
-        self.convertData = function(){
+        self.convertData = function () {
             var convertData = apos.schemas.findFieldset(self.$form, "data").find("textarea");
-            if(convertData.length > 0){
+            if (convertData.length > 0) {
                 convertData.val(JSON5.stringify({
                     data: self.rowData,
                     columns: self.columnData
                 }, {
-                    space: 2
-                }));
+                        space: 2
+                    }));
                 self.executeAutoResize(convertData.get(0));
             }
         }
 
-        self.getFields = function(query, callback){
-            return $.get("/modules/dynamic-table/get-fields" , query , function(data){
-                if(data.status === "success"){
-                    return callback(null , data.message);
+        self.getFields = function (query, callback) {
+            return $.get("/modules/dynamic-table/get-fields", query, function (data) {
+                if (data.status === "success") {
+                    return callback(null, data.message);
                 }
                 return callback(data.message);
             })
         }
 
-        self.updateFields = function(query,callback){
+        self.updateFields = function (query, callback) {
             return apos.modules["dynamic-table"].api("update-fields", query, function (data) {
-                if(data.status === "success"){
-                    return callback(null , data.message)
+                if (data.status === "success") {
+                    return callback(null, data.message)
                 }
                 return callback(data.message);
             })
         }
 
-        self.removeUrls = function(query, callback){
-            return apos.modules["dynamic-table"].api("remove-urls" , query, function(data){
-                if(data.status === "success"){
+        self.removeUrls = function (query, callback) {
+            return apos.modules["dynamic-table"].api("remove-urls", query, function (data) {
+                if (data.status === "success") {
                     return callback(null, data.message);
                 }
 
@@ -621,7 +621,7 @@ apos.define("dynamic-table-utils", {
             })
         }
 
-        self.getResultAndInitTable = function(ajaxResult){
+        self.getResultAndInitTable = function (ajaxResult) {
             // Loop ajaxResult object
             for (let property of Object.keys(ajaxResult)) {
                 if (ajaxResult.hasOwnProperty(property)) {
@@ -650,7 +650,7 @@ apos.define("dynamic-table-utils", {
             self.initTable();
         }
 
-        self.beforeSave = function(callback){
+        self.beforeSave = function (callback) {
             // Should always return callback null. Because if you put an error to it, it will never be save.
             // We don't want that
             if (self.getChoiceId !== self.getNewChoiceId && self.getChoiceId) {
@@ -677,32 +677,32 @@ apos.define("dynamic-table-utils", {
                         return callback(null);
                     })
                 })
-            }else if(self.getNewChoiceId && !self.getChoiceId){
-                 // Update latest piece
-                 return self.updateFields({
-                     id: self.getNewChoiceId,
-                     url: window.location.pathname
-                 }, function (err) {
-                     if (err) {
-                         apos.utils.warn("Unable to update new piece save");
-                         return callback(null)
-                     }
-                     // reset choice value
-                     self.getChoiceId = self.getNewChoiceId;
+            } else if (self.getNewChoiceId && !self.getChoiceId) {
+                // Update latest piece
+                return self.updateFields({
+                    id: self.getNewChoiceId,
+                    url: window.location.pathname
+                }, function (err) {
+                    if (err) {
+                        apos.utils.warn("Unable to update new piece save");
+                        return callback(null)
+                    }
+                    // reset choice value
+                    self.getChoiceId = self.getNewChoiceId;
 
-                     return callback(null);
-                 })
+                    return callback(null);
+                })
             }
 
             return callback(null);
         }
 
-        self.allListener = function(){
-            apos.on("widgetTrashed" , function($widget){
-                if ($widget.data() && $widget.data().aposWidget === "dynamic-table"){
+        self.allListener = function () {
+            apos.on("widgetTrashed", function ($widget) {
+                if ($widget.data() && $widget.data().aposWidget === "dynamic-table") {
                     var pieceId = apos.modules["dynamic-table-widgets"].getData($widget).dynamicTableId;
-                    self.removeUrls({ id : pieceId, url : window.location.pathname } , function(err){
-                        if(err){
+                    self.removeUrls({ id: pieceId, url: window.location.pathname }, function (err) {
+                        if (err) {
                             return apos.utils.warn("Unable to remove widget location.");
                         }
                         return apos.utils.log("Successful remove widget location.");
@@ -711,7 +711,7 @@ apos.define("dynamic-table-utils", {
             })
         }
 
-        self.getJoin = function($chooser){
+        self.getJoin = function ($chooser) {
             var superAfterManagerSave = $chooser.afterManagerSave;
             var superAfterManagerCancel = $chooser.afterManagerCancel;
             self.getChoiceId = undefined;
@@ -720,11 +720,11 @@ apos.define("dynamic-table-utils", {
             // Destroy table and its options first to avoid DataTablesJQuery Problem
             self.destroyTable()
 
-            if($chooser.choices.length > 0){
+            if ($chooser.choices.length > 0) {
                 self.getChoiceId = $chooser.choices[0].value;
             }
 
-            if(self.getChoiceId){
+            if (self.getChoiceId) {
                 // Get fields first and start
                 self.getFields({
                     id: self.getChoiceId
@@ -738,7 +738,7 @@ apos.define("dynamic-table-utils", {
                 })
             }
 
-            $chooser.afterManagerSave = function(){
+            $chooser.afterManagerSave = function () {
                 superAfterManagerSave();
                 // Refresh Form
                 self.$form = $chooser.$choices.parent().parent().parent();
@@ -754,10 +754,10 @@ apos.define("dynamic-table-utils", {
 
                     return self.getResultAndInitTable(result);
                 })
-                
+
             }
 
-            $chooser.afterManagerCancel = function(){
+            $chooser.afterManagerCancel = function () {
                 superAfterManagerCancel();
                 self.destroyTable();
 
@@ -781,7 +781,7 @@ apos.define("dynamic-table-utils", {
 
         }
 
-        self.changeTabRebuildTable = function(element){
+        self.changeTabRebuildTable = function (element) {
 
             if (apos.assets.options.lean) {
                 // Destroy first
@@ -823,7 +823,7 @@ apos.define("dynamic-table-utils", {
                 // Append the table clone node
                 $(element).append(apos.schemas.dt.getTable.cloneNode());
 
-                apos.schemas.dt.vanillaJSTable = new simpleDatatables.DataTable(element.querySelector("#dynamicTable"), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
+                apos.schemas.dt.vanillaJSTable = new DataTable(element.querySelector("#dynamicTable"), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
                     data: obj
                 });
 
@@ -866,7 +866,7 @@ apos.define("dynamic-table-utils", {
 
 
         // To always send the data that has schema type of array
-        self.arrayFieldsArrange = function(arrayItems , fieldName){
+        self.arrayFieldsArrange = function (arrayItems, fieldName) {
             // Just pass the array items from rowData & columnData
             var config = {
                 delimiter: self.tableDelimiter
@@ -876,11 +876,11 @@ apos.define("dynamic-table-utils", {
             }
             switch (fieldName) {
                 case "adjustRow":
-                    for(var row = 0; row < self.rowData.length; row++){
+                    for (var row = 0; row < self.rowData.length; row++) {
                         // Always replace value and re-edit id
                         arrayItems[row] = {
-                            id : apos.utils.generateId(),
-                            rowContent: Papa.unparse(self.rowData,{newLine : "\r\n" , quotes : true}).split("\r\n").map((val) => val.replace(/(",")/g, "|").replace(/(^")|("$)/g,"").replace(/,/g , "\",\"").replace(/\|/g , ","))[row]
+                            id: apos.utils.generateId(),
+                            rowContent: Papa.unparse(self.rowData, { newLine: "\r\n", quotes: true }).split("\r\n").map((val) => val.replace(/(",")/g, "|").replace(/(^")|("$)/g, "").replace(/,/g, "\",\"").replace(/\|/g, ","))[row]
                         }
                         // Chaining replace due to Papa Unparse bug where '\",\"' is become ',' on very first row
                         // While ',' is become '\",\"'
@@ -889,14 +889,14 @@ apos.define("dynamic-table-utils", {
                     break;
 
                 case "adjustColumn":
-                    for(var column = 0; column < self.columnData.length; column++){
+                    for (var column = 0; column < self.columnData.length; column++) {
                         arrayItems[column] = {
-                            id : apos.utils.generateId(),
+                            id: apos.utils.generateId(),
                             columnContent: self.columnData[column].title
                         }
                     }
                     break;
-            
+
                 default:
                     arrayItems = arrayItems;
                     break;
@@ -905,12 +905,12 @@ apos.define("dynamic-table-utils", {
             return arrayItems;
         }
 
-        self.updateFromArrayFields = function(arrayItems, fieldName){
+        self.updateFromArrayFields = function (arrayItems, fieldName) {
             // Just pass the array items from rowData & columnData
             var config = {
-                delimiter : self.tableDelimiter
+                delimiter: self.tableDelimiter
             }
-            if(self.tableEscapeChar){
+            if (self.tableEscapeChar) {
                 config.escapeChar = self.tableEscapeChar;
             }
             switch (fieldName) {
@@ -918,7 +918,7 @@ apos.define("dynamic-table-utils", {
                     for (var row = 0; row < arrayItems.length; row++) {
                         // Tough parsing but it works !
                         self.rowData[row] = Papa.parse(arrayItems[row].rowContent, {
-                            escapeChar : self.tableEscapeChar || '"',
+                            escapeChar: self.tableEscapeChar || '"',
                             transform: function (value) {
                                 var store = value;
                                 // Replace the quote value to normal
@@ -932,12 +932,12 @@ apos.define("dynamic-table-utils", {
 
                 case "adjustColumn":
                     for (var column = 0; column < arrayItems.length; column++) {
-                        self.columnData.map(function(value , i , arr){
+                        self.columnData.map(function (value, i, arr) {
                             // In Column, there will be an object, so loop it !
-                            for(let property of Object.keys(value)){
-                                if(value.hasOwnProperty(property)){
+                            for (let property of Object.keys(value)) {
+                                if (value.hasOwnProperty(property)) {
                                     // Make sure its on same array
-                                    if(i === column){
+                                    if (i === column) {
                                         value[property] = arrayItems[column].columnContent;
                                     }
                                 }
@@ -948,7 +948,7 @@ apos.define("dynamic-table-utils", {
                     break;
             }
 
-            if(self.rowData.length > 0 && self.columnData.length > 0){
+            if (self.rowData.length > 0 && self.columnData.length > 0) {
                 // Update to make convert enabled
                 self.updateRowsAndColumns();
             }
@@ -958,7 +958,7 @@ apos.define("dynamic-table-utils", {
                 self.$ajaxOptions.trigger("change");
             }
 
-            if(self.$ajaxOptions.find("textarea").val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0){
+            if (self.$ajaxOptions.find("textarea").val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
                 self.$ajaxOptions.find("textarea").val("")
             }
         }
