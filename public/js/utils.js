@@ -11,9 +11,7 @@
 },{"./date-5b20bb7a.js":1}],3:[function(require,module,exports){
 "use strict";
 
-var _simpleDatatables = _interopRequireDefault(require("simple-datatables"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+var _simpleDatatables = require("simple-datatables");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
@@ -470,7 +468,7 @@ apos.define('dynamic-table-utils', {
             $parent.empty(); // Append the table clone node
 
             $parent.append(apos.schemas.dt.getTable.cloneNode());
-            apos.schemas.dt.vanillaJSTable = new _simpleDatatables["default"]($parent.find('#dynamicTable').get(0), self.EditorDataTableOptions.ajax ? self.EditorDataTableOptions : {
+            apos.schemas.dt.vanillaJSTable = new _simpleDatatables.DataTable($parent.find('#dynamicTable').get(0), self.EditorDataTableOptions.ajax ? self.EditorDataTableOptions : {
               data: obj
             });
           } else {
@@ -807,7 +805,7 @@ apos.define('dynamic-table-utils', {
         $(element).empty(); // Append the table clone node
 
         $(element).append(apos.schemas.dt.getTable.cloneNode());
-        apos.schemas.dt.vanillaJSTable = new _simpleDatatables["default"](element.querySelector('#dynamicTable'), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
+        apos.schemas.dt.vanillaJSTable = new _simpleDatatables.DataTable(element.querySelector('#dynamicTable'), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
           data: obj
         }); // Apply Event
 

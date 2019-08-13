@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /* eslint-disable no-redeclare */
 // eslint-disable-next-line no-undef
-import DataTable from 'simple-datatables';
+import { DataTable } from 'simple-datatables';
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
     // Use object so that devs can extend or

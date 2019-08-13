@@ -1,7 +1,7 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable no-var */
 /* eslint-disable no-undef */
-import DataTable from 'simple-datatables';
+import { DataTable } from 'simple-datatables';
 apos.define('dynamic-table-utils', {
     afterConstruct: function (self) {
         // To let others extend it
