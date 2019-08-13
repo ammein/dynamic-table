@@ -159,6 +159,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
     apos.dynamicTableLean = apos.utils.assign(apos.dynamicTableLean || {}, {
         utils: utils,
+        DataTable: DataTable,
         [data._id]: table
     })
 }

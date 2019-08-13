@@ -21,6 +21,8 @@ apos.define('dynamic-table-utils', {
             self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
         }
 
+        self.DataTableLean = DataTable;
+
         self.exists = false;
 
         self.updateRowsAndColumns = function (object) {
@@ -403,7 +405,7 @@ apos.define('dynamic-table-utils', {
 
                 // Reupload data to column change
                 for (let row = 0; row < self.rowData.length; row++) {
-                    for (column = 0; column < self.columnData.length; column++) {
+                    for (let column = 0; column < self.columnData.length; column++) {
                         if (self.rowData[row][column]) {
                             continue;
                         }
