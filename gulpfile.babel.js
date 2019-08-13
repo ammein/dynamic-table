@@ -9,14 +9,15 @@ import gulpStylelint from 'gulp-stylelint';
 import notify from 'gulp-notify';
 import sass from 'gulp-sass';
 import source from 'vinyl-source-stream';
+import merge from 'merge-stream';
 import through from 'through2'; // For custom function extension
 import path from 'path';
 
 var src = "src/"
 
 var JS = [
-    { src: 'public/js/lean/*', name: 'lean', dest: 'lib/modules/dynamic-table-widgets/public/js' },
-    { src: 'public/js/utils/*', name: 'utils', dest: 'public/js' }
+    { src: 'src/js/lean/', name: 'lean', dest: 'lib/modules/dynamic-table-widgets/public/js' },
+    { src: 'src/js/utils/', name: 'utils', dest: 'public/js' }
 ];
 
 const spawn = require('child_process').spawn;
@@ -44,17 +45,18 @@ gulp.task('browser-sync', ['server'], function () {
     });
 });
 
-gulp.task('js', () => {
+gulp.task('js', (done) => {
     JS.map(function(file){
-        return gulp.src(file.src + ".js")
-        .pipe(browserify(`${file.src}/${file.name}.js`))
+        browserify(`${file.src}${file.name}.js`)
         .transform(babelify, { presets: ['@babel/preset-env'] })
         .bundle()
         .pipe(source(file.name+'.js'))
         .pipe(buffer())
-        .pipe(gulp.dest(`${file.dest}js`))
+        .pipe(gulp.dest(`${file.dest}`))
+        .pipe(bs.stream())
         .pipe(notify('scripts task ' + file.name + ' complete'));
     })
+    done();
 });
 
 gulp.task('sass', () =>

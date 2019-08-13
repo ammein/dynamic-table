@@ -1,8 +1,10 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-redeclare */
 // eslint-disable-next-line no-undef
 import DataTable from 'simple-datatables';
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
-    // Use object so that devs can extend or 
+    // Use object so that devs can extend or
     let utils = {};
     let table = {}
     table['el'] = el.querySelector('table#' + data._id);
@@ -67,7 +69,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                         table.ajaxOptions.ajax &&
                         table.ajaxOptions.ajax.dataSrc &&
                         table.ajaxOptions.ajax.dataSrc.length > 0 &&
-                        table.ajaxOptions.ajax.dataSrc !== ""
+                        table.ajaxOptions.ajax.dataSrc !== ''
                     ) {
                         // eslint-disable-next-line no-var
                         var data = JSON.findNested(table.ajaxOptions.ajax.dataSrc, JSON.parse(xhr.responseText));
@@ -88,7 +90,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                                     // If filter success
                                     let getDataPos = filter[0].data;
                                     let getTitle = filter[0].title
-                                    if (getDataPos.split('.').length > 1 && getDataPos.split(".")[getDataPos.split(".").length - getDataPos.split(".").length] === property) {
+                                    if (getDataPos.split('.').length > 1 && getDataPos.split('.')[getDataPos.split('.').length - getDataPos.split('.').length] === property) {
                                         convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                             [getTitle]: !window.isNaN(utils.findNested(getDataPos, data[i][property])) ? utils.findNested(getDataPos, data[i][property]).toString() : utils.findNested(getDataPos, data[i][property])
                                         })
@@ -123,7 +125,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
     // Thanks to Dinesh Pandiyan , Source : https://hackernoon.com/accessing-nested-objects-in-javascript-f02f1bd6387f
     utils.findNested = function (path, data) {
-        return path.split(".").reduce(function (xs, x) {
+        return path.split('.').reduce(function (xs, x) {
             return (xs && xs[x]) ? xs[x] : null
         }, data);
     }
@@ -131,15 +133,15 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     apos.utils.onReady(function () {
         getResult({ id: data.dynamicTableId }, function (err, result) {
             if (err) {
-                return apos.notify("ERROR : " + err, {
-                    type: "error",
+                return apos.notify('ERROR : ' + err, {
+                    type: 'error',
                     dismiss: true
                 })
             }
-            table["result"] = result;
+            table['result'] = result;
             if (result.ajaxOptions && result.ajaxOptions.length > 0) {
                 try {
-                    table["ajaxOptions"] = JSON5.parse(result.ajaxOptions);
+                    table['ajaxOptions'] = JSON5.parse(result.ajaxOptions);
                     initAjaxTable();
                 } catch (e) {
                     console.warn(e);
@@ -147,8 +149,8 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             } else if (result.data && result.data.length > 0) {
                 initTable();
             } else {
-                apos.notify("There is no data to initialize the table. Table ID : " + data.dynamicTableId, {
-                    type: "warn",
+                apos.notify('There is no data to initialize the table. Table ID : ' + data.dynamicTableId, {
+                    type: 'warn',
                     dismiss: true
                 })
             }
