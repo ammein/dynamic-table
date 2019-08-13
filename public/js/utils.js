@@ -257,6 +257,8 @@ apos.define("dynamic-table-utils", {
                         url: options.ajax
                     };
                 }
+                // Bug where it load previous datatable data from other table. Just make this undefined
+                options.data = undefined;
                 // Pass to load
                 options.ajax.load = options.ajax.load || self.loadLeanDataTables;
             } else {
