@@ -281,13 +281,7 @@ apos.define('dynamic-table-utils', {
           // If options.columns
           if (constructorDatatable.options.columns) {
             var filter = constructorDatatable.options.columns.filter(function (val, i) {
-              if (val.data.split('.').length > 1) {
-                return val.data.split('.').filter(function (val) {
-                  return val === property;
-                });
-              }
-
-              return null;
+              return val.data.includes(property);
             });
 
             if (filter[0]) {
@@ -296,7 +290,7 @@ apos.define('dynamic-table-utils', {
               var getTitle = filter[0].title;
 
               if (getDataPos.split('.').length > 1 && getDataPos.split('.')[getDataPos.split('.').length - getDataPos.split('.').length] === property) {
-                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i][property])) ? self.findNested(getDataPos, data[i][property]).toString() : self.findNested(getDataPos, data[i][property])));
+                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])));
               } else {
                 convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
               }
@@ -337,6 +331,10 @@ apos.define('dynamic-table-utils', {
 
 
     self.findNested = function (path, data) {
+      if (Array.isArray(path)) {
+        path = path.join('.');
+      }
+
       return path.split('.').reduce(function (xs, x) {
         return xs && xs[x] ? xs[x] : null;
       }, data);

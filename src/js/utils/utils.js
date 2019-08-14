@@ -294,19 +294,14 @@ apos.define('dynamic-table-utils', {
                 for (let property in data[i]) {
                     // If options.columns
                     if (constructorDatatable.options.columns) {
-                        let filter = constructorDatatable.options.columns.filter((val, i) => {
-                            if (val.data.split('.').length > 1) {
-                                return val.data.split('.').filter((val) => val === property)
-                            }
-                            return null;
-                        });
+                        let filter = constructorDatatable.options.columns.filter((val, i) => val.data.includes(property));
                         if (filter[0]) {
                             // If filter success
                             let getDataPos = filter[0].data;
                             let getTitle = filter[0].title
                             if (getDataPos.split('.').length > 1 && getDataPos.split('.')[getDataPos.split('.').length - getDataPos.split('.').length] === property) {
                                 convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                    [getTitle]: !window.isNaN(self.findNested(getDataPos, data[i][property])) ? self.findNested(getDataPos, data[i][property]).toString() : self.findNested(getDataPos, data[i][property])
+                                    [getTitle]: !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])
                                 })
                             } else {
                                 convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
@@ -350,6 +345,9 @@ apos.define('dynamic-table-utils', {
 
         // Thanks to Dinesh Pandiyan , Source : https://hackernoon.com/accessing-nested-objects-in-javascript-f02f1bd6387f
         self.findNested = function (path, data) {
+            if (Array.isArray(path)) {
+                path = path.join('.');
+            }
             return path.split('.').reduce(function (xs, x) {
                 return (xs && xs[x]) ? xs[x] : null
             }, data);
