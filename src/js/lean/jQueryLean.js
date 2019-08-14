@@ -3,8 +3,7 @@
 /* eslint-disable no-redeclare */
 // eslint-disable-next-line no-undef
 import $ from 'jquery';
-import dt from 'datatables.net-dt';
-global.$.DataTable = dt;
+var dt = require('datatables.net-dt')(window, $);
 apos.utils.widgetPlayers['dynamic-table'] = function(el, data, options) {
 
     // Use object so that devs can extend or
