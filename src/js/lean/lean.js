@@ -57,7 +57,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                 url: table.ajaxOptions.ajax.url ? table.ajaxOptions.ajax.url : table.ajaxOptions.ajax,
 
                 // Adjust Load Ajax Data
-                load: table.ajaxOptions.load || function (xhr) {
+                load: function (xhr) {
                     if (
                         table.ajaxOptions.ajax &&
                         table.ajaxOptions.ajax.dataSrc &&
@@ -115,6 +115,8 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                 }
             }
         });
+
+        table.dataTable.refresh();
 
         utils.registerEvent(table.dataTable);
     }
