@@ -96,12 +96,12 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                                         let getTitle = table.ajaxOptions.columns[columns].title
                                         if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
                                             // First match if nested object found
-                                            return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                            convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                                 [getTitle]: !window.isNaN(utils.findNested(getDataPos, data[i])) ? utils.findNested(getDataPos, data[i]).toString() : utils.findNested(getDataPos, data[i])
                                             })
                                         } else if (getDataPos === property) {
                                             // Second Match that match directly to the property name
-                                            return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                            convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                                 [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
                                             })
                                         }

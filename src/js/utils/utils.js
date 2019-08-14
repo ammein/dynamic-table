@@ -301,12 +301,12 @@ apos.define('dynamic-table-utils', {
                                 let getTitle = constructorDatatable.options.columns[columns].title
                                 if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
                                     // First match if nested object found
-                                    return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                    convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                         [getTitle]: !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])
                                     })
                                 } else if (getDataPos === property) {
                                     // Second Match that match directly to the property name
-                                    return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                    convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                         [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
                                     })
                                 }

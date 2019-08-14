@@ -15,8 +15,6 @@ var _simpleDatatables = require("simple-datatables");
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
-
 apos.define('dynamic-table-utils', {
   afterConstruct: function afterConstruct(self) {
     // To let others extend it
@@ -293,14 +291,10 @@ apos.define('dynamic-table-utils', {
 
                 if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
                   // First match if nested object found
-                  return {
-                    v: convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])))
-                  };
+                  convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])));
                 } else if (getDataPos === property) {
                   // Second Match that match directly to the property name
-                  return {
-                    v: convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]))
-                  };
+                  convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
                 }
               }
             } else {
@@ -314,9 +308,7 @@ apos.define('dynamic-table-utils', {
         };
 
         for (var property in data[i]) {
-          var _ret = _loop(property);
-
-          if (_typeof(_ret) === "object") return _ret.v;
+          _loop(property);
         }
       } // Data must return array of objects
 
