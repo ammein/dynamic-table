@@ -791,8 +791,7 @@ apos.define('dynamic-table-utils', {
         }
 
         self.changeTabRebuildTable = function (element) {
-
-            if (apos.assets.options.lean) {
+            if (apos.assets.options.lean && !self.jQuery) {
                 // Destroy first
                 if (apos.schemas.dt.vanillaJSTable) {
                     if (!apos.schemas.dt.settings.ajax && apos.schemas.dt.vanillaJSTable.options.ajax) {
