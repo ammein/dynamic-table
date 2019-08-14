@@ -280,7 +280,7 @@ apos.define('dynamic-table-utils', {
         var _loop2 = function _loop2(property) {
           // If options.columns
           if (constructorDatatable.options.columns) {
-            constructorDatatable.options.columns.filter(function (value, columnsIndex) {
+            constructorDatatable.options.columns.forEach(function (value, columnsIndex) {
               var getDataPos = value.data;
               var getTitle = value.title;
 
