@@ -18,7 +18,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function(el, data, options) {
     }
 
     utils.getResult = function (query, callback) {
-        $.get('/modules/dynamic-table/get-query', query, function (result) {
+        $.get('/modules/dynamic-table/get-fields', query, function (result) {
             if (result.status === 'error') {
                 return callback(result.message);
             }
