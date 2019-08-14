@@ -27,6 +27,10 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     }
 
     function initTable() {
+        let parent = table.el.parentElement;
+        parent.innerHTML = '';
+        parent.appendChild(table.cloneTable.cloneNode());
+        table.el = parent.querySelector('table#' + data._id);
         // Always Convert
         let obj = {
             headings: [],
@@ -50,6 +54,10 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     }
 
     function initAjaxTable() {
+        let parent = table.el.parentElement;
+        parent.innerHTML = '';
+        parent.appendChild(table.cloneTable.cloneNode());
+        table.el = parent.querySelector('table#' + data._id);
         table.dataTable = new DataTable(table.el, {
             // Bug on Simpledatatable. Make data undefined. If not, it will load previous data from another table
             data: undefined,
@@ -57,7 +65,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                 url: table.ajaxOptions.ajax.url ? table.ajaxOptions.ajax.url : table.ajaxOptions.ajax,
 
                 // Adjust Load Ajax Data
-                load: function (xhr) {
+                load: table.ajaxOptions.load || function (xhr) {
                     if (
                         table.ajaxOptions.ajax &&
                         table.ajaxOptions.ajax.dataSrc &&
