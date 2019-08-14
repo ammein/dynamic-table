@@ -290,8 +290,8 @@ apos.define('dynamic-table-utils', {
                 var getDataPos = value.data;
                 var getTitle = value.title;
 
-                if (getDataPos.split('.').length > 1 && getDataPos.split('.')[getDataPos.split('.').length - getDataPos.split('.').length] === property) {
-                  convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(utils.findNested(getDataPos, data[i])) ? utils.findNested(getDataPos, data[i]).toString() : utils.findNested(getDataPos, data[i])));
+                if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
+                  convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])));
                 } else {
                   convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
                 }
