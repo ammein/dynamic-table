@@ -276,8 +276,8 @@ apos.define('dynamic-table-utils', {
 
       var convertData = []; // Loop over the data and style any columns with numbers
 
-      for (var i = 0; i < data.length; i++) {
-        var _loop = function _loop(property) {
+      var _loop = function _loop(i) {
+        var _loop2 = function _loop2(property) {
           // If options.columns
           if (constructorDatatable.options.columns) {
             var filter = constructorDatatable.options.columns.filter(function (val, i) {
@@ -285,7 +285,7 @@ apos.define('dynamic-table-utils', {
             });
 
             if (filter.length > 0) {
-              filter.forEach(function (value, i) {
+              filter.forEach(function (value, index) {
                 // If filter success
                 var getDataPos = value.data;
                 var getTitle = value.title;
@@ -307,8 +307,12 @@ apos.define('dynamic-table-utils', {
         };
 
         for (var property in data[i]) {
-          _loop(property);
+          _loop2(property);
         }
+      };
+
+      for (var i = 0; i < data.length; i++) {
+        _loop(i);
       } // Data must return array of objects
 
 

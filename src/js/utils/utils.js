@@ -296,7 +296,7 @@ apos.define('dynamic-table-utils', {
                     if (constructorDatatable.options.columns) {
                         let filter = constructorDatatable.options.columns.filter((val, i) => val.data.includes(property));
                         if (filter.length > 0) {
-                            filter.forEach(function (value, i) {
+                            filter.forEach(function (value, index) {
                                 // If filter success
                                 let getDataPos = value.data;
                                 let getTitle = value.title

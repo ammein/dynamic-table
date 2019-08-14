@@ -91,7 +91,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                             if (table.ajaxOptions.columns) {
                                 let filter = table.ajaxOptions.columns.filter((val, i) => val.data.includes(property));
                                 if (filter.length > 0) {
-                                    filter.forEach(function(value, i) {
+                                    filter.forEach(function(value, index) {
                                         // If filter success
                                         let getDataPos = value.data;
                                         let getTitle = value.title
