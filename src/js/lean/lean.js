@@ -27,10 +27,12 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     }
 
     function initTable() {
+        // Always clone the node on initializing. Bug found where other table did not get the same options due to the same Node reference
         let parent = table.el.parentElement;
         parent.innerHTML = '';
         parent.appendChild(table.cloneTable.cloneNode());
         table.el = parent.querySelector('table#' + data._id);
+
         // Always Convert
         let obj = {
             headings: [],
@@ -48,24 +50,33 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             ajax: undefined
         }, {})
 
+        // Start the table
         table.dataTable = new DataTable(table.el, options)
 
         utils.registerEvent(table.dataTable);
     }
 
     function initAjaxTable() {
+        // Always clone the node on initializing. Bug found where other table did not get the same options due to the same Node reference
         let parent = table.el.parentElement;
         parent.innerHTML = '';
         parent.appendChild(table.cloneTable.cloneNode());
         table.el = parent.querySelector('table#' + data._id);
-        table.dataTable = new DataTable(table.el, {
+
+        // eslint-disable-next-line no-var
+        var options = table.ajaxOptions.ajax.load ? {
+            load: table.ajaxOptions.ajax.load
+        } : {};
+
+        // Start the table
+        table.dataTable = new DataTable(table.el, apos.utils.assign({
             // Bug on Simpledatatable. Make data undefined. If not, it will load previous data from another table
             data: undefined,
             ajax: {
                 url: table.ajaxOptions.ajax.url ? table.ajaxOptions.ajax.url : table.ajaxOptions.ajax,
 
                 // Adjust Load Ajax Data
-                load: table.ajaxOptions.load || function (xhr) {
+                load: function (xhr) {
                     if (
                         table.ajaxOptions.ajax &&
                         table.ajaxOptions.ajax.dataSrc &&
@@ -122,7 +133,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                     return JSON.stringify(convertData);
                 }
             }
-        });
+        }, options));
 
         table.dataTable.refresh();
 
