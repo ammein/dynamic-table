@@ -221,22 +221,6 @@ module.exports = {
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 
-        self.route("get", "get-query", function(req,res){
-            return self.routes.getQuery(req, function(err,result){
-                if(err){
-                    return res.send({
-                        status : "error",
-                        message : err
-                    })
-                }
-
-                return res.send({
-                    status : "success",
-                    message : result
-                })
-            })
-        })
-
         self.route("post", "remove-urls" , function(req,res){
             return self.routes.removeUrls(req ,function(err){
                 if(err){
@@ -284,31 +268,6 @@ module.exports = {
                 })
             })
         })
-
-        self.routes.getQuery = function(req,callback){
-
-            if (!req.query.id) {
-                return callback("Id not found")
-            }
-
-            var allowFilterSchemas = self.tableSchemas.reduce((init, next, i) => Object.assign(init, init[next.name] = 1), {})
-            var criteria = {
-                _id : req.query.id
-            };
-
-            // Always find one
-            return self.find(req, criteria, allowFilterSchemas).toObject(function(err,result){
-                if(err){
-                    return callback(err);
-                }
-
-                if(result){
-                    return callback(null, result);
-                }
-
-                return callback("Unable to find table. Are you sure it saves correctly ?");
-            })
-        }
 
         self.routes.removeUrls = function(req,callback){
 
