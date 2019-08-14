@@ -280,26 +280,21 @@ apos.define('dynamic-table-utils', {
         var _loop2 = function _loop2(property) {
           // If options.columns
           if (constructorDatatable.options.columns) {
-            var filter = constructorDatatable.options.columns.filter(function (val, i) {
-              return val.data.includes(property);
+            constructorDatatable.options.columns.filter(function (value, columnsIndex) {
+              var getDataPos = value.data;
+              var getTitle = value.title;
+
+              if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
+                // First match if nested object found
+                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])));
+              } else if (getDataPos === property) {
+                // Second Match that match directly to the property name
+                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
+              } else {
+                // If no match at all
+                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, property, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
+              }
             });
-
-            if (filter.length > 0) {
-              filter.forEach(function (value, index) {
-                // If filter success
-                var getDataPos = value.data;
-                var getTitle = value.title;
-
-                if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
-                  convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])));
-                } else {
-                  convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
-                }
-              });
-            } else {
-              // If filter no success at all
-              convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, property, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
-            }
           } else {
             // If no options.columns
             convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, property, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));

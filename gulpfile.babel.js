@@ -24,27 +24,6 @@ const spawn = require('child_process').spawn;
 const bs = browserSync.create();
 let travis = process.env.TRAVIS || false;
 
-let node;
-
-gulp.task('server', function () {
-    if (node) node.kill();
-    node = spawn('node', ['app.js'], { stdio: 'inherit' });
-    node.on('close', function (code) {
-        if (code === 8) {
-            gulp.log('Error detected, waiting for changes...');
-        }
-    });
-});
-
-gulp.task('browser-sync', ['server'], function () {
-    bs.init({
-        proxy: 'localhost:3000',
-        ui: { port: 3002 },
-        port: 3001,
-        open: false
-    });
-});
-
 gulp.task('js', (done) => {
     JS.map(function(file){
         browserify(`${file.src}${file.name}.js`)
@@ -89,15 +68,4 @@ gulp.task('lint', () =>
         .pipe(eslint.failAfterError())
 );
 
-gulp.task('watch', () => {
-    gulp.watch(`${src}sass/**/*.scss`, ['sass']);
-    gulp.watch(`${src}js/**/*.js`, ['js', 'lint']);
-});
-
-gulp.task('default', ['build', 'browser-sync', 'watch']);
-gulp.task('build', ['lint', 'js']);
-
-// kill node on exit
-process.on('exit', function () {
-    if (node) node.kill();
-});
+gulp.task('default', ['lint', 'js']);
