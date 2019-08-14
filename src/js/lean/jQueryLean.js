@@ -3,7 +3,8 @@
 /* eslint-disable no-redeclare */
 // eslint-disable-next-line no-undef
 import $ from 'jquery';
-var dt = require('datatables.net-dt')(window, $);
+import dt from 'datatables.net-dt';
+global.$.DataTable = dt;
 apos.utils.widgetPlayers['dynamic-table'] = function(el, data, options) {
 
     // Use object so that devs can extend or
@@ -17,7 +18,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function(el, data, options) {
     }
 
     utils.getResult = function (query, callback) {
-        $.get('/modules/dynamic-table/get-fields', query, function (result) {
+        $.get('/modules/dynamic-table/get-query', query, function (result) {
             if (result.status === 'error') {
                 return callback(result.message);
             }
@@ -26,12 +27,12 @@ apos.utils.widgetPlayers['dynamic-table'] = function(el, data, options) {
     }
 
     apos.utils.onReady(function() {
-        let table;
+        let myTable;
         // Always set data based on saves piece
         // self.setData($widget, data.dynamicTableId);
-        table = el.querySelector('table#' + data._id);
-        let cloneTable = table.cloneNode();
-        let parent = table.parentElement;
+        myTable = el.querySelector('table#' + data._id);
+        let cloneTable = myTable.cloneNode();
+        let parent = myTable.parentElement;
         parent.innerHTML = '';
         parent.appendChild(cloneTable);
 
@@ -53,8 +54,8 @@ apos.utils.widgetPlayers['dynamic-table'] = function(el, data, options) {
                 apos.utils.warn('Error when parsing options, are you sure your option is properly configured ? \n\n' + e)
             }
 
-            table = parent.find('table#' + data._id);
-            table.DataTable(DataTableOptions || DataTableAjaxOptions);
+            table = parent.querySelector('table#' + data._id);
+            $(table).DataTable(DataTableOptions || DataTableAjaxOptions);
         })
     })
 
