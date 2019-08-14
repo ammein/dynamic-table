@@ -449,7 +449,7 @@ apos.define('dynamic-table-utils', {
             self.$tableHTML.each(function (i, val) {
                 // When table is visible
                 if (val.offsetParent !== null) {
-                    if (apos.assets.options.lean) {
+                    if (apos.assets.options.lean && !options.jQuery) {
                         // Destroy first
                         if (apos.schemas.dt.vanillaJSTable) {
                             if (!self.EditorDataTableOptions.ajax && apos.schemas.dt.vanillaJSTable.options.ajax) {

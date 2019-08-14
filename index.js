@@ -203,6 +203,7 @@ module.exports = {
 
             // To push apos.modules["dynamic-table-utils"] && also other options to pass on
             self.apos.push.browserCall("user", "apos.createModule(? , ? , ?)", "dynamic-table-utils", {
+                jQuery : self.apos.modules["dynamic-table-widgets"].options.jQuery || false,
                 editorDataTableOptions: {
                     "scrollY": 200,
                     "scrollX": true,
