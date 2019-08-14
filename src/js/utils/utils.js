@@ -294,28 +294,28 @@ apos.define('dynamic-table-utils', {
                 for (let property in data[i]) {
                     // If options.columns
                     if (constructorDatatable.options.columns) {
-                        for (let columns = 0; columns < constructorDatatable.options.columns.length; columns++) {
-                            let getDataPos = constructorDatatable.options.columns[columns].data;
-                            let getTitle = constructorDatatable.options.columns[columns].title
-                            if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
-                                // First match if nested object found
-                                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                    [getTitle]: !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])
-                                })
-                                continue;
-                            } else if (getDataPos === property) {
-                                // Second Match that match directly to the property name
-                                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                    [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
-                                })
-                                continue;
-                            } else {
-                                // If no match at all
-                                convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                    [property]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
-                                })
-                                continue;
+                        let filter = constructorDatatable.options.columns.filter((val) => val.data.includes(property));
+                        if (filter.length > 0) {
+                            for (let columns = 0; columns < constructorDatatable.options.columns.length; columns++) {
+                                let getDataPos = constructorDatatable.options.columns[columns].data;
+                                let getTitle = constructorDatatable.options.columns[columns].title
+                                if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
+                                    // First match if nested object found
+                                    return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                        [getTitle]: !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])
+                                    })
+                                } else if (getDataPos === property) {
+                                    // Second Match that match directly to the property name
+                                    return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                        [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
+                                    })
+                                }
                             }
+                        } else {
+                            // If no match at all
+                            convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                [property]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
+                            })
                         }
                     } else {
                         // If no options.columns

@@ -89,28 +89,28 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                         for (let property in data[i]) {
                             // If options.columns
                             if (table.ajaxOptions.columns) {
-                                for (let columns = 0; columns < table.ajaxOptions.columns.length; columns++) {
-                                    let getDataPos = table.ajaxOptions.columns[columns].data;
-                                    let getTitle = table.ajaxOptions.columns[columns].title
-                                    if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
-                                        // First match if nested object found
-                                        convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                            [getTitle]: !window.isNaN(utils.findNested(getDataPos, data[i])) ? utils.findNested(getDataPos, data[i]).toString() : utils.findNested(getDataPos, data[i])
-                                        })
-                                        continue;
-                                    } else if (getDataPos === property) {
-                                        // Second Match that match directly to the property name
-                                        convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                            [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
-                                        })
-                                        continue;
-                                    } else {
-                                        // If no match at all
-                                        convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                            [property]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
-                                        })
-                                        continue;
+                                let filter = table.ajaxOptions.columns.filter((val) => val.data.includes(property));
+                                if (filter.length > 0) {
+                                    for (let columns = 0; columns < table.ajaxOptions.columns.length; columns++) {
+                                        let getDataPos = table.ajaxOptions.columns[columns].data;
+                                        let getTitle = table.ajaxOptions.columns[columns].title
+                                        if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
+                                            // First match if nested object found
+                                            return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                                [getTitle]: !window.isNaN(utils.findNested(getDataPos, data[i])) ? utils.findNested(getDataPos, data[i]).toString() : utils.findNested(getDataPos, data[i])
+                                            })
+                                        } else if (getDataPos === property) {
+                                            // Second Match that match directly to the property name
+                                            return convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                                [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
+                                            })
+                                        }
                                     }
+                                } else {
+                                    // If no match at all
+                                    convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                        [property]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
+                                    })
                                 }
                             } else {
                                 // If no options.columns
