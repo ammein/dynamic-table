@@ -10,6 +10,9 @@ apos.define('dynamic-table-utils', {
     construct: function (self, options) {
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
+        if (options.jQuery) {
+            self.jQuery = options.jQuery;
+        }
         self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
         self.tableEscapeChar = options.tableEscapeChar;
 
@@ -449,7 +452,7 @@ apos.define('dynamic-table-utils', {
             self.$tableHTML.each(function (i, val) {
                 // When table is visible
                 if (val.offsetParent !== null) {
-                    if (apos.assets.options.lean && !options.jQuery) {
+                    if (apos.assets.options.lean && !self.jQuery) {
                         // Destroy first
                         if (apos.schemas.dt.vanillaJSTable) {
                             if (!self.EditorDataTableOptions.ajax && apos.schemas.dt.vanillaJSTable.options.ajax) {
