@@ -288,6 +288,7 @@ apos.define('dynamic-table-utils', {
                 var data = JSON.parse(xhr.responseText);
             }
             let convertData = [];
+            let increment = 0;
 
             // Loop over the data and style any columns with numbers
             for (let i = 0; i < data.length; i++) {
@@ -297,17 +298,17 @@ apos.define('dynamic-table-utils', {
                         constructorDatatable.options.columns.forEach((value, columnsIndex) => {
                                 let getDataPos = value.data;
                                 let getTitle = value.title
-                                if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
+                                if (getDataPos.split('.').length > 1 && getDataPos.includes(property) && i === increment) {
                                     // First match if nested object found
                                     convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                         [getTitle]: !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])
                                     })
-                                } else if (getDataPos === property) {
+                                } else if (getDataPos === property && i === increment) {
                                     // Second Match that match directly to the property name
                                     convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                         [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
                                     })
-                                } else {
+                                } else if (getDataPos !== property && i === increment) {
                                     // If no match at all
                                     convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
                                         [property]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
@@ -320,6 +321,7 @@ apos.define('dynamic-table-utils', {
                             [property]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
                         })
                     }
+                    increment++;
                 }
             }
 

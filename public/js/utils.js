@@ -274,7 +274,8 @@ apos.define('dynamic-table-utils', {
         var data = JSON.parse(xhr.responseText);
       }
 
-      var convertData = []; // Loop over the data and style any columns with numbers
+      var convertData = [];
+      var increment = 0; // Loop over the data and style any columns with numbers
 
       var _loop = function _loop(i) {
         var _loop2 = function _loop2(property) {
@@ -284,13 +285,13 @@ apos.define('dynamic-table-utils', {
               var getDataPos = value.data;
               var getTitle = value.title;
 
-              if (getDataPos.split('.').length > 1 && getDataPos.includes(property)) {
+              if (getDataPos.split('.').length > 1 && getDataPos.includes(property) && i === increment) {
                 // First match if nested object found
                 convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(self.findNested(getDataPos, data[i])) ? self.findNested(getDataPos, data[i]).toString() : self.findNested(getDataPos, data[i])));
-              } else if (getDataPos === property) {
+              } else if (getDataPos === property && i === increment) {
                 // Second Match that match directly to the property name
                 convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, getTitle, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
-              } else {
+              } else if (getDataPos !== property && i === increment) {
                 // If no match at all
                 convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, property, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
               }
@@ -299,6 +300,8 @@ apos.define('dynamic-table-utils', {
             // If no options.columns
             convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = _defineProperty({}, property, !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]));
           }
+
+          increment++;
         };
 
         for (var property in data[i]) {
