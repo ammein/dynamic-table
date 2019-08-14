@@ -90,19 +90,21 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                             // If options.columns
                             if (table.ajaxOptions.columns) {
                                 let filter = table.ajaxOptions.columns.filter((val, i) => val.data.includes(property));
-                                if (filter[0]) {
-                                    // If filter success
-                                    let getDataPos = filter[0].data;
-                                    let getTitle = filter[0].title
-                                    if (getDataPos.split('.').length > 1 && getDataPos.split('.')[getDataPos.split('.').length - getDataPos.split('.').length] === property) {
-                                        convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                            [getTitle]: !window.isNaN(utils.findNested(getDataPos, data[i])) ? utils.findNested(getDataPos, data[i]).toString() : utils.findNested(getDataPos, data[i])
-                                        })
-                                    } else {
-                                        convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
-                                            [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
-                                        })
-                                    }
+                                if (filter.length > 0) {
+                                    filter.forEach(function(value, i) {
+                                        // If filter success
+                                        let getDataPos = value.data;
+                                        let getTitle = value.title
+                                        if (getDataPos.split('.').length > 1 && getDataPos.split('.')[getDataPos.split('.').length - getDataPos.split('.').length] === property) {
+                                            convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                                [getTitle]: !window.isNaN(utils.findNested(getDataPos, data[i])) ? utils.findNested(getDataPos, data[i]).toString() : utils.findNested(getDataPos, data[i])
+                                            })
+                                        } else {
+                                            convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
+                                                [getTitle]: !window.isNaN(data[i][property]) ? data[i][property].toString() : data[i][property]
+                                            })
+                                        }
+                                    })
                                 } else {
                                     // If filter no success at all
                                     convertData[i] = Object.assign(convertData[i] ? convertData[i] : convertData[i] = {}, convertData[i] = {
