@@ -455,7 +455,7 @@ apos.define('dynamic-table-utils', {
 
                 // Run checking column
                 if (Object.keys(self.rowsAndColumns[row]).length !== self.columnData.length) {
-                    self.rowsAndColumns[row].map((val, i) => delete val[self.columnData[self.columnData.length - 1].title])
+                    Object.keys(self.rowsAndColumns[row]).map((val, i) => delete val[self.columnData[self.columnData.length - 1].title])
                 }
             }
 
