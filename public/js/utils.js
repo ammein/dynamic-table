@@ -87,6 +87,7 @@ apos.define('dynamic-table-utils', {
     self.resetDataOptions = function () {
       self.rowData = [];
       self.columnData = [];
+      self.rowsAndColumns = [];
 
       if (apos.schemas.dt.vanillaJSTable && apos.schemas.dt.vanillaJSTable.options) {
         delete apos.schemas.dt.vanillaJSTable.options.ajax;
@@ -421,11 +422,9 @@ apos.define('dynamic-table-utils', {
             });
             self.rowData[row] = self.rowData[row].slice(0, self.columnData.length);
           }
-        } // Update to options
+        }
 
-
-        self.EditorDataTableOptions.data = self.rowData;
-        self.EditorDataTableOptions.columns = self.columnData;
+        self.updateRowsAndColumns();
 
         if (self.columnData.length > 0) {
           self.initTable();
@@ -433,6 +432,34 @@ apos.define('dynamic-table-utils', {
       }
 
       if (value === 0) {// Nothing here yet
+      }
+    };
+
+    self.dataToArrayOfObjects = function () {
+      // Loop over row to determine its value
+      for (var row = 0; row < self.rowData.length; row++) {
+        // Loop over column to determine its property
+        for (var column = 0; column < self.columnData.length; column++) {
+          self.rowsAndColumns[row] = Object.assign(self.rowsAndColumns[row] || {}, _defineProperty({}, self.columnData[column].title, self.rowData[row][column]));
+        } // Run checking column
+
+
+        if (Object.keys(self.rowsAndColumns[row]).length !== self.columnData.length) {
+          Object.keys(self.rowsAndColumns[row]).forEach(function (val, i) {
+            var filter = self.columnData.filter(function (value, index) {
+              return value.title === val;
+            });
+
+            if (filter.length === 0) {
+              delete self.rowsAndColumns[row][val];
+            }
+          });
+        }
+      } // Run Checking Rows
+
+
+      if (self.rowsAndColumns.length !== self.rowData.length) {
+        self.rowsAndColumns = self.rowsAndColumns.slice(0, self.rowData.length);
       }
     };
 

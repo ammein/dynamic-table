@@ -455,7 +455,12 @@ apos.define('dynamic-table-utils', {
 
                 // Run checking column
                 if (Object.keys(self.rowsAndColumns[row]).length !== self.columnData.length) {
-                    Object.keys(self.rowsAndColumns[row]).map((val, i) => delete val[self.columnData[self.columnData.length - 1].title])
+                    Object.keys(self.rowsAndColumns[row]).forEach((val, i) => {
+                        var filter = self.columnData.filter((value, index) => value.title === val)
+                        if (filter.length === 0) {
+                            delete self.rowsAndColumns[row][val];
+                        }
+                    })
                 }
             }
 
