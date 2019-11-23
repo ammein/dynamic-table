@@ -20,10 +20,7 @@
   },
   "homepage": "https://github.com/ammein/dynamic-table#readme",
   "dependencies": {
-    "datatables.net-dt": "^1.10.19",
-    "jquery": "^3.4.1",
-    "lodash": "^4.17.15",
-    "simple-datatables": "^2.1.6"
+    "lodash": "^4.17.15"
   },
   "devDependencies": {
     "@babel/cli": "^7.5.5",

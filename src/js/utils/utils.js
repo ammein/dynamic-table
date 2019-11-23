@@ -1,7 +1,6 @@
 /* eslint-disable no-redeclare */
 /* eslint-disable no-var */
 /* eslint-disable no-undef */
-import { DataTable } from 'simple-datatables';
 apos.define('dynamic-table-utils', {
     afterConstruct: function (self) {
         // To let others extend it
@@ -24,22 +23,21 @@ apos.define('dynamic-table-utils', {
             self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
         }
 
-        self.DataTableLean = DataTable;
-
         self.exists = false;
 
         self.updateRowsAndColumns = function (object) {
             if (object) {
                 self.rowData = object.data;
                 self.columnData = object.columns;
+                self.executeRow(self.rowData.length);
+                self.executeColumn(self.columnData.length);
             }
 
             // Update to options
             self.EditorDataTableOptions.data = self.rowData;
             self.EditorDataTableOptions.columns = self.columnData;
 
-            self.executeRow(self.rowData.length);
-            self.executeColumn(self.columnData.length);
+            self.dataToArrayOfObjects();
 
             if (self.rowData.length > 0 && self.columnData.length > 0) {
                 apos.schemas.findField(self.$form, 'row').val(self.rowData.length);
@@ -381,7 +379,9 @@ apos.define('dynamic-table-utils', {
                 }
 
                 // Trigger change to update value based on active row input
-                apos.schemas.findFieldset(self.$form, 'column').trigger('change');
+                if (columnInput.val().length > 0) {
+                    apos.schemas.findFieldset(self.$form, 'column').trigger('change');
+                }
             }
 
             if (value === 0) {
@@ -409,7 +409,7 @@ apos.define('dynamic-table-utils', {
                         continue;
                     }
                     self.columnData.push({
-                        title: 'Header ' + (a + 1)
+                        title: 'header' + (a + 1)
                     })
                 }
 
@@ -443,6 +443,7 @@ apos.define('dynamic-table-utils', {
             }
         }
 
+        // Change all data to array of objects
         self.dataToArrayOfObjects = function () {
             // Loop over row to determine its value
             for (var row = 0; row < self.rowData.length; row++) {
@@ -478,77 +479,10 @@ apos.define('dynamic-table-utils', {
             self.$tableHTML.each(function (i, val) {
                 // When table is visible
                 if (val.offsetParent !== null) {
-                    if (apos.assets.options.lean && !self.jQuery) {
-                        // Destroy first
-                        if (apos.schemas.dt.vanillaJSTable) {
-                            if (!self.EditorDataTableOptions.ajax && apos.schemas.dt.vanillaJSTable.options.ajax) {
-                                delete apos.schemas.dt.vanillaJSTable.options.ajax;
-                                delete apos.schemas.dt.vanillaJSTable.options.load;
-                                delete apos.schemas.dt.vanillaJSTable.options.content;
-                            }
-                            // Always delete data and clear datatables
-                            delete apos.schemas.dt.vanillaJSTable.options.data;
-                            apos.schemas.dt.vanillaJSTable.clear()
-                            try {
-                                apos.schemas.dt.vanillaJSTable.destroy()
-                            } catch (e) {
-                                // Leave the error alone. Nothing to display
-                            }
-                        }
-
-                        if (self.EditorDataTableOptions.data && self.EditorDataTableOptions.columns) {
-                            // Always Convert
-                            let data = self.EditorDataTableOptions.data;
-                            let columns = self.EditorDataTableOptions.columns;
-
-                            var obj = {
-                                headings: [],
-                                data: data
-                            };
-
-                            obj.headings = columns.reduce(function (init, next, i, arr) {
-                                return init.concat(next.title);
-                            }, []);
-                        }
-
-                        // Empty the table for initialization
-                        var $parent = $(val).parent();
-                        $parent.empty();
-                        // Append the table clone node
-                        $parent.append(apos.schemas.dt.getTable.cloneNode());
-                        apos.schemas.dt.vanillaJSTable = new DataTable($parent.find('#dynamicTable').get(0), self.EditorDataTableOptions.ajax ? self.EditorDataTableOptions : {
-                            data: obj
-                        })
-
-                    } else {
-                        if ($.fn.DataTable.isDataTable($(self.$tableHTML[i]))) {
-                            try {
-                                $(self.$tableHTML[i]).DataTable().clear().destroy();
-                            } catch (error) {
-                                // Leave the error alone. Nothing to display
-                            }
-                        }
-                        // Delete additional data on options when initialized
-                        delete self.EditorDataTableOptions.aaData
-                        delete self.EditorDataTableOptions.aoColumns;
-
-                        // Bug : DataTable won't appear after destroy and replace schema in viewport
-                        try {
-                            // Empty the table for reinitialization
-                            $(self.$tableHTML[i]).empty();
-                            // Initialize
-                            $(self.$tableHTML[i]).DataTable(self.EditorDataTableOptions).draw();
-                        } catch (e) {
-                            // Empty the table for reinitialization
-                            var $parent = $(val).parent();
-                            $parent.empty()
-                            // Append the table clone node
-                            $parent.append(apos.schemas.dt.getTable.cloneNode());
-                            // Reinitialize & MUST DRAW to start
-                            $parent.find('#dynamicTable').DataTable(self.EditorDataTableOptions).draw();
-                        }
-
-                    }
+                    self.$tableHTML[i] = new Tabulator(self.$tableHTML[i], {
+                        data: self.rowsAndColumns,
+                        autoColumns: true
+                    })
                 } else {
                     // ALways delete the table and append new to it
                     var $parent = $(val).parent();
@@ -578,39 +512,12 @@ apos.define('dynamic-table-utils', {
             self.$tableHTML.each(function (i, val) {
                 // When table is visible
                 if (val.offsetParent !== null) {
-
-                    if (apos.assets.options.lean) {
-                        // get from schemas extends
-                        if (apos.schemas.dt.vanillaJSTable) {
-                            // Always delete data and clear datatables
-                            delete apos.schemas.dt.vanillaJSTable.options.data;
-                            apos.schemas.dt.vanillaJSTable.clear();
-                            apos.schemas.dt.vanillaJSTable.destroy();
-                            delete apos.schemas.dt.vanillaJSTable;
-                        }
-
-                        delete self.EditorDataTableOptions.ajax;
-                        delete self.EditorDataTableOptions.data;
-                        delete self.EditorDataTableOptions.columns;
-
-                        $(self.$tableHTML[i]).empty();
-                    } else {
-                        if ($.fn.DataTable.isDataTable($(self.$tableHTML[i]))) {
-                            try {
-                                $(self.$tableHTML[i]).DataTable().clear().destroy();
-                            } catch (e) {
-                                // Leave the error alone. Nothing to display
-                            }
-                            $(self.$tableHTML[i]).empty();
-                        }
-
                         // Reset Options
                         delete self.EditorDataTableOptions.ajax;
                         delete self.EditorDataTableOptions.data;
                         delete self.EditorDataTableOptions.aaData;
                         delete self.EditorDataTableOptions.columns;
                         delete self.EditorDataTableOptions.aoColumns;
-                    }
                 }
             })
         }

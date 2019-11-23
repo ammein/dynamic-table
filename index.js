@@ -186,6 +186,10 @@ module.exports = {
             self.pushAsset("script", 'vendor/json5/json5', {
                 when: "always"
             })
+
+            self.pushAsset("script", 'vendor/tabulator/tabulator.min', {
+                when: "always"
+            })
         }
 
         self.allBrowserCalls = function () {
