@@ -423,10 +423,10 @@ apos.define('dynamic-table-utils', {
                     }
                     // Delete unecessary rows data based on columns
                     if (self.rowData[row].length !== self.columnData.length) {
-                        apos.notify(`Error : Number of rows isn't based on number of columns. Row ${row} affected`, {
-                            type: 'error',
-                            dismiss: true
-                        })
+                        // apos.notify(`Error : Number of rows isn't based on number of columns. Row ${row} affected`, {
+                        //     type: 'error',
+                        //     dismiss: true
+                        // })
                         self.rowData[row] = self.rowData[row].slice(0, self.columnData.length)
                     }
                 }
@@ -479,15 +479,17 @@ apos.define('dynamic-table-utils', {
             self.$tableHTML.each(function (i, val) {
                 // When table is visible
                 if (val.offsetParent !== null) {
-                    self.$tableHTML[i] = new Tabulator(self.$tableHTML[i], {
-                        data: self.rowsAndColumns,
-                        autoColumns: true
-                    })
+                    var table = new Tabulator(self.$tableHTML[i], {
+                        autoColumns: true,
+                        columns: self.columnData
+                    });
+
+                    self.tabulator = table;
+                    table.setData(self.rowsAndColumns);
                 } else {
-                    // ALways delete the table and append new to it
-                    var $parent = $(val).parent();
-                    $parent.empty()
-                    $parent.append(apos.schemas.dt.getTable.cloneNode());
+                    // Clear Data and setData again
+                    self.tabulator.clearData();
+                    self.tabulator.setData(self.rowsAndColumns);
                 }
             });
 
