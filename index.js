@@ -212,6 +212,10 @@ module.exports = {
                     "scrollY": 200,
                     "scrollX": true,
                     "retrieve": true
+                },
+                tabulator : {
+                    layout: "fitColumns",
+                    autoColumns: true
                 }
             }, "dynamicTableUtils")
 

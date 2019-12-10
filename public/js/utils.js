@@ -20,7 +20,12 @@ apos.define('dynamic-table-utils', {
     }
 
     self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
-    self.tableEscapeChar = options.tableEscapeChar; // This only allow editorDataTableOptions from server options to be passed on
+    self.tableEscapeChar = options.tableEscapeChar;
+    self.tabulator = {
+      options: null,
+      table: null
+    };
+    Object.assign({}, self.tabulator.options, options.tabulator); // This only allow editorDataTableOptions from server options to be passed on
 
     if (options.editorDataTableOptions) {
       self.keyOptions = Object.keys(options.editorDataTableOptions).map(function (key) {
@@ -466,16 +471,15 @@ apos.define('dynamic-table-utils', {
       self.$tableHTML.each(function (i, val) {
         // When table is visible
         if (val.offsetParent !== null) {
-          var table = new Tabulator(self.$tableHTML[i], {
-            autoColumns: true,
+          var table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
             columns: self.columnData
-          });
-          self.tabulator = table;
+          }));
+          self.tabulator.table = table;
           table.setData(self.rowsAndColumns);
         } else {
           // Clear Data and setData again
-          self.tabulator.clearData();
-          self.tabulator.setData(self.rowsAndColumns);
+          self.tabulator.table.clearData();
+          self.tabulator.table.setData(self.rowsAndColumns);
         }
       }); // Register any DataTablesJS Event
 
@@ -715,79 +719,12 @@ apos.define('dynamic-table-utils', {
     self.registerTableEvent = function ($table) {};
 
     self.changeTabRebuildTable = function (element) {
-      if (apos.assets.options.lean && !self.jQuery) {
-        // Destroy first
-        if (apos.schemas.dt.vanillaJSTable) {
-          if (!apos.schemas.dt.settings.ajax && apos.schemas.dt.vanillaJSTable.options.ajax) {
-            delete apos.schemas.dt.vanillaJSTable.options.ajax;
-            delete apos.schemas.dt.vanillaJSTable.options.load;
-            delete apos.schemas.dt.vanillaJSTable.options.content;
-          } // Always delete data and clear datatables
+      var table = new Tabulator(element, Object.assign({}, self.tabulator.options, {
+        columns: self.columnData
+      }));
+      self.tabulator.table = table; // Apply Event
 
-
-          delete apos.schemas.dt.vanillaJSTable.options.data;
-          apos.schemas.dt.vanillaJSTable.clear();
-
-          try {
-            apos.schemas.dt.vanillaJSTable.destroy();
-          } catch (e) {// Leave the error alone. Nothing to display
-          }
-
-          delete apos.schemas.dt.vanillaJSTable;
-        } // Always convert
-
-
-        if (apos.schemas.dt.settings.data && apos.schemas.dt.settings.columns) {
-          var data = apos.schemas.dt.settings.data;
-          var columns = apos.schemas.dt.settings.columns;
-          var obj = {
-            headings: [],
-            data: data
-          };
-          obj.headings = columns.reduce(function (init, next, i, arr) {
-            return init.concat(next.title);
-          }, []);
-        } // Empty the table to reinitialization
-
-
-        $(element).empty(); // Append the table clone node
-
-        $(element).append(apos.schemas.dt.getTable.cloneNode());
-        apos.schemas.dt.vanillaJSTable = new DataTable(element.querySelector('#dynamicTable'), apos.schemas.dt.settings.ajax ? apos.schemas.dt.settings : {
-          data: obj
-        }); // Apply Event
-
-        self.registerTableEvent(apos.schemas.dt.vanillaJSTable);
-      } else {
-        // If the table use DataTablesJS, destroy it first
-        if ($.fn.DataTable.isDataTable($(element).find('#dynamicTable'))) {
-          try {
-            $(element).find('#dynamicTable').DataTable().clear().destroy();
-          } catch (error) {// Leave the error alone. Nothing to display
-          }
-        } // Delete additional data on options when initialized
-
-
-        delete apos.schemas.dt.settings.aaData;
-        delete apos.schemas.dt.settings.aoColumns; // Empty the table to reinitialization
-
-        $(element).empty(); // Append the table clone node
-
-        $(element).append(apos.schemas.dt.getTable.cloneNode());
-
-        try {
-          // Try if success
-          $(element).find('#dynamicTable').DataTable(apos.schemas.dt.settings); // Apply Event
-
-          self.registerTableEvent($(element).find('#dynamicTable'));
-        } catch (e) {
-          // If not, destroy it ! It will output a console error and the table won't even respond
-          // on change input for row & column
-          $(element).find('#dynamicTable').DataTable().clear(); // Just remove dataTable class
-
-          $(element).find('#dynamicTable').removeClass('dataTable');
-        }
-      }
+      self.registerTableEvent(table);
     }; // To always send the data that has schema type of array
 
 
