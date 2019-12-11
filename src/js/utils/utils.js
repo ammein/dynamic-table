@@ -19,14 +19,6 @@ apos.define('dynamic-table-utils', {
             table: null
         }
 
-        // This only allow editorDataTableOptions from server options to be passed on
-        if (options.editorDataTableOptions) {
-            self.keyOptions = Object.keys(options.editorDataTableOptions).map(function (key) {
-                return [key, options.editorDataTableOptions[key]];
-            });
-            self.originalEditorDataTableOptions = _.cloneDeep(options.editorDataTableOptions);
-        }
-
         self.exists = false;
 
         self.updateRowsAndColumns = function (object) {
@@ -36,10 +28,6 @@ apos.define('dynamic-table-utils', {
                 self.executeRow(self.rowData.length);
                 self.executeColumn(self.columnData.length);
             }
-
-            // Update to options
-            self.EditorDataTableOptions.data = self.rowData;
-            self.EditorDataTableOptions.columns = self.columnData;
 
             self.dataToArrayOfObjects();
 
@@ -70,28 +58,6 @@ apos.define('dynamic-table-utils', {
             let ajaxOptions = apos.schemas.findFieldset(self.$form, 'ajaxOptions').find('textarea');
             if (ajaxOptions.val().length > 0) {
                 ajaxOptions.val('');
-            }
-        }
-
-        self.resetDataOptions = function () {
-            self.rowData = [];
-            self.columnData = [];
-            self.rowsAndColumns = [];
-
-            if (apos.schemas.dt.vanillaJSTable && apos.schemas.dt.vanillaJSTable.options) {
-                delete apos.schemas.dt.vanillaJSTable.options.ajax;
-                delete apos.schemas.dt.vanillaJSTable.options.load;
-                delete apos.schemas.dt.vanillaJSTable.options.content;
-                delete apos.schemas.dt.vanillaJSTable.options.data;
-            }
-
-            if (self.EditorDataTableOptions) {
-                delete self.EditorDataTableOptions;
-                delete self.originalEditorDataTableOptions;
-                self.originalEditorDataTableOptions = {}
-                self.keyOptions.forEach(function (value, i, arr) {
-                    self.originalEditorDataTableOptions[value[0]] = value[1];
-                })
             }
         }
 
@@ -129,10 +95,6 @@ apos.define('dynamic-table-utils', {
                 if (ajaxOptions.val().length > 0) {
                     let confirm = window.confirm('You are about to remove your Ajax Input from being used. Are you sure you want to continue ?');
                     if (confirm) {
-                        // Remove ajax options
-                        delete self.EditorDataTableOptions.ajax;
-                        delete self.EditorDataTableOptions.columns;
-                        delete self.EditorDataTableOptions.processed;
                         ajaxOptions.val('')
                         self.executeRow(num);
                     }
@@ -246,15 +208,8 @@ apos.define('dynamic-table-utils', {
 
         }
 
-        self.mergeOptions = function () {
-            self.EditorDataTableOptions = self.EditorDataTableOptions || {};
-            Object.assign(self.EditorDataTableOptions, self.originalEditorDataTableOptions);
-        }
-
         self.executeAjax = function (options) {
             self.destroyTable();
-            delete self.EditorDataTableOptions.data;
-            delete self.EditorDataTableOptions.columns;
             // Reset Data
             self.rowData = [];
             self.columnData = [];
@@ -273,8 +228,6 @@ apos.define('dynamic-table-utils', {
                 delete options.ajax.load;
                 delete options.ajax.content;
             }
-            // Merge Options
-            Object.assign(self.EditorDataTableOptions, options);
             self.resetCustomTable();
             self.initTable();
 
@@ -511,20 +464,16 @@ apos.define('dynamic-table-utils', {
 
             // Reset options
             self.resetDataOptions();
-            self.mergeOptions();
 
-            // Safe method. Table may display many
-            self.$tableHTML.each(function (i, val) {
-                // When table is visible
-                if (val.offsetParent !== null) {
-                        // Reset Options
-                        delete self.EditorDataTableOptions.ajax;
-                        delete self.EditorDataTableOptions.data;
-                        delete self.EditorDataTableOptions.aaData;
-                        delete self.EditorDataTableOptions.columns;
-                        delete self.EditorDataTableOptions.aoColumns;
-                }
-            })
+            if (self.tabulator.table) {
+                self.tabulator.table.destroy();
+            }
+        }
+
+        self.resetDataOptions = function() {
+            self.rowData = [];
+            self.columnData = [];
+            self.rowsAndColumns = [];
         }
 
         self.convertData = function () {
