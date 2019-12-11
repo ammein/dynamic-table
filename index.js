@@ -213,7 +213,7 @@ module.exports = {
                     "scrollX": true,
                     "retrieve": true
                 },
-                tabulator : {
+                tabulator : options.tabulator || {
                     layout: "fitColumns",
                     autoColumns: true
                 }

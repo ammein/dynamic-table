@@ -15,11 +15,9 @@ apos.define('dynamic-table-utils', {
         self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
         self.tableEscapeChar = options.tableEscapeChar;
         self.tabulator = {
-            options: null,
+            options: Object.assign({}, self.tabulator ? self.tabulator.options : {}, options.tabulator),
             table: null
         }
-
-        Object.assign({}, self.tabulator.options, options.tabulator)
 
         // This only allow editorDataTableOptions from server options to be passed on
         if (options.editorDataTableOptions) {
@@ -736,6 +734,9 @@ apos.define('dynamic-table-utils', {
                 }));
 
                 self.tabulator.table = table;
+
+                self.tabulator.table.clearData();
+                self.tabulator.table.setData(self.rowsAndColumns);
 
                 // Apply Event
                 self.registerTableEvent(table);

@@ -22,10 +22,10 @@ apos.define('dynamic-table-utils', {
     self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
     self.tableEscapeChar = options.tableEscapeChar;
     self.tabulator = {
-      options: null,
-      table: null
+      options: Object.assign({}, self.tabulator ? self.tabulator.options : {}, options.tabulator),
+      table: null // This only allow editorDataTableOptions from server options to be passed on
+
     };
-    Object.assign({}, self.tabulator.options, options.tabulator); // This only allow editorDataTableOptions from server options to be passed on
 
     if (options.editorDataTableOptions) {
       self.keyOptions = Object.keys(options.editorDataTableOptions).map(function (key) {
@@ -722,7 +722,9 @@ apos.define('dynamic-table-utils', {
       var table = new Tabulator(element, Object.assign({}, self.tabulator.options, {
         columns: self.columnData
       }));
-      self.tabulator.table = table; // Apply Event
+      self.tabulator.table = table;
+      self.tabulator.table.clearData();
+      self.tabulator.table.setData(self.rowsAndColumns); // Apply Event
 
       self.registerTableEvent(table);
     }; // To always send the data that has schema type of array
