@@ -210,7 +210,8 @@ module.exports = {
                 jQuery : self.options.jQuery || false,
                 tabulator : self.options.tabulator || {
                     layout: "fitColumns",
-                    autoColumns: true
+                    autoColumns: true,
+                    responsiveLayout: true
                 }
             }, "dynamicTableUtils")
 

@@ -429,28 +429,30 @@ apos.define('dynamic-table-utils', {
         }
 
         self.initTable = function () {
-            // Refresh Existing Table
-            self.$tableHTML = self.$form.find('table#dynamicTable');
+            if (self.tabulator.table) {
+                // Clear Data and setData again
+                self.tabulator.table.clearData();
+                self.tabulator.table.setData(self.rowsAndColumns);
+            } else {
+                // Refresh Existing Table
+                self.$tableHTML = self.$form.find('table#dynamicTable');
 
-            // Safe method. Table may display many
-            self.$tableHTML.each(function (i, val) {
-                // When table is visible
-                if (val.offsetParent !== null) {
-                    var table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
-                        columns: self.columnData
-                    }));
+                // Safe method. Table may display many
+                self.$tableHTML.each(function (i, val) {
+                    // When table is visible
+                    if (val.offsetParent !== null) {
+                        var table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
+                            columns: self.columnData
+                        }));
 
-                    self.tabulator.table = table;
-                    table.setData(self.rowsAndColumns);
-                } else {
-                    // Clear Data and setData again
-                    self.tabulator.table.clearData();
-                    self.tabulator.table.setData(self.rowsAndColumns);
-                }
-            });
+                        self.tabulator.table = table;
+                        table.setData(self.rowsAndColumns);
+                    }
+                });
+            }
 
             // Register any DataTablesJS Event
-            self.registerTableEvent(self.$tableHTML);
+            self.registerTableEvent(self.tabulator.table);
 
             // For Schema Auto Insert
             if (self.rowData.length !== 0 && self.columnData.length !== 0) {
@@ -467,6 +469,7 @@ apos.define('dynamic-table-utils', {
 
             if (self.tabulator.table) {
                 self.tabulator.table.destroy();
+                self.tabulator.table = null;
             }
         }
 
@@ -678,13 +681,11 @@ apos.define('dynamic-table-utils', {
         }
 
         self.changeTabRebuildTable = function (element) {
-                var table = new Tabulator(element, Object.assign({}, self.tabulator.options, {
+                var table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
                     columns: self.columnData
                 }));
 
                 self.tabulator.table = table;
-
-                self.tabulator.table.clearData();
                 self.tabulator.table.setData(self.rowsAndColumns);
 
                 // Apply Event
