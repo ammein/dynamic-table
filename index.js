@@ -124,6 +124,26 @@ module.exports = {
             }
         ].concat(options.addFields || []);
 
+        if (options.apos.customCodeEditor) {
+            originalFields = originalFields.concat([
+                {
+                    name: 'callbacks',
+                    label: 'Tabulator Callbacks',
+                    type: "custom-code-editor",
+                    htmlHelp: `Example : <br><br><code style="font-family: monospace;background-color: #EEE;padding: 10px;font: 300 12px monospace;display:block;">{ optionName : "some-option-here" }</code>`,
+                    ace: {
+                        defaultMode: "javascript",
+                        config: {
+                            dropdown: null,
+                            optionsCustomizer: {
+                                enable: false
+                            }
+                        }
+                    }
+                }
+            ])
+        }
+
         // Combine fields
         options.addFields = options.addFields.concat(originalFields);
 
@@ -152,6 +172,11 @@ module.exports = {
                 name: "ajax",
                 label: "Ajax Table",
                 fields: ["ajaxOptions"]
+            },
+            {
+                name: "advance",
+                label: "Advance Tabulator",
+                fields: ["callbacks"]
             },
             {
                 name: "settings",
