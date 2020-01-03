@@ -40,12 +40,7 @@ module.exports = {
                 {
                     name: "ajaxOptions",
                     label: "Ajax Options",
-                    type: "string",
-                    textarea: true,
-                    htmlHelp: `Example :
-            <br><br><pre><code style="font-family: monospace;background-color: #EEE;padding: 10px;font: 300 12px monospace;display: block;">{
-  ajax: "data/arrays.txt"
-}</code></pre>You can refer here for more info : <a href="https://datatables.net/examples/ajax/" target="_blank">DataTables JQuery Ajax Data Source</a><br>`
+                    type: "string"
                 }
             ]
         }

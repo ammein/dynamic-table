@@ -63,7 +63,7 @@ apos.define('dynamic-table-utils', {
     };
 
     self.resetAjaxTable = function () {
-      var ajaxOptions = apos.schemas.findFieldset(self.$form, 'ajaxOptions').find('textarea');
+      var ajaxOptions = apos.schemas.findFieldset(self.$form, 'ajaxOptions').find('input');
 
       if (ajaxOptions.val().length > 0) {
         ajaxOptions.val('');
@@ -88,7 +88,7 @@ apos.define('dynamic-table-utils', {
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');
-      var ajaxOptions = self.$ajaxOptions.find('textarea'); // Destroy table if exists
+      var ajaxOptions = self.$ajaxOptions.find('input'); // Destroy table if exists
 
       self.destroyTable(); // Disabled first by default
 
@@ -115,18 +115,19 @@ apos.define('dynamic-table-utils', {
         self.executeColumn(num);
       });
       self.$ajaxOptions.on('change', function (e) {
-        try {
-          // Use custom JSON5 to beautifully parse the value without double quotes JSON
-          var _options = JSON5.parse(e.currentTarget.querySelector('textarea').value);
-
-          self.executeAjax(_options); // Stringify for better user reading
-
-          ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
-        } catch (error) {
-          // Stringify for better user reading
-          ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
-          console.warn(error);
-        }
+        // try {
+        //     // Use custom JSON5 to beautifully parse the value without double quotes JSON
+        //     let options = JSON5.parse(e.currentTarget.querySelector('textarea').value);
+        //     self.executeAjax(options);
+        //     // Stringify for better user reading
+        //     ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
+        // } catch (error) {
+        //     // Stringify for better user reading
+        //     ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
+        //     console.warn(error);
+        // }
+        var options = e.currentTarget.querySelector('input').value;
+        self.executeAjax(options);
       });
       self.$data.on('change', function (e) {
         try {
@@ -198,24 +199,9 @@ apos.define('dynamic-table-utils', {
 
       self.rowData = [];
       self.columnData = [];
-
-      if (apos.assets.options.lean) {
-        if (options && typeof options.ajax === 'string') {
-          options.ajax = {
-            url: options.ajax
-          };
-        } // Bug where it load previous datatable data from other table. Just make this undefined
-
-
-        options.data = undefined; // Pass to load
-
-        options.ajax.load = options.ajax.load || self.loadLeanDataTables;
-      } else {
-        // If switch to DataTablesJquery, delete this unnecessary options
-        delete options.ajax.load;
-        delete options.ajax.content;
-      }
-
+      self.tabulator.options = Object.assign({}, self.tabulator.options, {
+        ajaxURL: typeof options === 'string' ? options : options.ajax
+      });
       self.resetCustomTable();
       self.initTable();
     };
