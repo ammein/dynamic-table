@@ -195,15 +195,19 @@ apos.define('dynamic-table-utils', {
     };
 
     self.executeAjax = function (options) {
-      self.destroyTable(); // Reset Data
-
+      // self.destroyTable();
+      // Reset Data
       self.rowData = [];
       self.columnData = [];
       self.tabulator.options = Object.assign({}, self.tabulator.options, {
-        ajaxURL: typeof options === 'string' ? options : options.ajax
+        ajaxURL: typeof options === 'string' ? options : options.ajaxURL
       });
       self.resetCustomTable();
       self.initTable();
+    };
+
+    self.resetAjaxTable = function () {
+      self.tabulator.options.ajaxURL = undefined;
     };
 
     self.loadLeanDataTables = function (xhr) {
@@ -415,11 +419,20 @@ apos.define('dynamic-table-utils', {
         self.$tableHTML.each(function (i, val) {
           // When table is visible
           if (val.offsetParent !== null) {
-            var table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
-              columns: self.columnData
-            }));
-            self.tabulator.table = table;
-            table.setData(self.rowsAndColumns);
+            // If Ajax enable, disable custom row and column data
+            if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
+              self.executeAjax(self.tabulator.options);
+            } else {
+              if (self.tabulator.options.ajaxURL) {
+                self.resetAjaxTable();
+              }
+
+              var table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
+                columns: self.columnData
+              }));
+              self.tabulator.table = table;
+              table.setData(self.rowsAndColumns);
+            }
           }
         });
       } // Register any DataTablesJS Event
@@ -659,11 +672,20 @@ apos.define('dynamic-table-utils', {
     self.registerTableEvent = function ($table) {};
 
     self.changeTabRebuildTable = function (element) {
-      var table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
-        columns: self.columnData
-      }));
-      self.tabulator.table = table;
-      self.tabulator.table.setData(self.rowsAndColumns); // Apply Event
+      if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
+        self.executeAjax(self.tabulator.options);
+      } else {
+        if (self.tabulator.options.ajaxURL) {
+          self.resetAjaxTable();
+        }
+
+        var table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
+          columns: self.columnData
+        }));
+        self.tabulator.table = table;
+        self.tabulator.table.setData(self.rowsAndColumns);
+      } // Apply Event
+
 
       self.registerTableEvent(table);
     }; // To always send the data that has schema type of array
@@ -690,11 +712,10 @@ apos.define('dynamic-table-utils', {
                 quotes: true
               }).split('\r\n').map(function (val) {
                 return val.replace(/(",")/g, '|').replace(/(^")|("$)/g, '').replace(/,/g, '","').replace(/\|/g, ',');
-              })[row] // Chaining replace due to Papa Unparse bug where '\",\"' is become ',' on very first row
-              // While ',' is become '\",\"'
-              // So in order to fix that, we have to replace so many string
-
-            };
+              })[row]
+            }; // Chaining replace due to Papa Unparse bug where '\",\"' is become ',' on very first row
+            // While ',' is become '\",\"'
+            // So in order to fix that, we have to replace so many string
           }
 
           break;
