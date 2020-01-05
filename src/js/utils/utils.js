@@ -211,15 +211,21 @@ apos.define('dynamic-table-utils', {
         }
 
         self.executeAjax = function (options) {
-            // self.destroyTable();
+            if (self.tabulator.table) {
+                self.destroyTable();
+            }
             // Reset Data
             self.rowData = [];
             self.columnData = [];
             self.tabulator.options = Object.assign({}, self.tabulator.options, {
-                ajaxURL: typeof options === 'string' ? options : options.ajaxURL
+                ajaxURL: typeof options === 'string' ? options : options.ajaxURL,
+                ajaxResponse: function(url, params, response) {
+                    console.log('Table Ajax Response', response);
+                    return response;
+                }
             })
             self.resetCustomTable();
-            self.initTable();
+            return self.initTable();
         }
 
         self.resetAjaxTable = function() {
@@ -436,7 +442,8 @@ apos.define('dynamic-table-utils', {
                     if (val.offsetParent !== null) {
                         // If Ajax enable, disable custom row and column data
                         if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
-                            self.executeAjax(self.tabulator.options)
+                            var table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
+                            self.tabulator.table = table;
                         } else {
                             if (self.tabulator.options.ajaxURL) {
                                 self.resetAjaxTable();
@@ -682,21 +689,25 @@ apos.define('dynamic-table-utils', {
         }
 
         self.changeTabRebuildTable = function (element) {
-                if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
-                    self.executeAjax(self.tabulator.options)
-                } else {
-                    if (self.tabulator.options.ajaxURL) {
-                        self.resetAjaxTable();
-                    }
-                    var table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
-                        columns: self.columnData
-                    }));
+            // Find table
+            self.$tableHTML = self.$form.find('table#dynamicTable');
 
-                    self.tabulator.table = table;
-                    self.tabulator.table.setData(self.rowsAndColumns);
+            if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
+                // Pass extra arguments for specific table element when change tab
+                self.executeAjax(self.tabulator.options, element.querySelector('table'));
+            } else if (self.rowData.length > 0 && self.columnData.length > 0) {
+                if (self.tabulator.options.ajaxURL) {
+                    self.resetAjaxTable();
                 }
-                // Apply Event
-                self.registerTableEvent(table);
+                var table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
+                    columns: self.columnData
+                }));
+
+                self.tabulator.table = table;
+                self.tabulator.table.setData(self.rowsAndColumns);
+            }
+            // Apply Event
+            self.registerTableEvent(table);
         }
 
         // To always send the data that has schema type of array
