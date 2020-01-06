@@ -210,6 +210,10 @@ module.exports = {
             self.pushAsset("script", 'vendor/tabulator/tabulator.min', {
                 when: "always"
             })
+
+            self.pushAsset("script", 'extends/customCodeEditor',{
+                when: "user"
+            })
         }
 
         self.allBrowserCalls = function () {

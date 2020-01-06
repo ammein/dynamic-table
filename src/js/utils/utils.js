@@ -183,6 +183,9 @@ apos.define('dynamic-table-utils', {
             let dataInput = self.$data.find('textarea');
             let idInput = self.$id.find('input');
             self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser');
+
+            // Run Custom Code Editor for Dynamic Table
+            apos.customCodeEditor.tabulator(self.$form);
             // Let change event registered first, then trigger it
             if (
                 rowInput.length > 0 &&
