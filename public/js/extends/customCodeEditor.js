@@ -7,6 +7,8 @@ apos.define('custom-code-editor', {
         let _this = self;
 
         self.populate = function (object, name, $field, $el, field, callback) {
+            superPopulate(object, name, $field, $el, field, callback);
+
             // Locate the element on specific schema
             let $fieldSet = apos.schemas.findFieldset($el, name);
 
@@ -17,20 +19,41 @@ apos.define('custom-code-editor', {
             // eslint-disable-next-line no-undef
             let editor = ace.edit($fieldInput);
 
-            self.tabulator = function($form) {
+            self.tabulator = function($form, type) {
                 // eslint-disable-next-line no-undef
                 let beautify = ace.require('ace/ext/beautify');
-                if ($form.find('#dynamicTable').length > 0) {
-                    // Add my own option for custom code editor when dynamic-table enable
-                    editor.session.setValue(`var callbacks = {
-                            tableBuilding: function () {},
-                            tableBuilt: function () {},
-                    }`);
+                type.forEach(function(val, i, arr) {
+                    switch (val) {
+                        case 'tableCallback':
+                            self[val].editor.session.setValue(`var callbacks = {
+                                tableBuilding: function () {},
+                                tableBuilt: function () {}
+                            }`);
+                            beautify.beautify(self[val].editor.session);
+                            break;
 
-                    beautify.beautify(editor.session);
-                }
+                        case 'columnCallback':
+                            self[val].editor.session.setValue(`var callbacks = {
+                                columnMoved: function (column, columns) {
+                                    //column - column component of the moved column
+                                    //columns- array of columns in new order
+                                }, 
+                                columnResized: function (column) {
+                                    //column - column component of the resized column
+                                },
+                                columnVisibilityChanged: function (column, visible) {
+                                    //column - column component
+                                    //visible - is column visible (true = visible, false = hidden)
+                                },
+                                columnTitleChanged: function (column) {
+                                    //column - column component
+                                }
+                            }`);
+                            beautify.beautify(self[val].editor.session);
+                            break;
+                    }
+                })
             }
-            superPopulate(object, name, $field, $el, field, callback);
         }
     }
 })

@@ -175,7 +175,11 @@ apos.define('dynamic-table-utils', {
       var idInput = self.$id.find('input');
       self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser'); // Run Custom Code Editor for Dynamic Table
 
-      apos.customCodeEditor.tabulator(self.$form); // Let change event registered first, then trigger it
+      apos.customCodeEditor.tabulator(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
+        return val.name === 'callbacks';
+      })[0].choices.reduce(function (init, next, i, arr) {
+        return init.concat(next.value + 'Callback');
+      }, [])); // Let change event registered first, then trigger it
 
       if (rowInput.length > 0 && columnInput.length > 0 && ajaxOptions.length > 0 && rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxOptions.val().length === 0) {
         self.updateRowsAndColumns(JSON5.parse(dataInput.val()));

@@ -120,23 +120,7 @@ module.exports = {
         ].concat(options.addFields || []);
 
         if (options.apos.customCodeEditor) {
-            originalFields = originalFields.concat([
-                {
-                    name: 'callbacks',
-                    label: 'Tabulator Callbacks',
-                    type: "custom-code-editor",
-                    htmlHelp: `Example : <br><br><code style="font-family: monospace;background-color: #EEE;padding: 10px;font: 300 12px monospace;display:block;">{ optionName : "some-option-here" }</code>`,
-                    ace: {
-                        defaultMode: "javascript",
-                        config: {
-                            dropdown: null,
-                            optionsCustomizer: {
-                                enable: false
-                            }
-                        }
-                    }
-                }
-            ])
+            originalFields = originalFields.concat(require('./callbackFields.js'));
         }
 
         // Combine fields
@@ -171,7 +155,7 @@ module.exports = {
             {
                 name: "advance",
                 label: "Advance Tabulator",
-                fields: ["callbacks"]
+                fields: ["callbacks","tableCallback", "columnCallback"]
             },
             {
                 name: "settings",
@@ -211,9 +195,11 @@ module.exports = {
                 when: "always"
             })
 
-            self.pushAsset("script", 'extends/customCodeEditor',{
-                when: "user"
-            })
+            if (options.apos.customCodeEditor) {
+                self.pushAsset("script", 'extends/customCodeEditor', {
+                    when: "user"
+                })
+            }
         }
 
         self.allBrowserCalls = function () {
