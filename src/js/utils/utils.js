@@ -441,7 +441,11 @@ apos.define('dynamic-table-utils', {
                     // When table is visible
                     if (val.offsetParent !== null) {
                         // If Ajax enable, disable custom row and column data
-                        if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
+                        if (
+                            self.$ajaxOptions.find('input').val().length > 0 &&
+                            self.rowData.length === 0 &&
+                            self.columnData.length === 0
+                            ) {
                             var table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
                             self.tabulator.table = table;
                         } else {
@@ -469,16 +473,25 @@ apos.define('dynamic-table-utils', {
         }
 
         self.destroyTable = function () {
-            // Refresh Existing Table
-            self.$tableHTML = self.$form.find('table#dynamicTable');
-
             // Reset options
             self.resetDataOptions();
 
             if (self.tabulator.table) {
-                self.tabulator.table.destroy();
-                self.tabulator.table = null;
+                // Get parent element and append new table from cloneNode to overcome bug issue
+                if (self.$ajaxOptions.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+                    var parentTable = self.tabulator.table.element.parentElement;
+                    self.tabulator.table.destroy();
+                    self.tabulator.table = null;
+                    $(parentTable).empty();
+                    parentTable.appendChild(apos.schemas.tabulator.getTable.cloneNode());
+                } else {
+                    self.tabulator.table.destroy();
+                    self.tabulator.table = null;
+                }
             }
+
+            // Refresh Existing Table
+            self.$tableHTML = self.$form.find('table#dynamicTable');
         }
 
         self.resetDataOptions = function() {
@@ -689,13 +702,10 @@ apos.define('dynamic-table-utils', {
         }
 
         self.changeTabRebuildTable = function (element) {
-            // Find table
-            self.$tableHTML = self.$form.find('table#dynamicTable');
-
-            if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
+            if (self.$ajaxOptions.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
                 // Pass extra arguments for specific table element when change tab
-                self.executeAjax(self.tabulator.options, element.querySelector('table'));
-            } else if (self.rowData.length > 0 && self.columnData.length > 0) {
+                self.executeAjax(self.tabulator.options);
+            } else if (self.$ajaxOptions.find('input').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
                 if (self.tabulator.options.ajaxURL) {
                     self.resetAjaxTable();
                 }
