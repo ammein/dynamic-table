@@ -175,7 +175,7 @@ apos.define('dynamic-table-utils', {
       var idInput = self.$id.find('input');
       self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser'); // Run Custom Code Editor for Dynamic Table
 
-      apos.customCodeEditor.tabulator(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
+      apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
         return val.name === 'callbacks';
       })[0].choices.reduce(function (init, next, i, arr) {
         return init.concat(next.value + 'Callback');
