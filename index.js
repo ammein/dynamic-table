@@ -187,7 +187,11 @@ module.exports = {
                 when : "user"
             })
 
-            self.pushAsset("script", 'vendor/json5/json5', {
+            self.pushAsset("script", 'vendor/json/jsonfn.min', {
+                when: "always"
+            })
+
+            self.pushAsset("script", 'vendor/json/json5.min', {
                 when: "always"
             })
 

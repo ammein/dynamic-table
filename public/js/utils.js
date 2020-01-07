@@ -116,14 +116,14 @@ apos.define('dynamic-table-utils', {
       });
       self.$ajaxOptions.on('change', function (e) {
         // try {
-        //     // Use custom JSON5 to beautifully parse the value without double quotes JSON
-        //     let options = JSON5.parse(e.currentTarget.querySelector('textarea').value);
+        //     // Use custom JSONfn to beautifully parse the value without double quotes JSON
+        //     let options = JSONfn.parse(e.currentTarget.querySelector('textarea').value);
         //     self.executeAjax(options);
         //     // Stringify for better user reading
-        //     ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
+        //     ajaxOptions.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
         // } catch (error) {
         //     // Stringify for better user reading
-        //     ajaxOptions.val(JSON5.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
+        //     ajaxOptions.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
         //     console.warn(error);
         // }
         var options = e.currentTarget.querySelector('input').value;
@@ -182,7 +182,7 @@ apos.define('dynamic-table-utils', {
       }, [])); // Let change event registered first, then trigger it
 
       if (rowInput.length > 0 && columnInput.length > 0 && ajaxOptions.length > 0 && rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxOptions.val().length === 0) {
-        self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
+        self.updateRowsAndColumns(JSONfn.parse(dataInput.val()));
         self.initTable();
       }
 
@@ -540,7 +540,7 @@ apos.define('dynamic-table-utils', {
           switch (property) {
             case 'ajaxOptions':
               try {
-                self.executeAjax(JSON5.parse(ajaxResult[property]));
+                self.executeAjax(JSONfn.parse(ajaxResult[property]));
               } catch (e) {// Leave the error alone
               }
 
@@ -548,7 +548,7 @@ apos.define('dynamic-table-utils', {
 
             case 'data':
               try {
-                self.updateRowsAndColumns(JSON5.parse(ajaxResult[property]));
+                self.updateRowsAndColumns(JSONfn.parse(ajaxResult[property]));
               } catch (e) {// Leave the error alone
               }
 
