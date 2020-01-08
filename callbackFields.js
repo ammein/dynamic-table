@@ -9,8 +9,8 @@ let aceDefault = {
 }
 
 let myArrangeFields = {
-    name: 'advance',
-    label: 'Advance Tabulator',
+    name: 'callbacks',
+    label: 'Tabulator Callbacks',
     fields: ['callbacks', 'tableCallback', 'columnCallback', 'ajaxCallback']
 }
 
