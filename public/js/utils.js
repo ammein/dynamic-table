@@ -104,6 +104,7 @@ apos.define('dynamic-table-utils', {
 
           if (confirm) {
             ajaxOptions.val('');
+            self.resetAjaxTable();
             self.executeRow(num);
           }
         } else {
@@ -182,7 +183,7 @@ apos.define('dynamic-table-utils', {
       }, [])); // Let change event registered first, then trigger it
 
       if (rowInput.length > 0 && columnInput.length > 0 && ajaxOptions.length > 0 && rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxOptions.val().length === 0) {
-        self.updateRowsAndColumns(JSONfn.parse(dataInput.val()));
+        self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
         self.initTable();
       }
 
@@ -209,11 +210,7 @@ apos.define('dynamic-table-utils', {
       self.rowData = [];
       self.columnData = [];
       self.tabulator.options = Object.assign({}, self.tabulator.options, {
-        ajaxURL: typeof options === 'string' ? options : options.ajaxURL,
-        ajaxResponse: function ajaxResponse(url, params, response) {
-          console.log('Table Ajax Response', response);
-          return response;
-        }
+        ajaxURL: typeof options === 'string' ? options : options.ajaxURL
       });
       self.resetCustomTable();
       return self.initTable();
@@ -540,7 +537,7 @@ apos.define('dynamic-table-utils', {
           switch (property) {
             case 'ajaxOptions':
               try {
-                self.executeAjax(JSONfn.parse(ajaxResult[property]));
+                self.executeAjax(JSON5.parse(ajaxResult[property]));
               } catch (e) {// Leave the error alone
               }
 
@@ -548,17 +545,16 @@ apos.define('dynamic-table-utils', {
 
             case 'data':
               try {
-                self.updateRowsAndColumns(JSONfn.parse(ajaxResult[property]));
+                self.updateRowsAndColumns(JSON5.parse(ajaxResult[property])); // Start the table
+
+                self.initTable();
               } catch (e) {// Leave the error alone
               }
 
               break;
           }
         }
-      } // Start the table
-
-
-      self.initTable();
+      }
     };
 
     self.beforeSave = function (callback) {

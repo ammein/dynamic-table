@@ -95,7 +95,8 @@ apos.define('dynamic-table-utils', {
                 if (ajaxOptions.val().length > 0) {
                     let confirm = window.confirm('You are about to remove your Ajax Input from being used. Are you sure you want to continue ?');
                     if (confirm) {
-                        ajaxOptions.val('')
+                        ajaxOptions.val('');
+                        self.resetAjaxTable();
                         self.executeRow(num);
                     }
                 } else {
@@ -197,7 +198,7 @@ apos.define('dynamic-table-utils', {
                 rowInput.val().length > 0 &&
                 columnInput.val().length > 0 &&
                 ajaxOptions.val().length === 0) {
-                self.updateRowsAndColumns(JSONfn.parse(dataInput.val()));
+                self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
                 self.initTable();
             }
 
@@ -224,11 +225,7 @@ apos.define('dynamic-table-utils', {
             self.rowData = [];
             self.columnData = [];
             self.tabulator.options = Object.assign({}, self.tabulator.options, {
-                ajaxURL: typeof options === 'string' ? options : options.ajaxURL,
-                ajaxResponse: function(url, params, response) {
-                    console.log('Table Ajax Response', response);
-                    return response;
-                }
+                ajaxURL: typeof options === 'string' ? options : options.ajaxURL
             })
             self.resetCustomTable();
             return self.initTable();
@@ -554,7 +551,7 @@ apos.define('dynamic-table-utils', {
                     switch (property) {
                         case 'ajaxOptions':
                             try {
-                                self.executeAjax(JSONfn.parse(ajaxResult[property]))
+                                self.executeAjax(JSON5.parse(ajaxResult[property]))
                             } catch (e) {
                                 // Leave the error alone
                             }
@@ -562,18 +559,16 @@ apos.define('dynamic-table-utils', {
 
                         case 'data':
                             try {
-                                self.updateRowsAndColumns(JSONfn.parse(ajaxResult[property]));
+                                self.updateRowsAndColumns(JSON5.parse(ajaxResult[property]));
+                                // Start the table
+                                self.initTable();
                             } catch (e) {
                                 // Leave the error alone
                             }
                             break;
-
                     }
                 }
             }
-
-            // Start the table
-            self.initTable();
         }
 
         self.beforeSave = function (callback) {

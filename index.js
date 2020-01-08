@@ -120,7 +120,7 @@ module.exports = {
         ].concat(options.addFields || []);
 
         if (options.apos.customCodeEditor) {
-            originalFields = originalFields.concat(require('./callbackFields.js'));
+            originalFields = originalFields.concat(require('./callbackFields.js').addFields || []);
         }
 
         // Combine fields
@@ -153,17 +153,14 @@ module.exports = {
                 fields: ["ajaxOptions"]
             },
             {
-                name: "advance",
-                label: "Advance Tabulator",
-                fields: ["callbacks","tableCallback", "columnCallback"]
-            },
-            {
                 name: "settings",
                 label: "Settings",
                 fields: ["id", "slug", "published", "tags", "trash" , "url"],
                 last: true
             }
         ].concat(options.arrangeFields || []);
+
+        options.arrangeFields = options.arrangeFields.concat(require("./callbackFields.js").arrangeFields || []);
     },
     afterConstruct : function(self){
         self.dynamicTableSchemas();
