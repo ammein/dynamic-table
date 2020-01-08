@@ -14,36 +14,6 @@ module.exports = {
         directory: 'lib/modules'
     },
     beforeConstruct : function(self,options){
-        // Lean or Non-Lean Assets to decide which fields to use 
-        var originalFields = [];
-        if (options.apos.assets.options.lean) {
-            originalFields = [
-                {
-                    name: "ajaxOptions",
-                    label: "Ajax Options",
-                    type: "string",
-                    textarea: true,
-                    htmlHelp: `Example :
-            <br><br><pre><code style="font-family: monospace;background-color: #EEE;padding: 10px;font: 300 12px monospace;display: block;">ajax: {
-    url: "some/url/data.txt", // url to remote data
-    content: {
-        type: "csv", // specify the content
-    },
-    load: function(xhr) {
-        // process and return the response data
-    }
-}</code></pre>You can refer here for more info : <a href="https://github.com/fiduswriter/Simple-DataTables/wiki/ajax" target="_blank">DataTables Vanilla JS Ajax Data Source</a><br>`
-                }
-            ];
-        } else {
-            originalFields = [
-                {
-                    name: "ajaxOptions",
-                    label: "Ajax Options",
-                    type: "string"
-                }
-            ]
-        }
         options.addFields = [
             {
                 name : "title",
@@ -116,15 +86,17 @@ module.exports = {
                         label : "Column Content"
                     }
                 ]
+            },
+            {
+                name: "ajaxURL",
+                label: "Ajax URL",
+                type: "string"
             }
         ].concat(options.addFields || []);
 
         if (options.apos.customCodeEditor) {
-            originalFields = originalFields.concat(require('./callbackFields.js').addFields || []);
+            options.addFields = options.addFields.concat(require('./callbackFields.js').addFields || []);
         }
-
-        // Combine fields
-        options.addFields = options.addFields.concat(originalFields);
 
         options.addColumns = [
             {
@@ -150,7 +122,7 @@ module.exports = {
             {
                 name: "ajax",
                 label: "Ajax Table",
-                fields: ["ajaxOptions"]
+                fields: ["ajaxURL"]
             },
             {
                 name: "settings",
@@ -232,7 +204,7 @@ module.exports = {
 
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, 
-                ["title", "row", "column" , "data", "ajaxOptions" , "id" , "url"])
+                ["title", "row", "column", "data", "ajaxURL", "id", "url"])
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 

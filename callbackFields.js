@@ -19,7 +19,7 @@ module.exports = {
         type: 'checkboxes',
         name: 'callbacks',
         label: 'Tabulator Callbacks',
-        help: 'To enable callbacks, you can check one or more for your own callback',
+        htmlHelp: 'To enable callbacks, you can check one or more checkboxes of each callback types.<br>Docs : <a href="http://tabulator.info/docs/4.0/callbacks" target="_blank">http://tabulator.info/docs/4.0/callbacks</a>',
         choices: [
             {
                 label: 'Table Callback',
@@ -49,14 +49,14 @@ module.exports = {
         name: 'columnCallback',
         label: 'Column Callbacks',
         type: 'custom-code-editor',
-        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.0/callbacks#table" target="_blank">http://tabulator.info/docs/4.0/callbacks#column</a>`,
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.0/callbacks#column" target="_blank">http://tabulator.info/docs/4.0/callbacks#column</a>`,
         ace: aceDefault
     },
     {
         name: 'ajaxCallback',
         label: 'Ajax Callbacks',
         type: 'custom-code-editor',
-        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.0/callbacks#table" target="_blank">http://tabulator.info/docs/4.0/callbacks#ajax</a>`,
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.0/callbacks#ajax" target="_blank">http://tabulator.info/docs/4.0/callbacks#ajax</a>`,
         ace: aceDefault
     }],
     arrangeFields: myArrangeFields

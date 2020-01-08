@@ -63,10 +63,10 @@ apos.define('dynamic-table-utils', {
     };
 
     self.resetAjaxTable = function () {
-      var ajaxOptions = apos.schemas.findFieldset(self.$form, 'ajaxOptions').find('input');
+      var ajaxURL = apos.schemas.findFieldset(self.$form, 'ajaxURL').find('input');
 
-      if (ajaxOptions.val().length > 0) {
-        ajaxOptions.val('');
+      if (ajaxURL.val().length > 0) {
+        ajaxURL.val('');
       }
     };
 
@@ -80,7 +80,7 @@ apos.define('dynamic-table-utils', {
       self.$column = apos.schemas.findFieldset(self.$form, 'column');
       self.$data = apos.schemas.findFieldset(self.$form, 'data');
       self.$tableHTML = self.$form.find('#dynamicTable');
-      self.$ajaxOptions = apos.schemas.findFieldset(self.$form, 'ajaxOptions');
+      self.$ajaxURL = apos.schemas.findFieldset(self.$form, 'ajaxURL');
       self.$divTable = self.$form.find('.dynamic-table-area');
       self.$id = apos.schemas.findFieldset(self.$form, 'id');
       self.$url = apos.schemas.findFieldset(self.$form, 'url');
@@ -88,7 +88,7 @@ apos.define('dynamic-table-utils', {
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');
-      var ajaxOptions = self.$ajaxOptions.find('input'); // Destroy table if exists
+      var ajaxURL = self.$ajaxURL.find('input'); // Destroy table if exists
 
       self.destroyTable(); // Disabled first by default
 
@@ -99,11 +99,11 @@ apos.define('dynamic-table-utils', {
       self.$row.on('change', function (e) {
         var num = parseInt(e.currentTarget.querySelector('input').value);
 
-        if (ajaxOptions.val().length > 0) {
+        if (ajaxURL.val().length > 0) {
           var confirm = window.confirm('You are about to remove your Ajax Input from being used. Are you sure you want to continue ?');
 
           if (confirm) {
-            ajaxOptions.val('');
+            ajaxURL.val('');
             self.resetAjaxTable();
             self.executeRow(num);
           }
@@ -115,16 +115,16 @@ apos.define('dynamic-table-utils', {
         var num = parseInt(e.currentTarget.querySelector('input').value);
         self.executeColumn(num);
       });
-      self.$ajaxOptions.on('change', function (e) {
+      self.$ajaxURL.on('change', function (e) {
         // try {
         //     // Use custom JSONfn to beautifully parse the value without double quotes JSON
         //     let options = JSONfn.parse(e.currentTarget.querySelector('textarea').value);
         //     self.executeAjax(options);
         //     // Stringify for better user reading
-        //     ajaxOptions.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
+        //     ajaxURL.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
         // } catch (error) {
         //     // Stringify for better user reading
-        //     ajaxOptions.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
+        //     ajaxURL.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
         //     console.warn(error);
         // }
         var options = e.currentTarget.querySelector('input').value;
@@ -171,7 +171,7 @@ apos.define('dynamic-table-utils', {
 
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
-      var ajaxOptions = self.$ajaxOptions.find('textarea');
+      var ajaxURL = self.$ajaxURL.find('input');
       var dataInput = self.$data.find('textarea');
       var idInput = self.$id.find('input');
       self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser'); // Run Custom Code Editor for Dynamic Table
@@ -182,14 +182,14 @@ apos.define('dynamic-table-utils', {
         return init.concat(next.value + 'Callback');
       }, [])); // Let change event registered first, then trigger it
 
-      if (rowInput.length > 0 && columnInput.length > 0 && ajaxOptions.length > 0 && rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxOptions.val().length === 0) {
+      if (rowInput.length > 0 && columnInput.length > 0 && ajaxURL.length > 0 && rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxURL.val().length === 0) {
         self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
         self.initTable();
       }
 
-      if (ajaxOptions.length > 0 && ajaxOptions.val().length > 0) {
+      if (ajaxURL.val().length > 0 && ajaxURL.val().length > 0) {
         // To enable textarea auto resize
-        self.$ajaxOptions.trigger('change');
+        self.$ajaxURL.trigger('change');
       }
 
       if (idInput.length > 0 && idInput.val().length === 0) {
@@ -209,9 +209,13 @@ apos.define('dynamic-table-utils', {
 
       self.rowData = [];
       self.columnData = [];
-      self.tabulator.options = Object.assign({}, self.tabulator.options, {
-        ajaxURL: typeof options === 'string' ? options : options.ajaxURL
-      });
+
+      if (options !== (null || undefined)) {
+        self.tabulator.options = Object.assign({}, self.tabulator.options, {
+          ajaxURL: typeof options === 'string' ? options : options.ajaxURL
+        });
+      }
+
       self.resetCustomTable();
       return self.initTable();
     };
@@ -430,7 +434,7 @@ apos.define('dynamic-table-utils', {
           // When table is visible
           if (val.offsetParent !== null) {
             // If Ajax enable, disable custom row and column data
-            if (self.$ajaxOptions.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+            if (self.$ajaxURL.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
               var table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
               self.tabulator.table = table;
             } else {
@@ -462,7 +466,7 @@ apos.define('dynamic-table-utils', {
 
       if (self.tabulator.table) {
         // Get parent element and append new table from cloneNode to overcome bug issue
-        if (self.$ajaxOptions.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+        if (self.$ajaxURL.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
           var parentTable = self.tabulator.table.element.parentElement;
           self.tabulator.table.destroy();
           self.tabulator.table = null;
@@ -535,7 +539,7 @@ apos.define('dynamic-table-utils', {
 
         if (ajaxResult.hasOwnProperty(property)) {
           switch (property) {
-            case 'ajaxOptions':
+            case 'ajaxURL':
               try {
                 self.executeAjax(JSON5.parse(ajaxResult[property]));
               } catch (e) {// Leave the error alone
@@ -692,10 +696,10 @@ apos.define('dynamic-table-utils', {
     self.registerTableEvent = function ($table) {};
 
     self.changeTabRebuildTable = function (element) {
-      if (self.$ajaxOptions.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+      if (self.$ajaxURL.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
         // Pass extra arguments for specific table element when change tab
         self.executeAjax(self.tabulator.options);
-      } else if (self.$ajaxOptions.find('input').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
+      } else if (self.$ajaxURL.find('input').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
         if (self.tabulator.options.ajaxURL) {
           self.resetAjaxTable();
         }
@@ -815,12 +819,12 @@ apos.define('dynamic-table-utils', {
       } // If no rowData and ColumnData at all, must be the ajax. If not, just do nothing
 
 
-      if (self.$ajaxOptions.find('textarea').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
-        self.$ajaxOptions.trigger('change');
+      if (self.$ajaxURL.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+        self.$ajaxURL.trigger('change');
       }
 
-      if (self.$ajaxOptions.find('textarea').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
-        self.$ajaxOptions.find('textarea').val('');
+      if (self.$ajaxURL.find('input').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
+        self.$ajaxURL.find('input').val('');
       }
     }; // End of Utils
 

@@ -28,18 +28,25 @@ apos.define('custom-code-editor', {
                     // delta.start, delta.end, delta.lines, delta.action
                     let value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
 
-                    value = self.tabulator.convertJSONFunction(value);
+                    try {
+                        value = self.tabulator.convertJSONFunction(value);
 
-                    // eslint-disable-next-line no-undef
-                    apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, JSONfn.parse(value))
+                        // eslint-disable-next-line no-undef
+                        apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, JSONfn.parse(value))
 
-                    // Restart Table
-                    if (apos.dynamicTableUtils.tabulator.options.ajaxURL) {
-                        // If Ajax enabled, just reload the table
-                        apos.dynamicTableUtils.tabulator.table.setData();
-                    } else {
-                        // Restart normal custom table
-                        apos.dynamicTableUtils.initTable();
+                        // Restart Table
+                        if (apos.dynamicTableUtils.tabulator.options.ajaxURL) {
+                            // If Ajax enabled, just reload the table
+                            apos.dynamicTableUtils.executeAjax();
+                        } else {
+                            // Restart normal custom table
+                            apos.dynamicTableUtils.initTable();
+                        }
+                    } catch (e) {
+                        apos.notify(`You should not remove JSON Object wrapped with functions of callbacks. Please undo your work using key "Ctrl + Z"`, {
+                            type: 'error',
+                            dismiss: true
+                        })
                     }
                 }, 2000))
             }
