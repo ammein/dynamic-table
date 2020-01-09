@@ -52,8 +52,6 @@ apos.define('custom-code-editor', {
                             type: 'error',
                             dismiss: true
                         })
-
-                        console.error(e)
                     }
                 }, 2000))
             }
@@ -112,20 +110,35 @@ apos.define('custom-code-editor', {
             }
 
             self.tabulator.cacheCheck = function(editorType, valueObj) {
-                return self.tabulator.cache[editorType].filter(function(val, i, arr) {
+                let returnObj = {}
+                // Return Adjusted Changes Only
+                self.tabulator.cache[editorType].forEach(function(val, i, arr) {
                     for (let key in valueObj) {
                         if (valueObj.hasOwnProperty(key)) {
-                            if (Object.getOwnPropertyNames(val)[0] === key) {
-                                return val[key].toString() !== valueObj[key].toString()
+                            if (Object.getOwnPropertyNames(val)[0] === key &&
+                                val[key].toString() !== valueObj[key].toString()) {
+                                returnObj[key] = valueObj[key];
                             }
                         }
                     }
-                }).reduce(function(init, next, i) {
-                    return {
-                        ...init,
-                        [Object.getOwnPropertyNames(next)[0]]: next[Object.getOwnPropertyNames(next)[0]]
+                });
+
+                // Adjust Cache
+                for (let key in valueObj) {
+                    if (valueObj.hasOwnProperty(key)) {
+                        self.tabulator.cache[editorType] = self.tabulator.cache[editorType].map(function (val, i, arr) {
+                            if (key === Object.getOwnPropertyNames(val)[0]) {
+                                return {
+                                    [key]: valueObj[key]
+                                };
+                            } else {
+                                return val;
+                            }
+                        })
                     }
-                }, {});
+                }
+
+                return returnObj;
             }
 
             self.tabulator.editorCache = function(editorType, string) {
@@ -322,6 +335,191 @@ apos.define('custom-code-editor', {
                                 },
                                 dataLoaded: function (data) {
                                     //data - all data loaded into the table
+                                },
+                                dataEdited:function(data){
+                                    //data - the updated table data
+                                },
+                                htmlImporting:function(){},
+                                htmlImported:function(){}
+                            }`;
+                        break;
+
+                    case 'filterCallback':
+                        string = `{
+                                dataFiltering:function(filters){
+                                    //filters - array of filters currently applied
+                                },
+                                dataFiltered:function(filters, rows){
+                                    //filters - array of filters currently applied
+                                    //rows - array of row components that pass the filters
+                                }
+                            }`;
+                        break;
+
+                    case 'sortingCallback':
+                        string = `{
+                                dataSorting: function (sorters) {
+                                    //sorters - an array of the sorters currently applied
+                                },
+                                dataSorted: function (sorters, rows) {
+                                    //sorters - array of the sorters currently applied
+                                    //rows - array of row components in their new order
+                                }
+                            }`;
+                        break;
+
+                    case 'layoutCallback':
+                        string = `{
+                                renderStarted: function () {},
+                                renderComplete: function () {}
+                            }`;
+                        break;
+
+                    case 'paginationCallback':
+                        string = `{
+                                pageLoaded: function (pageno) {
+                                    //pageno - the number of the loaded page
+                                }
+                            }`;
+                        break;
+
+                    case 'selectionCallback':
+                        string = `{
+                                rowSelected: function (row) {
+                                    //row - row component for the selected row
+                                },
+                                rowDeselected: function (row) {
+                                    //row - row component for the deselected row
+                                },
+                                rowSelectionChanged: function (data, rows) {
+                                    //rows - array of row components for the selected rows in order of selection
+                                    //data - array of data objects for the selected rows in order of selection
+                                }
+                            }`;
+                        break;
+
+                    case 'rowMovementCallback':
+                        string = `{
+                                movableRowsSendingStart: function (toTables) {
+                                    //toTables - array of receiving table elements
+                                },
+                                movableRowsSent: function (fromRow, toRow, toTable) {
+                                    //fromRow - the row component from the sending table
+                                    //toRow - the row component from the receiving table (if available)
+                                    //toTable - the Tabulator object for the receiving table
+                                },
+                                movableRowsSentFailed: function (fromRow, toRow, toTable) {
+                                    //fromRow - the row component from the sending table
+                                    //toRow - the row component from the receiving table (if available)
+                                    //toTable - the Tabulator object for the receiving table
+                                },
+                                movableRowsSendingStop: function (toTables) {
+                                    //toTables - array of receiving table Tabulator objects
+                                },
+                                movableRowsReceivingStart: function (fromRow, fromTable) {
+                                    //fromRow - the row component from the sending table
+                                    //fromTable - the Tabulator object for the sending table
+                                },
+                                movableRowsReceived: function (fromRow, toRow, fromTable) {
+                                    //fromRow - the row component from the sending table
+                                    //toRow - the row component from the receiving table (if available)
+                                    //fromTable - the Tabulator object for the sending table
+                                },
+                                movableRowsReceivedFailed: function (fromRow, toRow, fromTable) {
+                                    //fromRow - the row component from the sending table
+                                    //toRow - the row component from the receiving table (if available)
+                                    //fromTable - the Tabulator object for the sending table
+                                },
+                                movableRowsReceivingStop: function (fromTable) {
+                                    //fromTable - the Tabulator object for the sending table
+                                }
+                            }`;
+                        break;
+
+                    case 'validationCallback':
+                        string = `{
+                                validationFailed: function (cell, value, validators) {
+                                    //cell - cell component for the edited cell
+                                    //value - the value that failed validation
+                                    //validatiors - an array of validator objects that failed
+                                }
+                            }`;
+                        break;
+
+                    case 'historyCallback':
+                        string = `{
+                                historyUndo: function (action, component, data) {
+                                    //action - the action that has been undone
+                                    //component - the Component object afected by the action (colud be a row or cell component)
+                                    //data - the data being changed
+                                },
+                                historyRedo: function (action, component, data) {
+                                    //action - the action that has been redone
+                                    //component - the Component object afected by the action (colud be a row or cell component)
+                                    //data - the data being changed
+                                }
+                            }`;
+                        break;
+
+                    case 'clipboardCallback':
+                        string = `{
+                                clipboardCopied: function (clipboard) {
+                                    //clipboard - the string that has been copied into the clipboard
+                                },
+                                clipboardPasted: function (clipboard, rowData, rows) {
+                                    //clipboard - the clipboard string
+                                    //rowData - the row data from the paste parser
+                                    //rows - the row components from the paste action (this will be empty if the "replace" action is used)
+                                },
+                                clipboardPasteError: function (clipboard) {
+                                    //clipboard - the clipboard string that was rejected by the paste parser
+                                }
+                            }`;
+                        break;
+
+                    case 'downloadCallback':
+                        string = `{
+                                downloadDataFormatter: function (data) {
+                                    //data - active table data array
+
+                                    data.forEach(function (row) {
+                                        row.age = row.age >= 18 ? "adult" : "child";
+                                    });
+
+                                    return data;
+                                },
+                                downloadReady: function (fileContents, blob) {
+                                    //fileContents - the unencoded contents of the file
+                                    //blob - the blob object for the download
+
+                                    //custom action to send blob to server could be included here
+
+                                    return blob; //must return a blob to proceed with the download, return false to abort download
+                                },
+                                downloadComplete: function () {}
+                            }`;
+                        break;
+
+                    case 'dataTreeCallback':
+                        string = `{
+                                dataTreeRowExpanded: function (row, level) {
+                                    //row - the row component for the expanded row
+                                    //level - the depth of the row in the tree
+                                },
+                                dataTreeRowCollapsed: function (row, level) {
+                                    //row - the row component for the collapsed row
+                                    //level - the depth of the row in the tree
+                                }
+                            }`;
+                        break;
+
+                    case 'scrollingCallback':
+                        string = `{
+                                scrollVertical: function (top) {
+                                    //top - the current vertical scroll position
+                                },
+                                scrollHorizontal: function (left) {
+                                    //left - the current horizontal scroll position
                                 }
                             }`;
                         break;
@@ -342,65 +540,14 @@ apos.define('custom-code-editor', {
                 // eslint-disable-next-line no-undef
                 let beautify = ace.require('ace/ext/beautify');
                 type.forEach(function(val, i, arr) {
-                    switch (val) {
-                        case 'tableCallback':
-                            // Set Worker to be false to disable error highlighting
-                            self[val].editor.session.setUseWorker(false);
-                            self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
-                            beautify.beautify(self[val].editor.session);
-                            self.tabulator.events(val)
+                    // Set Worker to be false to disable error highlighting
+                    self[val].editor.session.setUseWorker(false);
+                    self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
+                    beautify.beautify(self[val].editor.session);
+                    self.tabulator.events(val)
 
-                            // Store to cache for comparison check
-                            self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
-                            break;
-
-                        case 'columnCallback':
-                            // Set Worker to be false to disable error highlighting
-                            self[val].editor.session.setUseWorker(false);
-                            self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
-                            beautify.beautify(self[val].editor.session);
-                            self.tabulator.events(val);
-
-                            // Store to cache for comparison check
-                            self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
-                            break;
-                        case 'ajaxCallback':
-                            self[val].editor.session.setUseWorker(false);
-                            self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
-                            beautify.beautify(self[val].editor.session);
-                            self.tabulator.events(val);
-
-                            // Store to cache for comparison check
-                            self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
-                            break;
-                        case 'rowCallback':
-                            self[val].editor.session.setUseWorker(false);
-                            self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
-                            beautify.beautify(self[val].editor.session);
-                            self.tabulator.events(val);
-
-                            // Store to cache for comparison check
-                            self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
-                            break;
-                        case 'cellCallback':
-                            self[val].editor.session.setUseWorker(false);
-                            self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
-                            beautify.beautify(self[val].editor.session);
-                            self.tabulator.events(val);
-
-                            // Store to cache for comparison check
-                            self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
-                            break;
-                        case 'dataCallback':
-                            self[val].editor.session.setUseWorker(false);
-                            self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
-                            beautify.beautify(self[val].editor.session);
-                            self.tabulator.events(val);
-
-                            // Store to cache for comparison check
-                            self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
-                            break;
-                    }
+                    // Store to cache for comparison check
+                    self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
                 })
             }
         }

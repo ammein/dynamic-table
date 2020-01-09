@@ -11,7 +11,7 @@ let aceDefault = {
 let myArrangeFields = {
     name: 'callbacks',
     label: 'Tabulator Callbacks',
-    fields: ['callbacks', 'tableCallback', 'columnCallback', 'ajaxCallback', 'rowCallback', 'cellCallback', 'dataCallback']
+    fields: ['callbacks', 'tableCallback', 'columnCallback', 'ajaxCallback', 'rowCallback', 'cellCallback', 'dataCallback', 'filterCallback', 'sortingCallback', 'layoutCallback', 'paginationCallback', 'selectionCallback', 'rowMovementCallback', 'validationCallback', 'historyCallback', 'clipboardCallback', 'downloadCallback', 'dataTreeCallback', 'scrollingCallback']
 }
 
 module.exports = {
@@ -51,6 +51,66 @@ module.exports = {
                 label: 'Data Callback',
                 value: 'data',
                 showFields: ['dataCallback']
+            },
+            {
+                label: 'Filter Callback',
+                value: 'filter',
+                showFields: ['filterCallback']
+            },
+            {
+                label: 'Sorting Callback',
+                value: 'sorting',
+                showFields: ['sortingCallback']
+            },
+            {
+                label: 'Layout Callback',
+                value: 'layout',
+                showFields: ['layoutCallback']
+            },
+            {
+                label: 'Pagination Callback',
+                value: 'pagination',
+                showFields: ['paginationCallback']
+            },
+            {
+                label: 'Selection Callback',
+                value: 'selection',
+                showFields: ['selectionCallback']
+            },
+            {
+                label: 'Row Movement Callback',
+                value: 'rowMovement',
+                showFields: ['rowMovementCallback']
+            },
+            {
+                label: 'Validation Callback',
+                value: 'validation',
+                showFields: ['validationCallback']
+            },
+            {
+                label: 'History Callback',
+                value: 'history',
+                showFields: ['historyCallback']
+            },
+            {
+                label: 'Clipboard Callback',
+                value: 'clipboard',
+                showFields: ['clipboardCallback']
+            },
+            {
+                label: 'Download Callback',
+                value: 'download',
+                showFields: ['downloadCallback']
+            },
+            {
+                label: 'Data Tree Callback',
+                value: 'dataTree',
+                showFields: ['dataTreeCallback']
+            },
+            {
+                label: 'Scrolling Callback',
+                value: 'scrolling',
+                showFields: ['scrollingCallback']
             }
         ]
     },
@@ -94,6 +154,90 @@ module.exports = {
         label: 'Data Callbacks',
         type: 'custom-code-editor',
         htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#data" target="_blank">http://tabulator.info/docs/4.5/callbacks#data</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'filterCallback',
+        label: 'Filter Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#filter" target="_blank">http://tabulator.info/docs/4.5/callbacks#filter</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'sortingCallback',
+        label: 'Sorting Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#sort" target="_blank">http://tabulator.info/docs/4.5/callbacks#sort</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'layoutCallback',
+        label: 'Layout Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#layout" target="_blank">http://tabulator.info/docs/4.5/callbacks#layout</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'paginationCallback',
+        label: 'Pagination Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#page" target="_blank">http://tabulator.info/docs/4.5/callbacks#page</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'selectionCallback',
+        label: 'Selection Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#select" target="_blank">http://tabulator.info/docs/4.5/callbacks#select</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'rowMovementCallback',
+        label: 'Row Movement Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#row-move" target="_blank">http://tabulator.info/docs/4.5/callbacks#row-move</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'validationCallback',
+        label: 'Validation Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#validation" target="_blank">http://tabulator.info/docs/4.5/callbacks#validation</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'historyCallback',
+        label: 'History Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#history" target="_blank">http://tabulator.info/docs/4.5/callbacks#history</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'clipboardCallback',
+        label: 'Clipboard Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#clipboard" target="_blank">http://tabulator.info/docs/4.5/callbacks#clipboard</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'downloadCallback',
+        label: 'Download Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#download" target="_blank">http://tabulator.info/docs/4.5/callbacks#download</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'dataTreeCallback',
+        label: 'Data Tree Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#tree" target="_blank">http://tabulator.info/docs/4.5/callbacks#tree</a>`,
+        ace: aceDefault
+    },
+    {
+        name: 'scrollingCallback',
+        label: 'Scrolling Callbacks',
+        type: 'custom-code-editor',
+        htmlHelp: `Docs : <a href="http://tabulator.info/docs/4.5/callbacks#scrolling target="_blank">http://tabulator.info/docs/4.5/callbacks#scrolling</a>`,
         ace: aceDefault
     }
     ],
