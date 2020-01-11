@@ -3,8 +3,49 @@ apos.define('custom-code-editor', {
         // create superPopulate to extend method
         let superPopulate = self.populate;
 
+        let superConvert = self.convert;
+
         // Get extension self object
         let _this = self;
+
+        // Clean up data and reject if unacceptable
+        self.convert = function (data, name, $field, $el, field, callback) {
+            return superConvert(data, name, $field, $el, field, function() {
+
+                if (self.tabulator && self.tabulator.originalCache[name]) {
+                    let returnObj = {}
+
+                    // eslint-disable-next-line no-undef
+                    let dataObj = JSONfn.parse(self.tabulator.convertJSONFunction(data[name].code))
+                    // eslint-disable-next-line no-undef
+                    let originalObj = self.tabulator.originalCache[name].reduce((init, next, i) => Object.assign({}, init, next), {});
+                    // eslint-disable-next-line no-undef
+                    let cacheObj = self.tabulator.cache[name].reduce((init, next, i) => Object.assign({}, init, next), {});
+
+                    for (let key in dataObj) {
+                        if (dataObj.hasOwnProperty(key)) {
+                            let oriKey = Object.getOwnPropertyNames(originalObj).filter((val, i) => val === key)[0]
+                            if (key === oriKey) {
+                                // Match String function
+                                if (dataObj[key].toString() !== originalObj[key].toString()) {
+                                    returnObj[key] = cacheObj[key]
+                                }
+                            }
+                        }
+                    }
+
+                    // Set into object serverside
+                    if (Object.getOwnPropertyNames(returnObj).length > 0) {
+                        // eslint-disable-next-line no-undef
+                        data[name].code = JSONfn.stringify(returnObj);
+                    } else {
+                        data[name].code = '{}'
+                    }
+                }
+
+                return setImmediate(callback);
+            });
+        }
 
         self.populate = function (object, name, $field, $el, field, callback) {
             superPopulate(object, name, $field, $el, field, callback);
@@ -21,7 +62,8 @@ apos.define('custom-code-editor', {
 
             self.tabulator = {
                 callbacks: {},
-                cache: {}
+                cache: {},
+                originalCache: {}
             };
 
             self.tabulator.events = function(editorType) {
@@ -36,17 +78,9 @@ apos.define('custom-code-editor', {
                         // eslint-disable-next-line no-undef
                         value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value));
 
-                        // eslint-disable-next-line no-undef
-                        apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, value)
-
                         // Restart Table
-                        if (apos.dynamicTableUtils.tabulator.options.ajaxURL) {
-                            // If Ajax enabled, just reload the table
-                            apos.dynamicTableUtils.executeAjax();
-                        } else {
-                            // Restart normal custom table
-                            apos.dynamicTableUtils.initTable();
-                        }
+                        self.tabulator.restartTableCallback(value);
+
                     } catch (e) {
                         apos.notify(`Oops! Your code is not working! Check the error on console.`, {
                             type: 'error',
@@ -54,6 +88,20 @@ apos.define('custom-code-editor', {
                         })
                     }
                 }, 2000))
+            }
+
+            self.tabulator.restartTableCallback = function(callbackObj) {
+                // eslint-disable-next-line no-undef
+                apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj)
+
+                // Restart Table
+                if (apos.dynamicTableUtils.tabulator.options.ajaxURL) {
+                    // If Ajax enabled, just reload the table
+                    apos.dynamicTableUtils.executeAjax();
+                } else {
+                    // Restart normal custom table
+                    apos.dynamicTableUtils.initTable();
+                }
             }
 
             // Thanks to the article https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
@@ -69,16 +117,32 @@ apos.define('custom-code-editor', {
 
             // Using JSONfn (https://github.com/vkiryukhin/jsonfn) to make function enable on JSON Object
             self.tabulator.convertJSONFunction = function(value) {
-                value = self.tabulator.keyStringify(value);
-                value = self.tabulator.functionStringify(value);
+                value = self.tabulator.JSONFunctionStringify(value);
                 value = self.tabulator.addNewLineInFunction(value);
                 value = self.tabulator.removeBreakLines(value);
 
                 return value;
             }
 
+            self.tabulator.convertToString = function(value) {
+                // eslint-disable-next-line no-undef
+                value = JSONfn.stringify(value);
+                value = self.tabulator.JSONFunctionParse(value);
+                value = self.tabulator.JSONFuncToNormalString(value);
+                return value;
+            }
+
             self.tabulator.removeBreakLines = function(text) {
                 return text.replace(/\s+(?!\S)/g, '');
+            }
+
+            self.tabulator.JSONFuncToNormalString = function(text) {
+                text = text.replace(/\\n/g, '\n');
+                return text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
+            }
+
+            self.tabulator.JSONFunctionParse = function(text) {
+                return text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
             }
 
             self.tabulator.addNewLineInFunction = function(text) {
@@ -101,12 +165,8 @@ apos.define('custom-code-editor', {
                 return text;
             }
 
-            self.tabulator.keyStringify = function(text) {
-                return text.replace(/(\w+?)(?=(\s*?):\s*function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})/g, '"$&"');
-            }
-
-            self.tabulator.functionStringify = function(text) {
-                return text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '"$&"');
+            self.tabulator.JSONFunctionStringify = function(text) {
+                return text.replace(/(\w+?)(?=(\s*:+?))|(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})|(\w+?)(?=(\s*?):\s*function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})/g, '"$&"');
             }
 
             self.tabulator.cacheCheck = function(editorType, valueObj) {
@@ -143,6 +203,7 @@ apos.define('custom-code-editor', {
 
             self.tabulator.editorCache = function(editorType, string) {
                 self.tabulator.cache[editorType] = []
+                self.tabulator.originalCache[editorType] = []
 
                 // eslint-disable-next-line no-undef
                 let JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
@@ -150,6 +211,9 @@ apos.define('custom-code-editor', {
                 for (let key in JSONFuncObj) {
                     if (JSONFuncObj.hasOwnProperty(key)) {
                         self.tabulator.cache[editorType] = self.tabulator.cache[editorType].concat({
+                            [key]: JSONFuncObj[key]
+                        })
+                        self.tabulator.originalCache[editorType] = self.tabulator.originalCache[editorType].concat({
                             [key]: JSONFuncObj[key]
                         })
                     }
@@ -330,17 +394,17 @@ apos.define('custom-code-editor', {
 
                     case 'dataCallback':
                         string = `{
-                                dataLoading: function (data) {
+                                dataLoading: function(data) {
                                     //data - the data loading into the table
                                 },
-                                dataLoaded: function (data) {
+                                dataLoaded: function(data) {
                                     //data - all data loaded into the table
                                 },
-                                dataEdited:function(data){
+                                dataEdited: function(data) {
                                     //data - the updated table data
                                 },
-                                htmlImporting:function(){},
-                                htmlImported:function(){}
+                                htmlImporting: function() {},
+                                htmlImported: function() {}
                             }`;
                         break;
 
@@ -540,16 +604,79 @@ apos.define('custom-code-editor', {
                 // eslint-disable-next-line no-undef
                 let beautify = ace.require('ace/ext/beautify');
                 type.forEach(function(val, i, arr) {
+                    let strings = self.tabulator.callbackStrings(val);
+
                     // Set Worker to be false to disable error highlighting
                     self[val].editor.session.setUseWorker(false);
-                    self[val].editor.session.setValue(self.tabulator.callbackStrings(val));
+                    // Set Value to Editor
+                    self[val].editor.session.setValue(strings);
+                    // Beautify the Javascript Object in Editor
                     beautify.beautify(self[val].editor.session);
-                    self.tabulator.events(val)
-
                     // Store to cache for comparison check
-                    self.tabulator.editorCache(val, self.tabulator.callbackStrings(val));
+                    self.tabulator.editorCache(val, self[val].editor.session.getValue());
+
+                    // eslint-disable-next-line no-undef
+                    if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0) {
+                        // eslint-disable-next-line no-undef
+                        let obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings))
+                        // Restart Table
+                        // eslint-disable-next-line no-undef
+                        self.tabulator.restartTableCallback(JSONfn.parse(object[val].code))
+
+                        // Change on cache if its match
+                        for (let key in obj) {
+                            // eslint-disable-next-line no-undef
+                            if (obj.hasOwnProperty(key)) {
+                                // eslint-disable-next-line no-undef
+                                let objectKey = Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).filter((val, i) => val === key)[0];
+                                // eslint-disable-next-line no-undef
+                                let objectFunc = JSONfn.parse(object[val].code)[key]
+                                if (objectKey === key) {
+                                    self.tabulator.cache[val] = self.tabulator.cache[val].map(function(cacheObj, i, arr) {
+                                        if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
+                                            return { [key]: objectFunc }
+                                        } else {
+                                            return cacheObj
+                                        }
+                                    })
+                                    self.tabulator.originalCache[val] = self.tabulator.originalCache[val].map(function (cacheObj, i, arr) {
+                                        if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
+                                            return {
+                                                [key]: objectFunc
+                                            }
+                                        } else {
+                                            return cacheObj
+                                        }
+                                    })
+
+                                    // Change on string later (TODO)
+                                    // eslint-disable-next-line no-undef
+                                    let editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(self[val].editor.session.getValue()))
+                                    for (let editorKey in editorStringObj) {
+                                        if (editorStringObj.hasOwnProperty(editorKey)) {
+                                            if (editorKey === key) {
+                                                editorStringObj[editorKey] = objectFunc
+                                            }
+                                        }
+                                    }
+
+                                    // eslint-disable-next-line no-undef
+                                    self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj))
+
+                                    // Beautify it back
+                                    beautify.beautify(self[val].editor.session);
+                                }
+                            }
+                        }
+                    }
+
+                    // Apply on change events (Must trigger last!)
+                    self.tabulator.events(val);
+                    // End Set Value
                 })
             }
+
+            // End Custom Code Editor Extends
         }
     }
 })
