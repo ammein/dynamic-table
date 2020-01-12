@@ -204,7 +204,7 @@ module.exports = {
 
         self.dynamicTableSchemas = function(){
             self.tableSchemas = self.apos.schemas.subset(self.schema, 
-                ["title", "row", "column", "data", "ajaxURL", "id", "url"])
+                ["title", "row", "column", "data", "ajaxURL", "id", "url", "adjustRow", "adjustColumn", 'callbacks', 'tableCallback', 'columnCallback', 'ajaxCallback', 'rowCallback', 'cellCallback', 'dataCallback', 'filterCallback', 'sortingCallback', 'layoutCallback', 'paginationCallback', 'selectionCallback', 'rowMovementCallback', 'validationCallback', 'historyCallback', 'clipboardCallback', 'downloadCallback', 'dataTreeCallback', 'scrollingCallback'])
             self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
         };
 
@@ -240,6 +240,22 @@ module.exports = {
             })
         })
 
+        self.route("post", "reset-callbacks", function(req, res){
+            return self.routes.resetCallbacks(req, function(err){
+                if(err){
+                    return res.send({
+                        status : "error",
+                        message : err
+                    })
+                }
+
+                return res.send({
+                    status : "success",
+                    message : "Callback Reset !"
+                })
+            })
+        })
+
         self.route("get", "get-fields", function(req, res){
             return self.routes.getFields(req, function(err ,result){
                 if(err){
@@ -255,6 +271,37 @@ module.exports = {
                 })
             })
         })
+
+        self.routes.resetCallbacks = function(req, callback) {
+            if (!req.body.id) {
+                return callback("Id not found");
+            }
+
+            var criteria = {
+                _id: req.body.id
+            }
+
+            return self.find(req, criteria).toObject(function(err, result) {
+                if(err) {
+                    return callback(url);
+                }
+
+                var newPiece = _.cloneDeep(result);
+
+                // Find Choices in callbacks checkboxes showFields
+                var choices = self.tableSchemas.filter((val, i) => val.name === "callbacks").reduce((init, next) => Object.assign({}, init, next), {})["choices"];
+
+                // Loop each choices that matched with results. Then delete it on newPiece object
+                choices.forEach(function(val, i, arr) {
+                    if (val.showFields[0] === Object.getOwnPropertyNames(newPiece).filter((value) => value === val.showFields[0])[0]) {
+                        delete newPiece[val.showFields[0]];
+                    }
+                })
+
+                // Update it!
+                return self.update(req, newPiece, { permissions: false }, callback);
+            })
+        }
 
         self.routes.removeUrls = function(req,callback){
 

@@ -85,6 +85,7 @@ apos.define('dynamic-table-utils', {
       self.$id = apos.schemas.findFieldset(self.$form, 'id');
       self.$url = apos.schemas.findFieldset(self.$form, 'url');
       self.$title = apos.schemas.findFieldset(self.$form, 'title');
+      self.$id.val(data.id);
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');
@@ -174,7 +175,8 @@ apos.define('dynamic-table-utils', {
       var ajaxURL = self.$ajaxURL.find('input');
       var dataInput = self.$data.find('textarea');
       var idInput = self.$id.find('input');
-      self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser'); // Run Custom Code Editor for Dynamic Table
+      self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser');
+      idInput.val(data.id); // Run Custom Code Editor for Dynamic Table
 
       if (apos.customCodeEditor) {
         // For Callback
@@ -508,6 +510,16 @@ apos.define('dynamic-table-utils', {
 
     self.getFields = function (query, callback) {
       return $.get('/modules/dynamic-table/get-fields', query, function (data) {
+        if (data.status === 'success') {
+          return callback(null, data.message);
+        }
+
+        return callback(data.message);
+      });
+    };
+
+    self.resetCallbacks = function (query, callback) {
+      return apos.modules['dynamic-table'].api('reset-callbacks', query, function (data) {
         if (data.status === 'success') {
           return callback(null, data.message);
         }

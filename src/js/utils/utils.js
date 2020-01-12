@@ -76,6 +76,7 @@ apos.define('dynamic-table-utils', {
             self.$id = apos.schemas.findFieldset(self.$form, 'id');
             self.$url = apos.schemas.findFieldset(self.$form, 'url');
             self.$title = apos.schemas.findFieldset(self.$form, 'title');
+            self.$id.val(data.id)
 
             let rowInput = self.$row.find('input');
             let columnInput = self.$column.find('input');
@@ -184,6 +185,7 @@ apos.define('dynamic-table-utils', {
             let dataInput = self.$data.find('textarea');
             let idInput = self.$id.find('input');
             self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser');
+            idInput.val(data.id);
 
             // Run Custom Code Editor for Dynamic Table
             if (apos.customCodeEditor) {
@@ -526,6 +528,16 @@ apos.define('dynamic-table-utils', {
                 if (data.status === 'success') {
                     return callback(null, data.message);
                 }
+                return callback(data.message);
+            })
+        }
+
+        self.resetCallbacks = function(query, callback) {
+            return apos.modules['dynamic-table'].api('reset-callbacks', query, function(data) {
+                if (data.status === 'success') {
+                    return callback(null, data.message);
+                }
+
                 return callback(data.message);
             })
         }

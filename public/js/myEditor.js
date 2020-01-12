@@ -4,6 +4,8 @@ apos.define('dynamic-table-editor-modal', {
         let superBeforeShow = self.beforeShow;
         let superAfterShow = self.afterShow;
         self.dynamicTablePieces = apos.dynamicTable;
+        var myOptions = {}
+        myOptions.id = options["_id"];
 
         self.beforeShow = function (callback) {
             return superBeforeShow(function (err) {
@@ -12,7 +14,7 @@ apos.define('dynamic-table-editor-modal', {
                 }
 
                 // Use my own utils for beforeShow
-                apos.dynamicTableUtils.beforeShowDynamicTable(self.$form, self.options.data);
+                apos.dynamicTableUtils.beforeShowDynamicTable(self.$form, myOptions);
 
                 return callback(null);
             });
@@ -21,7 +23,7 @@ apos.define('dynamic-table-editor-modal', {
         self.afterShow = function () {
             superAfterShow();
 
-            apos.dynamicTableUtils.afterShowDynamicTable(self.$form, self.options.data);
+            apos.dynamicTableUtils.afterShowDynamicTable(self.$form, myOptions);
         }
 
     }
