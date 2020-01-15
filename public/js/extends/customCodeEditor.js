@@ -340,7 +340,7 @@ apos.define('custom-code-editor', {
       };
 
       self.tabulator.events = function (editorType) {
-        self[editorType].editor.session.on('change', debounce(function (delta) {
+        var onChange = debounce(function (delta) {
           // delta.start, delta.end, delta.lines, delta.action
           var value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
 
@@ -357,7 +357,11 @@ apos.define('custom-code-editor', {
               dismiss: true
             });
           }
-        }, 2000));
+        }, 2000); // Will off the event listener for not triggering this type of events too many times when switching tabs (Bugs)
+
+        self[editorType].editor.session.off('change', onChange); // Add new event listener on change
+
+        self[editorType].editor.session.on('change', onChange);
       };
 
       self.tabulator.restartTableCallback = function (callbackObj) {
@@ -366,7 +370,8 @@ apos.define('custom-code-editor', {
 
         if (apos.dynamicTableUtils.tabulator.options.ajaxURL) {
           // If Ajax enabled, just reload the table
-          apos.dynamicTableUtils.executeAjax();
+          apos.dynamicTableUtils.destroyTable();
+          apos.dynamicTableUtils.initTable();
         } else {
           // Restart normal custom table
           apos.dynamicTableUtils.initTable();
@@ -418,6 +423,7 @@ apos.define('custom-code-editor', {
 
       self.tabulator.JSONFuncToNormalString = function (text) {
         text = text.replace(/\\n/g, '\n');
+        text = text.replace(/\\"/g, '"');
         return text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
       }; // Remove all string quotes from function and keys to make it normal string object display on custom-code-editor
 
@@ -587,23 +593,21 @@ apos.define('custom-code-editor', {
         // eslint-disable-next-line no-undef
         var beautify = ace.require('ace/ext/beautify');
 
+        var existsObject = {};
         type.forEach(function (val, i, arr) {
           var strings = self.tabulator.callbackStrings(val); // Set Worker to be false to disable error highlighting
 
-          self[val].editor.session.setUseWorker(false); // Set Value to Editor
+          self[val].editor.session.setUseWorker(false); // Store to cache for comparison check
 
-          self[val].editor.session.setValue(strings); // Beautify the Javascript Object in Editor
-
-          beautify.beautify(self[val].editor.session); // Store to cache for comparison check
-
-          self.tabulator.editorCache(val, self[val].editor.session.getValue()); // eslint-disable-next-line no-undef
+          self.tabulator.editorCache(val, strings); // eslint-disable-next-line no-undef
 
           if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0) {
             // eslint-disable-next-line no-undef
             var obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings)); // Restart Table
             // eslint-disable-next-line no-undef
 
-            self.tabulator.restartTableCallback(JSONfn.parse(object[val].code)); // Change on cache if its match
+            existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code));
+            apos.dynamicTableUtils.resetCallbacksButton(); // Change on cache if its match
 
             var _loop3 = function _loop3(key) {
               // eslint-disable-next-line no-undef
@@ -632,7 +636,7 @@ apos.define('custom-code-editor', {
                   }); // Change on string later (TODO)
                   // eslint-disable-next-line no-undef
 
-                  var editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(self[val].editor.session.getValue()));
+                  var editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(strings));
 
                   for (var editorKey in editorStringObj) {
                     if (editorStringObj.hasOwnProperty(editorKey)) {
@@ -653,11 +657,20 @@ apos.define('custom-code-editor', {
             for (var key in obj) {
               _loop3(key);
             }
+          } else {
+            // Set Value to Editor after checking the exists object
+            self[val].editor.session.setValue(strings); // Beautify the Javascript Object in Editor
+
+            beautify.beautify(self[val].editor.session);
           } // Apply on change events (Must trigger last!)
 
 
           self.tabulator.events(val); // End Set Value
-        });
+        }); // End loop
+
+        if (Object.getOwnPropertyNames(existsObject).length > 0) {
+          self.tabulator.restartTableCallback(existsObject);
+        }
       }; // End Custom Code Editor Extends
 
     };

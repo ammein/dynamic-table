@@ -176,17 +176,7 @@ apos.define('dynamic-table-utils', {
       var dataInput = self.$data.find('textarea');
       var idInput = self.$id.find('input');
       self.$chooser = apos.schemas.findFieldset(self.$form, '_dynamicTable').data('aposChooser');
-      idInput.val(data.id); // Run Custom Code Editor for Dynamic Table
-
-      if (apos.customCodeEditor) {
-        // For Callback
-        apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
-          return val.name === 'callbacks';
-        })[0].choices.reduce(function (init, next, i, arr) {
-          return init.concat(next.value + 'Callback');
-        }, []));
-      } // Let change event registered first, then trigger it
-
+      idInput.val(data.id); // Let change event registered first, then trigger it
 
       if (rowInput.length > 0 && columnInput.length > 0 && ajaxURL.length > 0 && rowInput.val().length > 0 && columnInput.val().length > 0 && ajaxURL.val().length === 0) {
         self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
@@ -204,6 +194,12 @@ apos.define('dynamic-table-utils', {
 
       if (self.$chooser) {
         self.getJoin(self.$chooser);
+      } // Run Custom Code Editor for Dynamic Table
+
+
+      if (apos.customCodeEditor) {
+        // For Callback
+        self.setCallbacksValue();
       }
     };
 
@@ -228,6 +224,22 @@ apos.define('dynamic-table-utils', {
 
     self.resetAjaxTable = function () {
       self.tabulator.options.ajaxURL = undefined;
+    };
+
+    self.resetCallbacks = function () {
+      var schemaCallbacks = apos.schemas.tabulator.schema.filter(function (val) {
+        return val.name === 'callbacks';
+      })[0].choices.reduce(function (init, next, i, arr) {
+        return Object.assign({}, init, _defineProperty({}, next.value + 'Callback', true));
+      }, {});
+
+      for (var key in self.tabulator.options) {
+        if (self.tabulator.options.hasOwnProperty(key)) {
+          if (key === schemaCallbacks[key]) {
+            delete self.tabulator.options[key];
+          }
+        }
+      }
     };
 
     self.loadLeanDataTables = function (xhr) {
@@ -477,7 +489,7 @@ apos.define('dynamic-table-utils', {
           self.tabulator.table.destroy();
           self.tabulator.table = null;
           $(parentTable).empty();
-          parentTable.appendChild(apos.schemas.tabulator.getTable.cloneNode());
+          $(parentTable).append(apos.schemas.tabulator.getTable.cloneNode());
         } else {
           self.tabulator.table.destroy();
           self.tabulator.table = null;
@@ -508,7 +520,7 @@ apos.define('dynamic-table-utils', {
       }
     };
 
-    self.getFields = function (query, callback) {
+    self.getFieldsApi = function (query, callback) {
       return $.get('/modules/dynamic-table/get-fields', query, function (data) {
         if (data.status === 'success') {
           return callback(null, data.message);
@@ -518,7 +530,7 @@ apos.define('dynamic-table-utils', {
       });
     };
 
-    self.resetCallbacks = function (query, callback) {
+    self.resetCallbacksApi = function (query, callback) {
       return apos.modules['dynamic-table'].api('reset-callbacks', query, function (data) {
         if (data.status === 'success') {
           return callback(null, data.message);
@@ -528,7 +540,7 @@ apos.define('dynamic-table-utils', {
       });
     };
 
-    self.updateFields = function (query, callback) {
+    self.updateFieldsApi = function (query, callback) {
       return apos.modules['dynamic-table'].api('update-fields', query, function (data) {
         if (data.status === 'success') {
           return callback(null, data.message);
@@ -538,7 +550,7 @@ apos.define('dynamic-table-utils', {
       });
     };
 
-    self.removeUrls = function (query, callback) {
+    self.removeUrlsApi = function (query, callback) {
       return apos.modules['dynamic-table'].api('remove-urls', query, function (data) {
         if (data.status === 'success') {
           return callback(null, data.message);
@@ -582,7 +594,7 @@ apos.define('dynamic-table-utils', {
       // We don't want that
       if (self.getChoiceId !== self.getNewChoiceId && self.getNewChoiceId) {
         // Update previous piece
-        return self.removeUrls({
+        return self.removeUrlsApi({
           id: self.getChoiceId,
           url: window.location.pathname
         }, function (err) {
@@ -591,7 +603,7 @@ apos.define('dynamic-table-utils', {
           } // Update latest piece
 
 
-          return self.updateFields({
+          return self.updateFieldsApi({
             id: self.getNewChoiceId,
             url: window.location.pathname
           }, function (err) {
@@ -607,7 +619,7 @@ apos.define('dynamic-table-utils', {
         });
       } else if (self.getNewChoiceId && !self.getChoiceId) {
         // Update latest piece
-        return self.updateFields({
+        return self.updateFieldsApi({
           id: self.getNewChoiceId,
           url: window.location.pathname
         }, function (err) {
@@ -622,6 +634,7 @@ apos.define('dynamic-table-utils', {
         });
       }
 
+      $(self["float"]).remove();
       return callback(null);
     };
 
@@ -629,7 +642,7 @@ apos.define('dynamic-table-utils', {
       apos.on('widgetTrashed', function ($widget) {
         if ($widget.data() && $widget.data().aposWidget === 'dynamic-table') {
           var pieceId = apos.modules['dynamic-table-widgets'].getData($widget).dynamicTableId;
-          self.removeUrls({
+          self.removeUrlsApi({
             id: pieceId,
             url: window.location.pathname
           }, function (err) {
@@ -657,7 +670,7 @@ apos.define('dynamic-table-utils', {
 
       if (self.getChoiceId) {
         // Get fields first and start
-        self.getFields({
+        self.getFieldsApi({
           id: self.getChoiceId
         }, function (err, result) {
           if (err) {
@@ -678,7 +691,7 @@ apos.define('dynamic-table-utils', {
 
         self.destroyTable(); // Get field first
 
-        return self.getFields({
+        return self.getFieldsApi({
           id: self.getNewChoiceId
         }, function (err, result) {
           if (err) {
@@ -695,7 +708,7 @@ apos.define('dynamic-table-utils', {
 
         if ($chooser.choices.length > 0) {
           self.getChoiceId = $chooser.choices[0].value;
-          return self.getFields({
+          return self.getFieldsApi({
             id: self.getChoiceId
           }, function (err, result) {
             if (err) {
@@ -711,7 +724,49 @@ apos.define('dynamic-table-utils', {
 
     self.registerTableEvent = function ($table) {};
 
-    self.changeTabRebuildTable = function (element) {
+    self.setCallbacksValue = function () {
+      apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
+        return val.name === 'callbacks';
+      })[0].choices.reduce(function (init, next, i, arr) {
+        return init.concat(next.value + 'Callback');
+      }, []));
+    };
+
+    self.resetCallbacksButton = function () {
+      if (!self["float"]) {
+        self["float"] = document.createElement('button');
+        $(self["float"]).addClass('float-dynamic-table');
+        $(self["float"]).text('Reset Callback');
+        self.$form.append(self["float"]);
+        $(self["float"]).on('click', function (e) {
+          self.resetCallbacksApi({
+            id: self.$id.val()
+          }, function (err) {
+            if (err) {
+              return apos.utils.warn('Unable to update new piece save');
+            }
+
+            apos.notify('Successfully reset all callbacks!', {
+              type: 'success',
+              dismiss: true
+            }); // Reset All Callbacks Options
+
+            self.resetCallbacks(); // Reset Callbacks Value
+
+            self.setCallbacksValue();
+            return setTimeout(function () {
+              $(float).remove();
+              self["float"] = undefined;
+            }, 2000);
+          });
+          e.stopPropagation();
+          e.preventDefault();
+          console.log('Propagation Stopped ?', e.isPropagationStopped()());
+        });
+      }
+    };
+
+    self.changeTabRebuildTable = function (element, tab) {
       if (self.$ajaxURL.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
         // Pass extra arguments for specific table element when change tab
         self.executeAjax(self.tabulator.options);
@@ -728,7 +783,17 @@ apos.define('dynamic-table-utils', {
       } // Apply Event
 
 
-      self.registerTableEvent(table);
+      self.registerTableEvent(table); // Only on callbacks tab clicked
+
+      if (tab.data().aposOpenGroup === 'callbacks') {
+        if (self["float"]) {
+          $(self["float"]).css('display', 'block');
+        }
+      } else {
+        if (self["float"]) {
+          $(self["float"]).css('display', 'none');
+        }
+      }
     }; // To always send the data that has schema type of array
 
 
