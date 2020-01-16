@@ -606,8 +606,7 @@ apos.define('custom-code-editor', {
             var obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings)); // Restart Table
             // eslint-disable-next-line no-undef
 
-            existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code));
-            apos.dynamicTableUtils.resetCallbacksButton(); // Change on cache if its match
+            existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code)); // Change on cache if its match
 
             var _loop3 = function _loop3(key) {
               // eslint-disable-next-line no-undef

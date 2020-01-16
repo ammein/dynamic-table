@@ -1,0 +1,6 @@
+{% if data.value.length > 0 %}
+<p>{{ data.total }} Callbacks</p>
+<button class="reset-callbacks" onClick='event.preventDefault();apos.dynamicTableUtils.resetCallbacks("{{ data.id }}");'>Reset Callbacks</button>
+{% else %}
+<p>No callbacks setup</p>
+{% endif %}

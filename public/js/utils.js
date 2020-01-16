@@ -117,17 +117,6 @@ apos.define('dynamic-table-utils', {
         self.executeColumn(num);
       });
       self.$ajaxURL.on('change', function (e) {
-        // try {
-        //     // Use custom JSONfn to beautifully parse the value without double quotes JSON
-        //     let options = JSONfn.parse(e.currentTarget.querySelector('textarea').value);
-        //     self.executeAjax(options);
-        //     // Stringify for better user reading
-        //     ajaxURL.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
-        // } catch (error) {
-        //     // Stringify for better user reading
-        //     ajaxURL.val(JSONfn.parse(JSON.stringify(e.currentTarget.querySelector('textarea').value, undefined, 2)));
-        //     console.warn(error);
-        // }
         var options = e.currentTarget.querySelector('input').value;
         self.executeAjax(options);
       });
@@ -226,20 +215,34 @@ apos.define('dynamic-table-utils', {
       self.tabulator.options.ajaxURL = undefined;
     };
 
-    self.resetCallbacks = function () {
-      var schemaCallbacks = apos.schemas.tabulator.schema.filter(function (val) {
-        return val.name === 'callbacks';
-      })[0].choices.reduce(function (init, next, i, arr) {
-        return Object.assign({}, init, _defineProperty({}, next.value + 'Callback', true));
-      }, {});
-
-      for (var key in self.tabulator.options) {
-        if (self.tabulator.options.hasOwnProperty(key)) {
-          if (key === schemaCallbacks[key]) {
-            delete self.tabulator.options[key];
-          }
+    self.resetCallbacks = function (id) {
+      // let schemaCallbacks = apos.schemas.tabulator.schema.filter(function (val) {
+      //     return val.name === 'callbacks';
+      // })[0].choices.reduce((init, next, i, arr) => Object.assign({}, init, {
+      //     [next.value + 'Callback']: true
+      // }), {});
+      // for (let key in self.tabulator.options) {
+      //     if (self.tabulator.options.hasOwnProperty(key)) {
+      //         if (key === schemaCallbacks[key]) {
+      //             delete self.tabulator.options[key];
+      //         }
+      //     }
+      // }
+      return self.resetCallbacksApi({
+        id: id || ''
+      }, function (err) {
+        if (err) {
+          apos.utils.warn('Unable to reset callbacks', err);
+          apos.notify('Oops ! Something went wrong!', {
+            dismiss: true,
+            type: 'error'
+          });
         }
-      }
+
+        apos.notify('Callbacks Reset! Please save your table to confirm reset.', {
+          type: 'success'
+        });
+      });
     };
 
     self.loadLeanDataTables = function (xhr) {
@@ -730,40 +733,6 @@ apos.define('dynamic-table-utils', {
       })[0].choices.reduce(function (init, next, i, arr) {
         return init.concat(next.value + 'Callback');
       }, []));
-    };
-
-    self.resetCallbacksButton = function () {
-      if (!self["float"]) {
-        self["float"] = document.createElement('button');
-        $(self["float"]).addClass('float-dynamic-table');
-        $(self["float"]).text('Reset Callback');
-        self.$form.append(self["float"]);
-        $(self["float"]).on('click', function (e) {
-          self.resetCallbacksApi({
-            id: self.$id.val()
-          }, function (err) {
-            if (err) {
-              return apos.utils.warn('Unable to update new piece save');
-            }
-
-            apos.notify('Successfully reset all callbacks!', {
-              type: 'success',
-              dismiss: true
-            }); // Reset All Callbacks Options
-
-            self.resetCallbacks(); // Reset Callbacks Value
-
-            self.setCallbacksValue();
-            return setTimeout(function () {
-              $(float).remove();
-              self["float"] = undefined;
-            }, 2000);
-          });
-          e.stopPropagation();
-          e.preventDefault();
-          console.log('Propagation Stopped ?', e.isPropagationStopped()());
-        });
-      }
     };
 
     self.changeTabRebuildTable = function (element, tab) {

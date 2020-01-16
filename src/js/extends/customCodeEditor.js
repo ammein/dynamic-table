@@ -641,8 +641,6 @@ apos.define('custom-code-editor', {
                         // eslint-disable-next-line no-undef
                         existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code))
 
-                        apos.dynamicTableUtils.resetCallbacksButton();
-
                         // Change on cache if its match
                         for (let key in obj) {
                             // eslint-disable-next-line no-undef
