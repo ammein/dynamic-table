@@ -86,6 +86,7 @@ apos.define('dynamic-table-utils', {
       self.$url = apos.schemas.findFieldset(self.$form, 'url');
       self.$title = apos.schemas.findFieldset(self.$form, 'title');
       self.$id.val(data.id);
+      this.link('resetCallbacks', self.resetCallbacks(data.id));
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');
@@ -215,19 +216,23 @@ apos.define('dynamic-table-utils', {
       self.tabulator.options.ajaxURL = undefined;
     };
 
+    self.resetCallbacksOptions = function () {
+      var schemaCallbacks = self.tabulator.schemas.filter(function (val) {
+        return val.name === 'callbacks';
+      })[0].choices.reduce(function (init, next, i, arr) {
+        return Object.assign({}, init, _defineProperty({}, next.showFields[0], true));
+      }, {});
+
+      for (var key in self.tabulator.options) {
+        if (self.tabulator.options.hasOwnProperty(key)) {
+          if (schemaCallbacks[key]) {
+            delete self.tabulator.options[key];
+          }
+        }
+      }
+    };
+
     self.resetCallbacks = function (id) {
-      // let schemaCallbacks = apos.schemas.tabulator.schema.filter(function (val) {
-      //     return val.name === 'callbacks';
-      // })[0].choices.reduce((init, next, i, arr) => Object.assign({}, init, {
-      //     [next.value + 'Callback']: true
-      // }), {});
-      // for (let key in self.tabulator.options) {
-      //     if (self.tabulator.options.hasOwnProperty(key)) {
-      //         if (key === schemaCallbacks[key]) {
-      //             delete self.tabulator.options[key];
-      //         }
-      //     }
-      // }
       return self.resetCallbacksApi({
         id: id || ''
       }, function (err) {
@@ -237,9 +242,11 @@ apos.define('dynamic-table-utils', {
             dismiss: true,
             type: 'error'
           });
+          return;
         }
 
-        apos.notify('Callbacks Reset! Please save your table to confirm reset.', {
+        self.resetCallbacksOptions();
+        return apos.notify('Callbacks Reset! Please save your table to confirm reset.', {
           type: 'success'
         });
       });

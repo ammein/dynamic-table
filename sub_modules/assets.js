@@ -5,7 +5,11 @@ module.exports = function(self, options) {
     self.pushAssets = function () {
         superPushAssets();
 
-        self.pushAsset('script', 'myEditor', {
+        self.pushAsset('script', 'piecesEditorModal', {
+            when: 'user'
+        })
+
+        self.pushAsset('script', 'piecesManagerModal', {
             when: 'user'
         })
 

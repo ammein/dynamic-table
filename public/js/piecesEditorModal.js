@@ -13,8 +13,8 @@ apos.define('dynamic-table-editor-modal', {
                     return callback(err);
                 }
 
-                // Use my own utils for beforeShow
-                apos.dynamicTableUtils.beforeShowDynamicTable(self.$form, myOptions);
+                // Use my own utils for beforeShow & Also to be available to call `this.link`
+                apos.dynamicTableUtils.beforeShowDynamicTable.call(self, self.$form, myOptions);
 
                 return callback(null);
             });
@@ -22,8 +22,8 @@ apos.define('dynamic-table-editor-modal', {
 
         self.afterShow = function () {
             superAfterShow();
-
-            apos.dynamicTableUtils.afterShowDynamicTable(self.$form, myOptions);
+            // Use my own utils for afterShow & Also to be available to call `this.link
+            apos.dynamicTableUtils.afterShowDynamicTable.call(self, self.$form, myOptions);
         }
 
     }

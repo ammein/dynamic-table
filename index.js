@@ -159,7 +159,7 @@ module.exports = {
         options.arrangeFields = options.arrangeFields.concat(require("./callbackFields.js").arrangeFields || []);
 
         // Path submodules
-        options.pathSubModules = path.join(__dirname, '/subModules');
+        options.pathSubModules = path.join(__dirname, '/sub_modules');
     },
     afterConstruct : function(self){
         self.dynamicTableSchemas();
