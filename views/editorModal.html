@@ -1,0 +1,18 @@
+{% extends "editorBase.html" %}
+{% import 'apostrophe-ui:components/buttons.html' as buttons with context %}
+{% import "dynamic-table-widgets:macros/tableFields.html" as myCustomSchemas %}
+
+{%- block controls -%}
+    {# Custom button #}
+    {{ buttons.minor('Reset Callbacks', { action: 'resetCallbacks' }) }}
+
+    {# The standard controls #}
+    {{ super() }}
+{%- endblock -%}
+
+{%- block body -%}
+    <form class="apos-form" data-apos-form>
+        {# Use my custom tableFields Schemas Views #}
+        {{ myCustomSchemas.tableFields(data.schema) }}
+    </form>
+{%- endblock -%}

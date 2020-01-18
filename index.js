@@ -114,29 +114,6 @@ module.exports = {
             }
         ].concat(options.addColumns || []);
 
-        // Add New Column if customCodeEditor enabled
-        if (options.apos.customCodeEditor) {
-            options.addColumns = options.addColumns.concat({
-                name: 'callbacks',
-                label: 'Total Callbacks Used',
-                partial: function(value, table) {
-                    if (!value) {
-                        return ''
-                    }
-
-                    var totalCallbacks = value.reduce((init, next, i, arr) => table[next + 'Callback'].code !== "{}" ? init + 1 : init, 0)
-
-                    return self.partial('widgetCallback.html', {
-                        total: totalCallbacks,
-                        value: value,
-                        id: table._id,
-                        table: table,
-                        callbacksArr: table.callbacks
-                    })
-                }
-            })
-        }
-
         options.arrangeFields = [
             {
                 name: "table",
@@ -166,7 +143,7 @@ module.exports = {
         self.allBrowserCalls();
     },
     construct : function(self,options){
-
+        var superBeforeList = self.beforeList;
         self.pathSubModules = options.pathSubModules;
 
         fs.readdirSync(self.pathSubModules).filter((file)=>{
@@ -177,5 +154,6 @@ module.exports = {
             value: 'edit-dynamic-table',
             label: 'Edit Dynamic Table'
         });
+        
     }
 }

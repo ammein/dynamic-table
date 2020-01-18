@@ -316,7 +316,7 @@ apos.define('custom-code-editor', {
             // eslint-disable-next-line no-undef
             data[name].code = JSONfn.stringify(returnObj);
           } else {
-            data[name].code = '{}';
+            delete data[name];
           }
         }
 
@@ -368,14 +368,7 @@ apos.define('custom-code-editor', {
         // eslint-disable-next-line no-undef
         apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj); // Restart Table
 
-        if (apos.dynamicTableUtils.tabulator.options.ajaxURL) {
-          // If Ajax enabled, just reload the table
-          apos.dynamicTableUtils.destroyTable();
-          apos.dynamicTableUtils.initTable();
-        } else {
-          // Restart normal custom table
-          apos.dynamicTableUtils.initTable();
-        }
+        apos.dynamicTableUtils.restartTable();
       }; // Thanks to the article https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
 
 
@@ -589,7 +582,7 @@ apos.define('custom-code-editor', {
       }; // This is where it all started
 
 
-      self.tabulator.setValue = function ($form, type) {
+      self.tabulator.setValue = function ($form, type, reset) {
         // eslint-disable-next-line no-undef
         var beautify = ace.require('ace/ext/beautify');
 
@@ -601,7 +594,7 @@ apos.define('custom-code-editor', {
 
           self.tabulator.editorCache(val, strings); // eslint-disable-next-line no-undef
 
-          if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0) {
+          if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0 && !reset) {
             // eslint-disable-next-line no-undef
             var obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings)); // Restart Table
             // eslint-disable-next-line no-undef

@@ -76,9 +76,10 @@ apos.define('dynamic-table-utils', {
             self.$id = apos.schemas.findFieldset(self.$form, 'id');
             self.$url = apos.schemas.findFieldset(self.$form, 'url');
             self.$title = apos.schemas.findFieldset(self.$form, 'title');
+            self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
             self.$id.val(data.id);
 
-            this.link('resetCallbacks', self.resetCallbacks(data.id))
+            this.link('apos', 'resetCallbacks', self.resetCallbacks)
 
             let rowInput = self.$row.find('input');
             let columnInput = self.$column.find('input');
@@ -223,17 +224,31 @@ apos.define('dynamic-table-utils', {
                 })
             }
             self.resetCustomTable();
-            return self.initTable();
+            self.initTable();
         }
 
         self.resetAjaxTable = function() {
             self.tabulator.options.ajaxURL = undefined;
         }
 
+        self.restartTable = function() {
+            // Restart Table
+            if (self.tabulator.options.ajaxURL) {
+                // If Ajax enabled, just reload the table
+                self.destroyTable();
+                self.initTable();
+            } else {
+                // Restart normal custom table
+                self.initTable();
+            }
+        }
+
         self.resetCallbacksOptions = function () {
             let schemaCallbacks = self.tabulator.schemas.filter(function (val) {
                 return val.name === 'callbacks';
-            })[0].choices.reduce((init, next, i, arr) => Object.assign({}, init, { [next.showFields[0]]: true }), {});
+            })[0].choices.reduce(function (init, next, i, arr) {
+                return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(apos.customCodeEditor.tabulator.callbackStrings(next.showFields[0]))))
+            }, {});
 
             for (let key in self.tabulator.options) {
                 if (self.tabulator.options.hasOwnProperty(key)) {
@@ -242,11 +257,17 @@ apos.define('dynamic-table-utils', {
                     }
                 }
             }
+
+            // Restart Table
+            self.restartTable();
+
+            // Reset Callbacks Value
+            self.setCallbacksValue(true)
         }
 
-        self.resetCallbacks = function(id) {
+        self.resetCallbacks = function() {
             return self.resetCallbacksApi({
-                id: id || ''
+                id: self.$id.val() || ''
             }, function (err) {
                 if (err) {
                     apos.utils.warn('Unable to reset callbacks', err);
@@ -743,10 +764,16 @@ apos.define('dynamic-table-utils', {
 
         }
 
-        self.setCallbacksValue = function () {
-            apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
-                return val.name === 'callbacks';
-            })[0].choices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []));
+        self.setCallbacksValue = function (reset) {
+            if (reset) {
+                return apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
+                    return val.name === 'callbacks';
+                })[0].choices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []), reset);
+            } else {
+                return apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
+                    return val.name === 'callbacks';
+                })[0].choices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []));
+            }
         }
 
         self.changeTabRebuildTable = function (element, tab) {
