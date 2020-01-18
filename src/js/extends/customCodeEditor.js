@@ -27,7 +27,7 @@ apos.define('custom-code-editor', {
                             let oriKey = Object.getOwnPropertyNames(originalObj).filter((val, i) => val === key)[0]
                             if (key === oriKey) {
                                 // Match String function
-                                if (dataObj[key].toString() !== originalObj[key].toString()) {
+                                if (cacheObj[key].toString() !== originalObj[key].toString()) {
                                     returnObj[key] = cacheObj[key]
                                 }
                             }
@@ -141,38 +141,59 @@ apos.define('custom-code-editor', {
 
             // Remove break lines and replace with '\n' string for JSONfn.parse() to use
             self.tabulator.removeBreakLines = function(text) {
-                return text.replace(/\s+(?!\S)/g, '');
+                try {
+                    text = text.replace(/\s+(?!\S)/g, '');
+                } catch (e) {
+                    apos.utils.warn('Unable to remove break line for: \n', text)
+                }
+                return text;
             }
 
             // Restructurize string into friendly & familiar string. Good case for Objects Javascript for Custom-Code-Editor display
             self.tabulator.JSONFuncToNormalString = function(text) {
-                text = text.replace(/\\n/g, '\n');
-                text = text.replace(/\\"/g, '"');
-                return text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
+                try {
+                    text = text.replace(/(\\n|\\r)+/g, '\n');
+                    text = text.replace(/\\"/g, '"');
+                    text = text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
+                } catch (e) {
+                    apos.utils.warn('Unable to convert to string for: \n', text)
+                }
+
+                return text
             }
 
             // Remove all string quotes from function and keys to make it normal string object display on custom-code-editor
             self.tabulator.JSONFunctionParse = function(text) {
-                return text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
+                try {
+                    text = text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
+                } catch (e) {
+                    apos.utils.warn('Unable to JSONfn parse format for: \n', text)
+                }
+                return text;
             }
 
             // Anything that has break lines replace it with '\n'. Also make the strings of all of them in single line of string. Easy for JSONfn.parse()
             self.tabulator.addNewLineInFunction = function(text) {
-                // Store Match String
-                let textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g);
 
-                // Replace with empty string
-                text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
+                try {
+                    // Store Match String
+                    let textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g);
 
-                textArr = textArr.map(function (val, i, arr) {
-                    val = val.replace(/"/g, '\\"')
-                    return val.replace(/(\r\n|\n|\r)/g, '\\n');
-                });
-                let i = -1;
-                text = text.replace(/""/g, function(val) {
-                    i++;
-                    return '"' + textArr[i] + '"';
-                });
+                    // Replace with empty string
+                    text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
+
+                    textArr = textArr.map(function (val, i, arr) {
+                        val = val.replace(/"/g, '\\"')
+                        return val.replace(/(\r\n|\n|\r)/g, '\\n');
+                    });
+                    let i = -1;
+                    text = text.replace(/""/g, function (val) {
+                        i++;
+                        return '"' + textArr[i] + '"';
+                    });
+                } catch (e) {
+                    apos.utils.warn('Unable to add new line in function for: \n', text)
+                }
 
                 return text;
             }
@@ -235,390 +256,13 @@ apos.define('custom-code-editor', {
                 }
             }
 
-            // All Editor Callbacks strings to use and to edit
-            self.tabulator.callbackStrings = function(editorType) {
-                let string = ``;
-                switch (editorType) {
-                    case 'tableCallback':
-                        string = `{
-                                    tableBuilding: function () {},
-                                    tableBuilt: function () {}
-                                }`
-                        break;
-
-                    case 'columnCallback':
-                        string = `{
-                                columnMoved: function (column, columns) {
-                                    //column - column component of the moved column
-                                    //columns- array of columns in new order
-                                }, 
-                                columnResized: function (column) {
-                                    //column - column component of the resized column
-                                },
-                                columnVisibilityChanged: function (column, visible) {
-                                    //column - column component
-                                    //visible - is column visible (true = visible, false = hidden)
-                                },
-                                columnTitleChanged: function (column) {
-                                    //column - column component
-                                }
-                            }`
-
-                        break;
-
-                    case 'ajaxCallback':
-                        string = `{
-                                ajaxRequesting: function (url, params) {
-                                    //url - the URL of the request
-                                    //params - the parameters passed with the request
-                                },
-                                ajaxResponse: function (url, params, response) {
-                                    // console.log('Table Ajax Response', response);
-                                    return response;
-                                },
-                                ajaxError: function (xhr, textStatus, errorThrown) {
-                                    //xhr - the XHR object
-                                    //textStatus - error type
-                                    //errorThrown - text portion of the HTTP status
-                                }
-                            }`
-                        break;
-
-                    case 'rowCallback':
-                        string = `{
-                                rowClick: function (e, row) {
-                                    //e - the click event object
-                                    //row - row component
-                                },
-                                rowDblClick: function (e, row) {
-                                    //e - the click event object
-                                    //row - row component
-                                },
-                                rowContext: function (e, row) {
-                                    //e - the click event object
-                                    //row - row component
-
-                                    e.preventDefault(); // prevent the browsers default context menu form appearing.
-                                },
-                                rowTap: function (e, row) {
-                                    //e - the tap event object
-                                    //row - row component
-                                },
-                                rowDblTap: function (e, row) {
-                                    //e - the tap event object
-                                    //row - row component
-                                },
-                                rowTapHold: function (e, row) {
-                                    //e - the tap event object
-                                    //row - row component
-                                },
-                                rowMouseEnter: function (e, row) {
-                                    //e - the event object
-                                    //row - row component
-                                },
-                                rowMouseLeave: function (e, row) {
-                                    //e - the event object
-                                    //row - row component
-                                },
-                                rowMouseOver: function (e, row) {
-                                    //e - the event object
-                                    //row - row component
-                                },
-                                rowMouseOut: function (e, row) {
-                                    //e - the event object
-                                    //row - row component
-                                },
-                                rowMouseMove: function (e, row) {
-                                    //e - the event object
-                                    //row - row component
-                                },
-                                rowAdded: function (row) {
-                                    //row - row component
-                                },
-                                rowUpdated: function (row) {
-                                    //row - row component
-                                },
-                                rowDeleted: function (row) {
-                                    //row - row component
-                                },
-                                rowMoved: function (row) {
-                                    //row - row component
-                                },
-                                rowResized: function (row) {
-                                    //row - row component of the resized row
-                                }
-                            }`
-                        break;
-
-                    case 'cellCallback':
-                        string = `{
-                                cellClick: function (e, cell) {
-                                    //e - the click event object
-                                    //cell - cell component
-                                },
-                                cellDblClick: function (e, cell) {
-                                    //e - the click event object
-                                    //cell - cell component
-                                },
-                                cellContext: function (e, cell) {
-                                    //e - the click event object
-                                    //cell - cell component
-                                },
-                                cellTap: function (e, cell) {
-                                    //e - the tap event object
-                                    //cell - cell component
-                                },
-                                cellDblTap: function (e, cell) {
-                                    //e - the tap event object
-                                    //cell - cell component
-                                },
-                                cellTapHold: function (e, cell) {
-                                    //e - the tap event object
-                                    //cell - cell component
-                                },
-                                cellMouseEnter: function (e, cell) {
-                                    //e - the event object
-                                    //cell - cell component
-                                },
-                                cellMouseLeave: function (e, cell) {
-                                    //e - the event object
-                                    //cell - cell component
-                                },
-                                cellMouseOver: function (e, cell) {
-                                    //e - the event object
-                                    //cell - cell component
-                                },
-                                cellMouseOut: function (e, cell) {
-                                    //e - the event object
-                                    //cell - cell component
-                                },
-                                cellMouseMove: function (e, cell) {
-                                    //e - the event object
-                                    //cell - cell component
-                                },
-                                cellEditing: function (cell) {
-                                    //cell - cell component
-                                },
-                                cellEditCancelled: function (cell) {
-                                    //cell - cell component
-                                },
-                                cellEdited: function (cell) {
-                                    //cell - cell component
-                                }
-                            }`
-                        break;
-
-                    case 'dataCallback':
-                        string = `{
-                                dataLoading: function(data) {
-                                    //data - the data loading into the table
-                                },
-                                dataLoaded: function(data) {
-                                    //data - all data loaded into the table
-                                },
-                                dataEdited: function(data) {
-                                    //data - the updated table data
-                                },
-                                htmlImporting: function() {},
-                                htmlImported: function() {}
-                            }`;
-                        break;
-
-                    case 'filterCallback':
-                        string = `{
-                                dataFiltering:function(filters){
-                                    //filters - array of filters currently applied
-                                },
-                                dataFiltered:function(filters, rows){
-                                    //filters - array of filters currently applied
-                                    //rows - array of row components that pass the filters
-                                }
-                            }`;
-                        break;
-
-                    case 'sortingCallback':
-                        string = `{
-                                dataSorting: function (sorters) {
-                                    //sorters - an array of the sorters currently applied
-                                },
-                                dataSorted: function (sorters, rows) {
-                                    //sorters - array of the sorters currently applied
-                                    //rows - array of row components in their new order
-                                }
-                            }`;
-                        break;
-
-                    case 'layoutCallback':
-                        string = `{
-                                renderStarted: function () {},
-                                renderComplete: function () {}
-                            }`;
-                        break;
-
-                    case 'paginationCallback':
-                        string = `{
-                                pageLoaded: function (pageno) {
-                                    //pageno - the number of the loaded page
-                                }
-                            }`;
-                        break;
-
-                    case 'selectionCallback':
-                        string = `{
-                                rowSelected: function (row) {
-                                    //row - row component for the selected row
-                                },
-                                rowDeselected: function (row) {
-                                    //row - row component for the deselected row
-                                },
-                                rowSelectionChanged: function (data, rows) {
-                                    //rows - array of row components for the selected rows in order of selection
-                                    //data - array of data objects for the selected rows in order of selection
-                                }
-                            }`;
-                        break;
-
-                    case 'rowMovementCallback':
-                        string = `{
-                                movableRowsSendingStart: function (toTables) {
-                                    //toTables - array of receiving table elements
-                                },
-                                movableRowsSent: function (fromRow, toRow, toTable) {
-                                    //fromRow - the row component from the sending table
-                                    //toRow - the row component from the receiving table (if available)
-                                    //toTable - the Tabulator object for the receiving table
-                                },
-                                movableRowsSentFailed: function (fromRow, toRow, toTable) {
-                                    //fromRow - the row component from the sending table
-                                    //toRow - the row component from the receiving table (if available)
-                                    //toTable - the Tabulator object for the receiving table
-                                },
-                                movableRowsSendingStop: function (toTables) {
-                                    //toTables - array of receiving table Tabulator objects
-                                },
-                                movableRowsReceivingStart: function (fromRow, fromTable) {
-                                    //fromRow - the row component from the sending table
-                                    //fromTable - the Tabulator object for the sending table
-                                },
-                                movableRowsReceived: function (fromRow, toRow, fromTable) {
-                                    //fromRow - the row component from the sending table
-                                    //toRow - the row component from the receiving table (if available)
-                                    //fromTable - the Tabulator object for the sending table
-                                },
-                                movableRowsReceivedFailed: function (fromRow, toRow, fromTable) {
-                                    //fromRow - the row component from the sending table
-                                    //toRow - the row component from the receiving table (if available)
-                                    //fromTable - the Tabulator object for the sending table
-                                },
-                                movableRowsReceivingStop: function (fromTable) {
-                                    //fromTable - the Tabulator object for the sending table
-                                }
-                            }`;
-                        break;
-
-                    case 'validationCallback':
-                        string = `{
-                                validationFailed: function (cell, value, validators) {
-                                    //cell - cell component for the edited cell
-                                    //value - the value that failed validation
-                                    //validatiors - an array of validator objects that failed
-                                }
-                            }`;
-                        break;
-
-                    case 'historyCallback':
-                        string = `{
-                                historyUndo: function (action, component, data) {
-                                    //action - the action that has been undone
-                                    //component - the Component object afected by the action (colud be a row or cell component)
-                                    //data - the data being changed
-                                },
-                                historyRedo: function (action, component, data) {
-                                    //action - the action that has been redone
-                                    //component - the Component object afected by the action (colud be a row or cell component)
-                                    //data - the data being changed
-                                }
-                            }`;
-                        break;
-
-                    case 'clipboardCallback':
-                        string = `{
-                                clipboardCopied: function (clipboard) {
-                                    //clipboard - the string that has been copied into the clipboard
-                                },
-                                clipboardPasted: function (clipboard, rowData, rows) {
-                                    //clipboard - the clipboard string
-                                    //rowData - the row data from the paste parser
-                                    //rows - the row components from the paste action (this will be empty if the "replace" action is used)
-                                },
-                                clipboardPasteError: function (clipboard) {
-                                    //clipboard - the clipboard string that was rejected by the paste parser
-                                }
-                            }`;
-                        break;
-
-                    case 'downloadCallback':
-                        string = `{
-                                downloadDataFormatter: function (data) {
-                                    //data - active table data array
-
-                                    data.forEach(function (row) {
-                                        row.age = row.age >= 18 ? "adult" : "child";
-                                    });
-
-                                    return data;
-                                },
-                                downloadReady: function (fileContents, blob) {
-                                    //fileContents - the unencoded contents of the file
-                                    //blob - the blob object for the download
-
-                                    //custom action to send blob to server could be included here
-
-                                    return blob; //must return a blob to proceed with the download, return false to abort download
-                                },
-                                downloadComplete: function () {}
-                            }`;
-                        break;
-
-                    case 'dataTreeCallback':
-                        string = `{
-                                dataTreeRowExpanded: function (row, level) {
-                                    //row - the row component for the expanded row
-                                    //level - the depth of the row in the tree
-                                },
-                                dataTreeRowCollapsed: function (row, level) {
-                                    //row - the row component for the collapsed row
-                                    //level - the depth of the row in the tree
-                                }
-                            }`;
-                        break;
-
-                    case 'scrollingCallback':
-                        string = `{
-                                scrollVertical: function (top) {
-                                    //top - the current vertical scroll position
-                                },
-                                scrollHorizontal: function (left) {
-                                    //left - the current horizontal scroll position
-                                }
-                            }`;
-                        break;
-
-                    default:
-                        string = `{}`
-                        break;
-                }
-
-                return string;
-            }
-
             // This is where it all started
             self.tabulator.setValue = function($form, type, reset) {
                 // eslint-disable-next-line no-undef
                 let beautify = ace.require('ace/ext/beautify');
                 let existsObject = {}
                 type.forEach(function(val, i, arr) {
-                    let strings = self.tabulator.callbackStrings(val);
+                    let strings = apos.dynamicTableUtils.tabulator.callbackStrings(val);
 
                     // Set Worker to be false to disable error highlighting
                     self[val].editor.session.setUseWorker(false);

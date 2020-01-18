@@ -300,7 +300,7 @@ apos.define('custom-code-editor', {
 
               if (key === oriKey) {
                 // Match String function
-                if (dataObj[key].toString() !== originalObj[key].toString()) {
+                if (cacheObj[key].toString() !== originalObj[key].toString()) {
                   returnObj[key] = cacheObj[key];
                 }
               }
@@ -410,36 +410,59 @@ apos.define('custom-code-editor', {
 
 
       self.tabulator.removeBreakLines = function (text) {
-        return text.replace(/\s+(?!\S)/g, '');
+        try {
+          text = text.replace(/\s+(?!\S)/g, '');
+        } catch (e) {
+          apos.utils.warn('Unable to remove break line for: \n', text);
+        }
+
+        return text;
       }; // Restructurize string into friendly & familiar string. Good case for Objects Javascript for Custom-Code-Editor display
 
 
       self.tabulator.JSONFuncToNormalString = function (text) {
-        text = text.replace(/\\n/g, '\n');
-        text = text.replace(/\\"/g, '"');
-        return text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
+        try {
+          text = text.replace(/(\\n|\\r)+/g, '\n');
+          text = text.replace(/\\"/g, '"');
+          text = text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
+        } catch (e) {
+          apos.utils.warn('Unable to convert to string for: \n', text);
+        }
+
+        return text;
       }; // Remove all string quotes from function and keys to make it normal string object display on custom-code-editor
 
 
       self.tabulator.JSONFunctionParse = function (text) {
-        return text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
+        try {
+          text = text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
+        } catch (e) {
+          apos.utils.warn('Unable to JSONfn parse format for: \n', text);
+        }
+
+        return text;
       }; // Anything that has break lines replace it with '\n'. Also make the strings of all of them in single line of string. Easy for JSONfn.parse()
 
 
       self.tabulator.addNewLineInFunction = function (text) {
-        // Store Match String
-        var textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g); // Replace with empty string
+        try {
+          // Store Match String
+          var textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g); // Replace with empty string
 
-        text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
-        textArr = textArr.map(function (val, i, arr) {
-          val = val.replace(/"/g, '\\"');
-          return val.replace(/(\r\n|\n|\r)/g, '\\n');
-        });
-        var i = -1;
-        text = text.replace(/""/g, function (val) {
-          i++;
-          return '"' + textArr[i] + '"';
-        });
+          text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
+          textArr = textArr.map(function (val, i, arr) {
+            val = val.replace(/"/g, '\\"');
+            return val.replace(/(\r\n|\n|\r)/g, '\\n');
+          });
+          var i = -1;
+          text = text.replace(/""/g, function (val) {
+            i++;
+            return '"' + textArr[i] + '"';
+          });
+        } catch (e) {
+          apos.utils.warn('Unable to add new line in function for: \n', text);
+        }
+
         return text;
       }; // Convert everything from string that has Object Javascript format with double quotes string. Later to be use on JSON.parse()
 
@@ -494,91 +517,6 @@ apos.define('custom-code-editor', {
             self.tabulator.originalCache[editorType] = self.tabulator.originalCache[editorType].concat(_defineProperty({}, key, JSONFuncObj[key]));
           }
         }
-      }; // All Editor Callbacks strings to use and to edit
-
-
-      self.tabulator.callbackStrings = function (editorType) {
-        var string = "";
-
-        switch (editorType) {
-          case 'tableCallback':
-            string = "{\n                                    tableBuilding: function () {},\n                                    tableBuilt: function () {}\n                                }";
-            break;
-
-          case 'columnCallback':
-            string = "{\n                                columnMoved: function (column, columns) {\n                                    //column - column component of the moved column\n                                    //columns- array of columns in new order\n                                }, \n                                columnResized: function (column) {\n                                    //column - column component of the resized column\n                                },\n                                columnVisibilityChanged: function (column, visible) {\n                                    //column - column component\n                                    //visible - is column visible (true = visible, false = hidden)\n                                },\n                                columnTitleChanged: function (column) {\n                                    //column - column component\n                                }\n                            }";
-            break;
-
-          case 'ajaxCallback':
-            string = "{\n                                ajaxRequesting: function (url, params) {\n                                    //url - the URL of the request\n                                    //params - the parameters passed with the request\n                                },\n                                ajaxResponse: function (url, params, response) {\n                                    // console.log('Table Ajax Response', response);\n                                    return response;\n                                },\n                                ajaxError: function (xhr, textStatus, errorThrown) {\n                                    //xhr - the XHR object\n                                    //textStatus - error type\n                                    //errorThrown - text portion of the HTTP status\n                                }\n                            }";
-            break;
-
-          case 'rowCallback':
-            string = "{\n                                rowClick: function (e, row) {\n                                    //e - the click event object\n                                    //row - row component\n                                },\n                                rowDblClick: function (e, row) {\n                                    //e - the click event object\n                                    //row - row component\n                                },\n                                rowContext: function (e, row) {\n                                    //e - the click event object\n                                    //row - row component\n\n                                    e.preventDefault(); // prevent the browsers default context menu form appearing.\n                                },\n                                rowTap: function (e, row) {\n                                    //e - the tap event object\n                                    //row - row component\n                                },\n                                rowDblTap: function (e, row) {\n                                    //e - the tap event object\n                                    //row - row component\n                                },\n                                rowTapHold: function (e, row) {\n                                    //e - the tap event object\n                                    //row - row component\n                                },\n                                rowMouseEnter: function (e, row) {\n                                    //e - the event object\n                                    //row - row component\n                                },\n                                rowMouseLeave: function (e, row) {\n                                    //e - the event object\n                                    //row - row component\n                                },\n                                rowMouseOver: function (e, row) {\n                                    //e - the event object\n                                    //row - row component\n                                },\n                                rowMouseOut: function (e, row) {\n                                    //e - the event object\n                                    //row - row component\n                                },\n                                rowMouseMove: function (e, row) {\n                                    //e - the event object\n                                    //row - row component\n                                },\n                                rowAdded: function (row) {\n                                    //row - row component\n                                },\n                                rowUpdated: function (row) {\n                                    //row - row component\n                                },\n                                rowDeleted: function (row) {\n                                    //row - row component\n                                },\n                                rowMoved: function (row) {\n                                    //row - row component\n                                },\n                                rowResized: function (row) {\n                                    //row - row component of the resized row\n                                }\n                            }";
-            break;
-
-          case 'cellCallback':
-            string = "{\n                                cellClick: function (e, cell) {\n                                    //e - the click event object\n                                    //cell - cell component\n                                },\n                                cellDblClick: function (e, cell) {\n                                    //e - the click event object\n                                    //cell - cell component\n                                },\n                                cellContext: function (e, cell) {\n                                    //e - the click event object\n                                    //cell - cell component\n                                },\n                                cellTap: function (e, cell) {\n                                    //e - the tap event object\n                                    //cell - cell component\n                                },\n                                cellDblTap: function (e, cell) {\n                                    //e - the tap event object\n                                    //cell - cell component\n                                },\n                                cellTapHold: function (e, cell) {\n                                    //e - the tap event object\n                                    //cell - cell component\n                                },\n                                cellMouseEnter: function (e, cell) {\n                                    //e - the event object\n                                    //cell - cell component\n                                },\n                                cellMouseLeave: function (e, cell) {\n                                    //e - the event object\n                                    //cell - cell component\n                                },\n                                cellMouseOver: function (e, cell) {\n                                    //e - the event object\n                                    //cell - cell component\n                                },\n                                cellMouseOut: function (e, cell) {\n                                    //e - the event object\n                                    //cell - cell component\n                                },\n                                cellMouseMove: function (e, cell) {\n                                    //e - the event object\n                                    //cell - cell component\n                                },\n                                cellEditing: function (cell) {\n                                    //cell - cell component\n                                },\n                                cellEditCancelled: function (cell) {\n                                    //cell - cell component\n                                },\n                                cellEdited: function (cell) {\n                                    //cell - cell component\n                                }\n                            }";
-            break;
-
-          case 'dataCallback':
-            string = "{\n                                dataLoading: function(data) {\n                                    //data - the data loading into the table\n                                },\n                                dataLoaded: function(data) {\n                                    //data - all data loaded into the table\n                                },\n                                dataEdited: function(data) {\n                                    //data - the updated table data\n                                },\n                                htmlImporting: function() {},\n                                htmlImported: function() {}\n                            }";
-            break;
-
-          case 'filterCallback':
-            string = "{\n                                dataFiltering:function(filters){\n                                    //filters - array of filters currently applied\n                                },\n                                dataFiltered:function(filters, rows){\n                                    //filters - array of filters currently applied\n                                    //rows - array of row components that pass the filters\n                                }\n                            }";
-            break;
-
-          case 'sortingCallback':
-            string = "{\n                                dataSorting: function (sorters) {\n                                    //sorters - an array of the sorters currently applied\n                                },\n                                dataSorted: function (sorters, rows) {\n                                    //sorters - array of the sorters currently applied\n                                    //rows - array of row components in their new order\n                                }\n                            }";
-            break;
-
-          case 'layoutCallback':
-            string = "{\n                                renderStarted: function () {},\n                                renderComplete: function () {}\n                            }";
-            break;
-
-          case 'paginationCallback':
-            string = "{\n                                pageLoaded: function (pageno) {\n                                    //pageno - the number of the loaded page\n                                }\n                            }";
-            break;
-
-          case 'selectionCallback':
-            string = "{\n                                rowSelected: function (row) {\n                                    //row - row component for the selected row\n                                },\n                                rowDeselected: function (row) {\n                                    //row - row component for the deselected row\n                                },\n                                rowSelectionChanged: function (data, rows) {\n                                    //rows - array of row components for the selected rows in order of selection\n                                    //data - array of data objects for the selected rows in order of selection\n                                }\n                            }";
-            break;
-
-          case 'rowMovementCallback':
-            string = "{\n                                movableRowsSendingStart: function (toTables) {\n                                    //toTables - array of receiving table elements\n                                },\n                                movableRowsSent: function (fromRow, toRow, toTable) {\n                                    //fromRow - the row component from the sending table\n                                    //toRow - the row component from the receiving table (if available)\n                                    //toTable - the Tabulator object for the receiving table\n                                },\n                                movableRowsSentFailed: function (fromRow, toRow, toTable) {\n                                    //fromRow - the row component from the sending table\n                                    //toRow - the row component from the receiving table (if available)\n                                    //toTable - the Tabulator object for the receiving table\n                                },\n                                movableRowsSendingStop: function (toTables) {\n                                    //toTables - array of receiving table Tabulator objects\n                                },\n                                movableRowsReceivingStart: function (fromRow, fromTable) {\n                                    //fromRow - the row component from the sending table\n                                    //fromTable - the Tabulator object for the sending table\n                                },\n                                movableRowsReceived: function (fromRow, toRow, fromTable) {\n                                    //fromRow - the row component from the sending table\n                                    //toRow - the row component from the receiving table (if available)\n                                    //fromTable - the Tabulator object for the sending table\n                                },\n                                movableRowsReceivedFailed: function (fromRow, toRow, fromTable) {\n                                    //fromRow - the row component from the sending table\n                                    //toRow - the row component from the receiving table (if available)\n                                    //fromTable - the Tabulator object for the sending table\n                                },\n                                movableRowsReceivingStop: function (fromTable) {\n                                    //fromTable - the Tabulator object for the sending table\n                                }\n                            }";
-            break;
-
-          case 'validationCallback':
-            string = "{\n                                validationFailed: function (cell, value, validators) {\n                                    //cell - cell component for the edited cell\n                                    //value - the value that failed validation\n                                    //validatiors - an array of validator objects that failed\n                                }\n                            }";
-            break;
-
-          case 'historyCallback':
-            string = "{\n                                historyUndo: function (action, component, data) {\n                                    //action - the action that has been undone\n                                    //component - the Component object afected by the action (colud be a row or cell component)\n                                    //data - the data being changed\n                                },\n                                historyRedo: function (action, component, data) {\n                                    //action - the action that has been redone\n                                    //component - the Component object afected by the action (colud be a row or cell component)\n                                    //data - the data being changed\n                                }\n                            }";
-            break;
-
-          case 'clipboardCallback':
-            string = "{\n                                clipboardCopied: function (clipboard) {\n                                    //clipboard - the string that has been copied into the clipboard\n                                },\n                                clipboardPasted: function (clipboard, rowData, rows) {\n                                    //clipboard - the clipboard string\n                                    //rowData - the row data from the paste parser\n                                    //rows - the row components from the paste action (this will be empty if the \"replace\" action is used)\n                                },\n                                clipboardPasteError: function (clipboard) {\n                                    //clipboard - the clipboard string that was rejected by the paste parser\n                                }\n                            }";
-            break;
-
-          case 'downloadCallback':
-            string = "{\n                                downloadDataFormatter: function (data) {\n                                    //data - active table data array\n\n                                    data.forEach(function (row) {\n                                        row.age = row.age >= 18 ? \"adult\" : \"child\";\n                                    });\n\n                                    return data;\n                                },\n                                downloadReady: function (fileContents, blob) {\n                                    //fileContents - the unencoded contents of the file\n                                    //blob - the blob object for the download\n\n                                    //custom action to send blob to server could be included here\n\n                                    return blob; //must return a blob to proceed with the download, return false to abort download\n                                },\n                                downloadComplete: function () {}\n                            }";
-            break;
-
-          case 'dataTreeCallback':
-            string = "{\n                                dataTreeRowExpanded: function (row, level) {\n                                    //row - the row component for the expanded row\n                                    //level - the depth of the row in the tree\n                                },\n                                dataTreeRowCollapsed: function (row, level) {\n                                    //row - the row component for the collapsed row\n                                    //level - the depth of the row in the tree\n                                }\n                            }";
-            break;
-
-          case 'scrollingCallback':
-            string = "{\n                                scrollVertical: function (top) {\n                                    //top - the current vertical scroll position\n                                },\n                                scrollHorizontal: function (left) {\n                                    //left - the current horizontal scroll position\n                                }\n                            }";
-            break;
-
-          default:
-            string = "{}";
-            break;
-        }
-
-        return string;
       }; // This is where it all started
 
 
@@ -588,7 +526,7 @@ apos.define('custom-code-editor', {
 
         var existsObject = {};
         type.forEach(function (val, i, arr) {
-          var strings = self.tabulator.callbackStrings(val); // Set Worker to be false to disable error highlighting
+          var strings = apos.dynamicTableUtils.tabulator.callbackStrings(val); // Set Worker to be false to disable error highlighting
 
           self[val].editor.session.setUseWorker(false); // Store to cache for comparison check
 

@@ -11,7 +11,8 @@ module.exports = function(self, options) {
         _.extend(myOptions.browser, {
             action: '/modules/dynamic-table',
             schemas: self.tableSchemas,
-            group: self.tableSchemasGroup
+            group: self.tableSchemasGroup,
+            callbacks: self.callbacks
         })
 
         // To push apos.modules["dynamic-table-utils"] && also other options to pass on
@@ -21,7 +22,8 @@ module.exports = function(self, options) {
                 layout: 'fitColumns',
                 autoColumns: true,
                 responsiveLayout: true
-            }
+            },
+            callbacks: self.callbacks
         }, 'dynamicTableUtils')
 
         // Push extra options

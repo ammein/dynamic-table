@@ -23,9 +23,22 @@ apos.define('dynamic-table-utils', {
     self.tableEscapeChar = options.tableEscapeChar;
     self.tabulator = {
       options: Object.assign({}, self.tabulator ? self.tabulator.options : {}, options.tabulator),
-      table: null
+      table: null,
+      callbacks: Object.assign({}, self.tabulator ? self.tabulator.callbacks : {}, options.callbacks ? JSONfn.parse(options.callbacks) : {})
     };
     self.exists = false;
+
+    self.tabulator.callbackStrings = function (editorType) {
+      var strings = '';
+
+      if (Object.getOwnPropertyNames(self.tabulator.callbacks).length > 0) {
+        strings = typeof self.tabulator.callbacks[editorType] !== 'string' ? apos.customCodeEditor.tabulator.convertToString(self.tabulator.callbacks[editorType]) : self.tabulator.callbacks[editorType];
+      } else {
+        strings = '{}';
+      }
+
+      return strings;
+    };
 
     self.updateRowsAndColumns = function (object) {
       if (object) {
@@ -233,7 +246,7 @@ apos.define('dynamic-table-utils', {
       var schemaCallbacks = self.tabulator.schemas.filter(function (val) {
         return val.name === 'callbacks';
       })[0].choices.reduce(function (init, next, i, arr) {
-        return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(apos.customCodeEditor.tabulator.callbackStrings(next.showFields[0]))));
+        return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(self.tabulator.callbackStrings(next.showFields[0]))));
       }, {});
 
       for (var key in self.tabulator.options) {
