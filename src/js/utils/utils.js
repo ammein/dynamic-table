@@ -52,14 +52,14 @@ apos.define('dynamic-table-utils', {
             let rowInput = apos.schemas.findFieldset(self.$form, 'row').find('input');
             let columnInput = apos.schemas.findFieldset(self.$form, 'column').find('input');
             let dataInput = apos.schemas.findFieldset(self.$form, 'data').find('textarea');
-            if (dataInput.val().length > 0) {
+            if (dataInput.length > 0 && dataInput.val().length > 0) {
                 dataInput.val('');
             }
-            if (rowInput.val().length > 0) {
+            if (rowInput.length > 0 && rowInput.val().length > 0) {
                 rowInput.val('')
             }
 
-            if (columnInput.val().length > 0) {
+            if (columnInput.length > 0 && columnInput.val().length > 0) {
                 columnInput.val('');
                 columnInput.attr('disabled', true);
             }
@@ -201,7 +201,7 @@ apos.define('dynamic-table-utils', {
                 self.initTable();
             }
 
-            if (ajaxURL.val().length > 0 && ajaxURL.val().length > 0) {
+            if (ajaxURL.length > 0 && ajaxURL.val().length > 0) {
                 // To enable textarea auto resize
                 self.$ajaxURL.trigger('change');
             }
@@ -215,7 +215,7 @@ apos.define('dynamic-table-utils', {
             }
 
             // Run Custom Code Editor for Dynamic Table
-            if (apos.customCodeEditor) {
+            if (apos.customCodeEditor.tabulator && this.__meta.name !== 'dynamic-table-widgets-editor') {
                 // For Callback
                 self.setCallbacksValue();
             }
@@ -506,7 +506,7 @@ apos.define('dynamic-table-utils', {
                     if (val.offsetParent !== null) {
                         // If Ajax enable, disable custom row and column data
                         if (
-                            self.$ajaxURL.find('input').val().length > 0 &&
+                            self.tabulator.options.ajaxURL &&
                             self.rowData.length === 0 &&
                             self.columnData.length === 0
                             ) {
@@ -542,7 +542,7 @@ apos.define('dynamic-table-utils', {
 
             if (self.tabulator.table) {
                 // Get parent element and append new table from cloneNode to overcome bug issue
-                if (self.$ajaxURL.find('input').val().length > 0 && self.rowData.length === 0 && self.columnData.length === 0) {
+                if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
                     var parentTable = self.tabulator.table.element.parentElement;
                     self.tabulator.table.destroy();
                     self.tabulator.table = null;
@@ -622,7 +622,7 @@ apos.define('dynamic-table-utils', {
                     switch (property) {
                         case 'ajaxURL':
                             try {
-                                self.executeAjax(JSON5.parse(ajaxResult[property]))
+                                self.executeAjax(ajaxResult[property])
                             } catch (e) {
                                 // Leave the error alone
                             }
