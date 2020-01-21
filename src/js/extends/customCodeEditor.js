@@ -1,3 +1,4 @@
+/* global JSONfn, ace */
 apos.define('custom-code-editor', {
     construct: function(self, options) {
         // create superPopulate to extend method
@@ -15,11 +16,8 @@ apos.define('custom-code-editor', {
                 if (self.tabulator && self.tabulator.originalCache[name]) {
                     let returnObj = {}
 
-                    // eslint-disable-next-line no-undef
                     let dataObj = JSONfn.parse(self.tabulator.convertJSONFunction(data[name].code))
-                    // eslint-disable-next-line no-undef
                     let originalObj = self.tabulator.originalCache[name].reduce((init, next, i) => Object.assign({}, init, next), {});
-                    // eslint-disable-next-line no-undef
                     let cacheObj = self.tabulator.cache[name].reduce((init, next, i) => Object.assign({}, init, next), {});
 
                     for (let key in dataObj) {
@@ -36,7 +34,6 @@ apos.define('custom-code-editor', {
 
                     // Set into object serverside
                     if (Object.getOwnPropertyNames(returnObj).length > 0) {
-                        // eslint-disable-next-line no-undef
                         data[name].code = JSONfn.stringify(returnObj);
                     } else {
                         delete data[name]
@@ -76,7 +73,6 @@ apos.define('custom-code-editor', {
                         value = self.tabulator.convertJSONFunction(value);
 
                         // Check only that is change
-                        // eslint-disable-next-line no-undef
                         value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value));
 
                         // Restart Table
@@ -132,7 +128,6 @@ apos.define('custom-code-editor', {
              * To convert object to string for for friendly inputs adjustment on custom-code-editor
              */
             self.tabulator.convertToString = function(value) {
-                // eslint-disable-next-line no-undef
                 value = JSONfn.stringify(value);
                 value = self.tabulator.JSONFunctionParse(value);
                 value = self.tabulator.JSONFuncToNormalString(value);
@@ -241,7 +236,6 @@ apos.define('custom-code-editor', {
                 self.tabulator.cache[editorType] = []
                 self.tabulator.originalCache[editorType] = []
 
-                // eslint-disable-next-line no-undef
                 let JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
 
                 for (let key in JSONFuncObj) {
@@ -258,7 +252,6 @@ apos.define('custom-code-editor', {
 
             // This is where it all started
             self.tabulator.setValue = function($form, type, reset) {
-                // eslint-disable-next-line no-undef
                 let beautify = ace.require('ace/ext/beautify');
                 let existsObject = {}
                 type.forEach(function(val, i, arr) {
@@ -270,21 +263,15 @@ apos.define('custom-code-editor', {
                     // Store to cache for comparison check
                     self.tabulator.editorCache(val, strings);
 
-                    // eslint-disable-next-line no-undef
                     if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0 && !reset) {
-                        // eslint-disable-next-line no-undef
                         let obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings))
                         // Restart Table
-                        // eslint-disable-next-line no-undef
                         existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code))
 
                         // Change on cache if its match
                         for (let key in obj) {
-                            // eslint-disable-next-line no-undef
                             if (obj.hasOwnProperty(key)) {
-                                // eslint-disable-next-line no-undef
                                 let objectKey = Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).filter((val, i) => val === key)[0];
-                                // eslint-disable-next-line no-undef
                                 let objectFunc = JSONfn.parse(object[val].code)[key]
                                 if (objectKey === key) {
                                     self.tabulator.cache[val] = self.tabulator.cache[val].map(function(cacheObj, i, arr) {
@@ -304,8 +291,7 @@ apos.define('custom-code-editor', {
                                         }
                                     })
 
-                                    // Change on string later (TODO)
-                                    // eslint-disable-next-line no-undef
+                                    // Parse the objects of functions and convert to string
                                     let editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(strings))
                                     for (let editorKey in editorStringObj) {
                                         if (editorStringObj.hasOwnProperty(editorKey)) {
@@ -315,7 +301,7 @@ apos.define('custom-code-editor', {
                                         }
                                     }
 
-                                    // eslint-disable-next-line no-undef
+                                    // Apply to editor string value
                                     self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj))
 
                                     // Beautify it back

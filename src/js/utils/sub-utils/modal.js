@@ -3,6 +3,7 @@ let modal = function(self, options) {
     self.getJoin = function ($chooser) {
         let superAfterManagerSave = $chooser.afterManagerSave;
         let superAfterManagerCancel = $chooser.afterManagerCancel;
+        let superOnChange = $chooser.onChange;
         self.getChoiceId = undefined;
         self.getNewChoiceId = undefined;
 
@@ -56,6 +57,24 @@ let modal = function(self, options) {
                 self.getChoiceId = $chooser.choices[0].value;
                 return self.getFieldsApi({
                     id: self.getChoiceId
+                }, function (err, result) {
+                    if (err) {
+                        return apos.utils.warn('Dynamic Table Piece not found');
+                    }
+
+                    return self.getResultAndInitTable(result);
+                })
+            }
+        }
+
+        $chooser.onChange = function() {
+            superOnChange();
+
+            if ($chooser.choices.length > 0) {
+                self.destroyTable();
+                self.getNewChoiceId = $chooser.choices[0].value;
+                return self.getFieldsApi({
+                    id: self.getNewChoiceId
                 }, function (err, result) {
                     if (err) {
                         return apos.utils.warn('Dynamic Table Piece not found');

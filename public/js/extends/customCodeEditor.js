@@ -269,6 +269,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+/* global JSONfn, ace */
 apos.define('custom-code-editor', {
   construct: function construct(self, options) {
     // create superPopulate to extend method
@@ -280,14 +281,11 @@ apos.define('custom-code-editor', {
     self.convert = function (data, name, $field, $el, field, callback) {
       return superConvert(data, name, $field, $el, field, function () {
         if (self.tabulator && self.tabulator.originalCache[name]) {
-          var returnObj = {}; // eslint-disable-next-line no-undef
-
-          var dataObj = JSONfn.parse(self.tabulator.convertJSONFunction(data[name].code)); // eslint-disable-next-line no-undef
-
+          var returnObj = {};
+          var dataObj = JSONfn.parse(self.tabulator.convertJSONFunction(data[name].code));
           var originalObj = self.tabulator.originalCache[name].reduce(function (init, next, i) {
             return Object.assign({}, init, next);
-          }, {}); // eslint-disable-next-line no-undef
-
+          }, {});
           var cacheObj = self.tabulator.cache[name].reduce(function (init, next, i) {
             return Object.assign({}, init, next);
           }, {});
@@ -313,7 +311,6 @@ apos.define('custom-code-editor', {
 
 
           if (Object.getOwnPropertyNames(returnObj).length > 0) {
-            // eslint-disable-next-line no-undef
             data[name].code = JSONfn.stringify(returnObj);
           } else {
             delete data[name];
@@ -346,7 +343,6 @@ apos.define('custom-code-editor', {
 
           try {
             value = self.tabulator.convertJSONFunction(value); // Check only that is change
-            // eslint-disable-next-line no-undef
 
             value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value)); // Restart Table
 
@@ -401,7 +397,6 @@ apos.define('custom-code-editor', {
 
 
       self.tabulator.convertToString = function (value) {
-        // eslint-disable-next-line no-undef
         value = JSONfn.stringify(value);
         value = self.tabulator.JSONFunctionParse(value);
         value = self.tabulator.JSONFuncToNormalString(value);
@@ -507,8 +502,7 @@ apos.define('custom-code-editor', {
 
       self.tabulator.editorCache = function (editorType, string) {
         self.tabulator.cache[editorType] = [];
-        self.tabulator.originalCache[editorType] = []; // eslint-disable-next-line no-undef
-
+        self.tabulator.originalCache[editorType] = [];
         var JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
 
         for (var key in JSONFuncObj) {
@@ -521,7 +515,6 @@ apos.define('custom-code-editor', {
 
 
       self.tabulator.setValue = function ($form, type, reset) {
-        // eslint-disable-next-line no-undef
         var beautify = ace.require('ace/ext/beautify');
 
         var existsObject = {};
@@ -530,23 +523,18 @@ apos.define('custom-code-editor', {
 
           self[val].editor.session.setUseWorker(false); // Store to cache for comparison check
 
-          self.tabulator.editorCache(val, strings); // eslint-disable-next-line no-undef
+          self.tabulator.editorCache(val, strings);
 
           if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0 && !reset) {
-            // eslint-disable-next-line no-undef
             var obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings)); // Restart Table
-            // eslint-disable-next-line no-undef
 
             existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code)); // Change on cache if its match
 
             var _loop3 = function _loop3(key) {
-              // eslint-disable-next-line no-undef
               if (obj.hasOwnProperty(key)) {
-                // eslint-disable-next-line no-undef
                 var objectKey = Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).filter(function (val, i) {
                   return val === key;
-                })[0]; // eslint-disable-next-line no-undef
-
+                })[0];
                 var objectFunc = JSONfn.parse(object[val].code)[key];
 
                 if (objectKey === key) {
@@ -563,8 +551,7 @@ apos.define('custom-code-editor', {
                     } else {
                       return cacheObj;
                     }
-                  }); // Change on string later (TODO)
-                  // eslint-disable-next-line no-undef
+                  }); // Parse the objects of functions and convert to string
 
                   var editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(strings));
 
@@ -574,7 +561,7 @@ apos.define('custom-code-editor', {
                         editorStringObj[editorKey] = objectFunc;
                       }
                     }
-                  } // eslint-disable-next-line no-undef
+                  } // Apply to editor string value
 
 
                   self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj)); // Beautify it back
