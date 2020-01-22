@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/ammein/dynamic-table#readme",
   "dependencies": {
+    "async": "^3.1.0",
     "jsonfn": "^0.31.0",
     "lodash": "^4.17.15"
   },
