@@ -17,7 +17,6 @@ var src = "src/"
 
 var JS = [
     { src: 'src/js/lean/', name: 'lean', dest: 'lib/modules/dynamic-table-widgets/public/js' },
-    { src: 'src/js/lean/', name: 'jQueryLean', dest: 'lib/modules/dynamic-table-widgets/public/js' },
     { src: 'src/js/utils/', name: 'utils', dest: 'public/js' },
     { src: 'src/js/extends/', name: 'customCodeEditor', dest: 'public/js/extends'}
 ];
