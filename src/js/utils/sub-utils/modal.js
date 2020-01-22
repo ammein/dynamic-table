@@ -104,17 +104,6 @@ let modal = function(self, options) {
         }
         // Apply Event
         self.registerTableEvent(table);
-
-        // Only on callbacks tab clicked
-        if (tab.data().aposOpenGroup === 'callbacks') {
-            if (self.float) {
-                $(self.float).css('display', 'block');
-            }
-        } else {
-            if (self.float) {
-                $(self.float).css('display', 'none');
-            }
-        }
     }
 
     // To always send the data that has schema type of array
