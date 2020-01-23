@@ -43,8 +43,9 @@ var callbacks = function callbacks(self, options) {
       }
 
       self.resetCallbacksOptions();
-      return apos.notify('Callbacks Reset! Please save your table to confirm reset.', {
-        type: 'success'
+      return apos.notify('Callbacks Reset!', {
+        type: 'success',
+        dismiss: true
       });
     });
   };

@@ -79,10 +79,12 @@ apos.define('custom-code-editor', {
                         self.tabulator.restartTableCallback(value);
 
                     } catch (e) {
-                        apos.notify(`Oops! Your code is not working! Check the error on console.`, {
-                            type: 'error',
-                            dismiss: true
-                        })
+                        if (value !== '{}') {
+                            apos.notify('' + editorType + ' : ' + e.message + '.', {
+                                type: 'error',
+                                dismiss: 3
+                            });
+                        }
                     }
                 }, 2000)
 
