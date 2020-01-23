@@ -12,7 +12,7 @@ module.exports = {
     searchable : false,
     moogBundle : {
         modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
-        directory: 'lib/modules'
+        directory: 'collections/modules'
     },
     beforeConstruct : function(self,options){
         options.addFields = [

@@ -1,33 +1,49 @@
-/* global JSON5 */
+/* global JSON5, Tabulator */
 apos.define('dynamic-table-widgets', {
     extend: 'apostrophe-widgets',
     construct: function (self, options) {
 
         self.schemas = options.dynamicTableSchemas;
 
-        self.getResult = function (query, callback) {
-            $.get('/modules/dynamic-table/get-fields', query, function (result) {
-                if (result.status === 'error') {
-                    return callback(result.message);
+        // Change all data to array of objects
+        self.dataToArrayOfObjects = function (objectData) {
+            let arrayOfObjects = []
+            let returnObject = {}
+            // Loop over row to determine its value
+            for (let row = 0; row < objectData.data.length; row++) {
+                // Loop over column to determine its property
+                for (let column = 0; column < objectData.columns.length; column++) {
+                    arrayOfObjects[row] = Object.assign(arrayOfObjects[row] || {}, {
+                        [objectData.columns[column].title]: objectData.data[row][column]
+                    })
                 }
-                return callback(null, result.message);
-            })
-        }
 
-        self.updateOptions = function (options) {
-            let callbacksKey = getCallbacksKey();
-
-            let allOptions = {}
-
-            for (let key of Object.keys(options)) {
-                if (options.hasOwnProperty(key)) {
-                    if (callbacksKey.includes(key) && options[key]) {
-                        allOptions[key] = options[key];
-                    }
+                // Run checking column
+                if (Object.keys(arrayOfObjects[row]).length !== objectData.columns.length) {
+                    Object.keys(arrayOfObjects[row]).forEach((val, i) => {
+                        let filter = objectData.columns.filter((value, index) => value.title === val)
+                        if (filter.length === 0) {
+                            delete arrayOfObjects[row][val];
+                        }
+                    })
                 }
             }
 
-            // Loop ajaxResult object
+            // Run Checking Rows
+            if (arrayOfObjects.length !== objectData.data.length) {
+                arrayOfObjects = arrayOfObjects.slice(0, objectData.data.length);
+            }
+
+            returnObject = {
+                data: arrayOfObjects,
+                columns: objectData.columns
+            }
+
+            return returnObject;
+        }
+
+        self.updateOptions = function (options) {
+            let allOptions = {}
             for (let property of Object.keys(options)) {
                 if (options.hasOwnProperty(property)) {
                     switch (true) {
@@ -42,56 +58,11 @@ apos.define('dynamic-table-widgets', {
 
                         case property === 'data' && options[property].length > 0:
                             try {
-                                allOptions[property] = options[property]
-                            } catch (e) {
-                                // Leave the error alone
-                                apos.utils.warn('Error Init Data Table', e);
-                            }
-                            break;
-
-                        default:
-                            if (property !== 'data' && property !== 'ajaxURL' && options[property]) {
-                                allOptions[property] = options[property]
-                            }
-                            break;
-                    }
-                }
-            }
-
-            self.tabulator.options = Object.assign({}, self.tabulator.options, allOptions);
-        }
-
-        self.initTable = function (tableDOM, options) {
-            if (self.tabulator.table) {
-                self.tabulator.table.destroy();
-                self.tabulator.table = null;
-            }
-            self.updateOptions(options);
-            let table = null
-            // eslint-disable-next-line no-undef
-            table = new Tabulator(tableDOM, self.tabulator.options);
-            self.tabulator.table = table;
-        }
-
-        self.getResultAndInitTable = function (ajaxResult) {
-            // Loop ajaxResult object
-            for (let property of Object.keys(ajaxResult)) {
-                if (ajaxResult.hasOwnProperty(property)) {
-                    switch (true) {
-                        case property === 'ajaxURL' && ajaxResult[property].length > 0:
-                            try {
-                                self.executeAjax(ajaxResult[property])
-                            } catch (e) {
-                                // Leave the error alone
-                                apos.utils.warn('Error Init Ajax Table', e);
-                            }
-                            break;
-
-                        case property === 'data' && ajaxResult[property].length > 0:
-                            try {
-                                self.updateRowsAndColumns(JSON5.parse(ajaxResult[property]));
-                                if (self.tabulator.table) {
-                                    self.restartTable();
+                                let data = self.dataToArrayOfObjects(JSON5.parse(options[property]))
+                                for (let key in data) {
+                                    if (data.hasOwnProperty(key)) {
+                                        allOptions[key] = data[key]
+                                    }
                                 }
                             } catch (e) {
                                 // Leave the error alone
@@ -101,36 +72,40 @@ apos.define('dynamic-table-widgets', {
                     }
                 }
             }
+
+            self.tabulator.options = Object.assign({}, self.tabulator.options, allOptions, self.options.tabulatorOptions);
         }
 
-        function getCallbacksKey() {
-            return self.schemas.filter(function (val, i) {
-                return val.group.name === 'callbacks' && val.name !== 'callbacks';
-            })
+        self.initTable = function (tableDOM, options) {
+            if (self.tabulator.table) {
+                self.tabulator.table.destroy();
+                self.tabulator.table = null;
+            }
+            self.updateOptions(options);
+            let table = null
+            if (self.tabulator.options['data']) {
+                table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator.options);
+                table.setData(self.tabulator.options['data'])
+            } else {
+                table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator.options);
+            }
+            self.tabulator.table = table;
         }
 
         self.play = function ($widget, data, options) {
             self.tabulator = {
                 options: {}
             }
-            let table;
+            let table, tableOptions;
             // Always set data based on saves piece
-            // self.setData($widget, data.dynamicTableId);
             table = $widget.find('table#' + data._id);
+            tableOptions = table.data('table-options')
             let cloneTable = table.clone();
             let parent = table.parent();
             parent.empty();
             parent.append(cloneTable);
 
-            return self.getResult({
-                id: data.dynamicTableId
-            }, function (err, result) {
-                if (err) {
-                    return apos.notify('ERROR : ' + err)
-                }
-
-                return self.initTable(table, result);
-            })
+            return self.initTable(table, tableOptions);
         }
     }
 })
