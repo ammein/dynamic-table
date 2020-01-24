@@ -68,6 +68,7 @@ let table = function(self, options) {
         if (self.tabulator.table) {
             self.destroyTable();
         }
+
         // Reset Data
         self.rowData = [];
         self.columnData = [];
@@ -77,7 +78,7 @@ let table = function(self, options) {
             })
         }
         self.resetCustomTable();
-        self.initTable();
+        return self.initTable();
     }
 
     self.resetAjaxTable = function () {
@@ -87,9 +88,8 @@ let table = function(self, options) {
     self.restartTable = function () {
         // Restart Table
         if (self.tabulator.options.ajaxURL) {
-            // If Ajax enabled, just reload the table
-            self.destroyTable();
-            self.initTable();
+            // If Ajax enabled, use executeAjax function
+            self.executeAjax(self.tabulator.options)
         } else {
             // Restart normal custom table
             self.initTable();

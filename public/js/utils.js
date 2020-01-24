@@ -854,7 +854,7 @@ var table = function table(self, options) {
     }
 
     self.resetCustomTable();
-    self.initTable();
+    return self.initTable();
   };
 
   self.resetAjaxTable = function () {
@@ -864,9 +864,8 @@ var table = function table(self, options) {
   self.restartTable = function () {
     // Restart Table
     if (self.tabulator.options.ajaxURL) {
-      // If Ajax enabled, just reload the table
-      self.destroyTable();
-      self.initTable();
+      // If Ajax enabled, use executeAjax function
+      self.executeAjax(self.tabulator.options);
     } else {
       // Restart normal custom table
       self.initTable();
