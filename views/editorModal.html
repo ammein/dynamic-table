@@ -1,10 +1,9 @@
 {% extends "editorBase.html" %}
-{% import 'apostrophe-ui:components/buttons.html' as buttons with context %}
 {% import "dynamic-table-widgets:macros/tableFields.html" as myCustomSchemas %}
 
 {%- block controls -%}
     {# Custom button #}
-    {{ buttons.minor('Reset Callbacks', { action: 'resetCallbacks' }) }}
+    {% include "tabulator/customButtonControls.html" %}
 
     {# The standard controls #}
     {{ super() }}
@@ -15,4 +14,5 @@
         {# Use my custom tableFields Schemas Views #}
         {{ myCustomSchemas.tableFields(data.schema) }}
     </form>
+    {% include "tabulator/scriptsDownload.html" %}
 {%- endblock -%}

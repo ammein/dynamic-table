@@ -6,6 +6,7 @@ import dataManagement from './sub-utils/data-management';
 import routes from './sub-utils/routes';
 import events from './sub-utils/events';
 import modal from './sub-utils/modal';
+import downloads from './sub-utils/downloads';
 apos.define('dynamic-table-utils', {
     afterConstruct: function (self) {
         // To let others extend it
@@ -32,6 +33,7 @@ apos.define('dynamic-table-utils', {
         routes(self, options);
         events(self, options);
         modal(self, options);
+        downloads(self, options);
 
         self.beforeShowDynamicTable = function ($form, data) {
             // Reset rows & columns
@@ -50,8 +52,12 @@ apos.define('dynamic-table-utils', {
             self.$title = apos.schemas.findFieldset(self.$form, 'title');
             self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
             self.$id.val(data.id);
-
-            this.link('apos', 'resetCallbacks', self.resetCallbacks)
+            this.link('apos', 'downloadcsv', self.downloadCSV);
+            this.link('apos', 'downloadjson', self.downloadJSON);
+            this.link('apos', 'downloadxlsx', self.downloadXlsx);
+            this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
+            this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
+            this.link('apos', 'resetCallbacks', self.resetCallbacks);
 
             let rowInput = self.$row.find('input');
             let columnInput = self.$column.find('input');

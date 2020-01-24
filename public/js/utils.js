@@ -13,20 +13,19 @@ var callbacks = function callbacks(self, options) {
       return val.name === 'callbacks';
     })[0].choices.reduce(function (init, next, i, arr) {
       return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(self.tabulator.callbackStrings(next.showFields[0]))));
-    }, {});
-
-    for (var key in self.tabulator.options) {
-      if (self.tabulator.options.hasOwnProperty(key)) {
-        if (schemaCallbacks[key]) {
-          delete self.tabulator.options[key];
-        }
-      }
-    } // Restart Table
-
+    }, {}); // Restart Table
 
     self.restartTable(); // Reset Callbacks Value
 
-    self.setCallbacksValue(true);
+    self.setCallbacksValue(true); // Reset Options Callbacks
+
+    for (var key in self.tabulator.options) {
+      if (self.tabulator.options.hasOwnProperty(key)) {
+        if (schemaCallbacks[key] && Object.keys(self.tabulator.options).includes(key)) {
+          delete self.tabulator.options[key];
+        }
+      }
+    }
   };
 
   self.resetCallbacks = function () {
@@ -286,6 +285,39 @@ exports["default"] = _default;
 },{}],3:[function(require,module,exports){
 "use strict";
 
+module.exports = function (self, options) {
+  self.downloadCSV = function () {
+    self.tabulator.table.download('csv', self.$id.val() + '.csv');
+  };
+
+  self.downloadJSON = function () {
+    self.tabulator.table.download('json', self.$id.val() + '.json');
+  };
+
+  self.downloadXlsx = function () {
+    self.tabulator.table.download('xlsx', self.$id.val() + '.xlsx', {
+      sheetName: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+    });
+  };
+
+  self.downloadPDFPotrait = function () {
+    self.tabulator.table.download('pdf', self.$id.val() + ' (Potrait).pdf', {
+      orientation: 'portrait',
+      title: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+    });
+  };
+
+  self.downloadPDFLandscape = function () {
+    self.tabulator.table.download('pdf', self.$id.val() + ' (Landscape).pdf', {
+      orientation: 'landscape',
+      title: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+    });
+  };
+};
+
+},{}],4:[function(require,module,exports){
+"use strict";
+
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
@@ -317,7 +349,7 @@ var events = function events(self, options) {
 var _default = events;
 exports["default"] = _default;
 
-},{}],4:[function(require,module,exports){
+},{}],5:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -357,7 +389,7 @@ var helpers = function helpers(self, options) {
 var _default = helpers;
 exports["default"] = _default;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -410,6 +442,7 @@ var modal = function modal(self, options) {
           return apos.utils.warn('Dynamic Table Piece not found');
         }
 
+        self.getChoiceId = self.getNewChoiceId;
         return self.getResultAndInitTable(result);
       });
     };
@@ -445,6 +478,7 @@ var modal = function modal(self, options) {
             return apos.utils.warn('Dynamic Table Piece not found');
           }
 
+          self.getChoiceId = self.getNewChoiceId;
           return self.getResultAndInitTable(result);
         });
       }
@@ -681,7 +715,7 @@ var modal = function modal(self, options) {
 var _default = modal;
 exports["default"] = _default;
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -734,7 +768,7 @@ var routes = function routes(self, options) {
 var _default = routes;
 exports["default"] = _default;
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -843,7 +877,7 @@ var table = function table(self, options) {
 var _default = table;
 exports["default"] = _default;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 var _table = _interopRequireDefault(require("./sub-utils/table"));
@@ -859,6 +893,8 @@ var _routes = _interopRequireDefault(require("./sub-utils/routes"));
 var _events = _interopRequireDefault(require("./sub-utils/events"));
 
 var _modal = _interopRequireDefault(require("./sub-utils/modal"));
+
+var _downloads = _interopRequireDefault(require("./sub-utils/downloads"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -889,6 +925,7 @@ apos.define('dynamic-table-utils', {
     (0, _routes["default"])(self, options);
     (0, _events["default"])(self, options);
     (0, _modal["default"])(self, options);
+    (0, _downloads["default"])(self, options);
 
     self.beforeShowDynamicTable = function ($form, data) {
       // Reset rows & columns
@@ -907,6 +944,11 @@ apos.define('dynamic-table-utils', {
       self.$title = apos.schemas.findFieldset(self.$form, 'title');
       self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
       self.$id.val(data.id);
+      this.link('apos', 'downloadcsv', self.downloadCSV);
+      this.link('apos', 'downloadjson', self.downloadJSON);
+      this.link('apos', 'downloadxlsx', self.downloadXlsx);
+      this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
+      this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
       this.link('apos', 'resetCallbacks', self.resetCallbacks);
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
@@ -1017,4 +1059,4 @@ apos.define('dynamic-table-utils', {
   }
 });
 
-},{"./sub-utils/callbacks":1,"./sub-utils/data-management":2,"./sub-utils/events":3,"./sub-utils/helpers":4,"./sub-utils/modal":5,"./sub-utils/routes":6,"./sub-utils/table":7}]},{},[8]);
+},{"./sub-utils/callbacks":1,"./sub-utils/data-management":2,"./sub-utils/downloads":3,"./sub-utils/events":4,"./sub-utils/helpers":5,"./sub-utils/modal":6,"./sub-utils/routes":7,"./sub-utils/table":8}]},{},[9]);

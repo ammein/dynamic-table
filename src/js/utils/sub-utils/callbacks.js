@@ -7,19 +7,20 @@ let callbacks = function(self, options) {
             return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(self.tabulator.callbackStrings(next.showFields[0]))))
         }, {});
 
-        for (let key in self.tabulator.options) {
-            if (self.tabulator.options.hasOwnProperty(key)) {
-                if (schemaCallbacks[key]) {
-                    delete self.tabulator.options[key];
-                }
-            }
-        }
-
         // Restart Table
         self.restartTable();
 
         // Reset Callbacks Value
-        self.setCallbacksValue(true)
+        self.setCallbacksValue(true);
+
+        // Reset Options Callbacks
+        for (let key in self.tabulator.options) {
+            if (self.tabulator.options.hasOwnProperty(key)) {
+                if (schemaCallbacks[key] && Object.keys(self.tabulator.options).includes(key)) {
+                    delete self.tabulator.options[key];
+                }
+            }
+        }
     }
 
     self.resetCallbacks = function () {

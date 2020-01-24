@@ -44,6 +44,8 @@ let modal = function(self, options) {
                     return apos.utils.warn('Dynamic Table Piece not found');
                 }
 
+                self.getChoiceId = self.getNewChoiceId;
+
                 return self.getResultAndInitTable(result);
             })
 
@@ -79,6 +81,8 @@ let modal = function(self, options) {
                     if (err) {
                         return apos.utils.warn('Dynamic Table Piece not found');
                     }
+
+                    self.getChoiceId = self.getNewChoiceId;
 
                     return self.getResultAndInitTable(result);
                 })

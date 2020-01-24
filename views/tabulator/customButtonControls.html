@@ -1,0 +1,18 @@
+{% import 'apostrophe-ui:components/buttons.html' as buttons with context %}
+{% import 'apostrophe-ui:components/dropdowns.html' as dropdowns with context %}
+
+{{ buttons.minor('Reset Callbacks', { action: 'resetCallbacks' }) }}
+{{ dropdowns.base({
+    label : 'Download',
+    items: [
+        { label: 'CSV', action: 'downloadCSV' },
+        { label: 'JSON', action: 'downloadJSON' },
+        { label: 'Xlsx', action: 'downloadXlsx' },
+        { label: 'PDF Potrait', action: 'downloadPDFPotrait' },
+        { label: 'PDF Landscape', action: 'downloadPDFLandscape' }
+    ]
+}, 'button',
+{
+    direction: 'down',
+    class: 'arrow-down'
+}) }}

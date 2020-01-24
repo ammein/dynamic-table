@@ -1,3 +1,23 @@
+import beautifyJS from 'js-beautify';
+const beautifyOptions = {
+    'indent_size': '4',
+    'indent_char': ' ',
+    'max_preserve_newlines': '5',
+    'preserve_newlines': true,
+    'keep_array_indentation': false,
+    'break_chained_methods': false,
+    'indent_scripts': 'normal',
+    'brace_style': 'collapse',
+    'space_before_conditional': true,
+    'unescape_strings': false,
+    'jslint_happy': true,
+    'end_with_newline': false,
+    'wrap_line_length': '0',
+    'indent_inner_html': false,
+    'comma_first': false,
+    'e4x': false,
+    'indent_empty_lines': false
+}
 /* global JSONfn, ace */
 apos.define('custom-code-editor', {
     construct: function(self, options) {
@@ -238,6 +258,9 @@ apos.define('custom-code-editor', {
                 self.tabulator.cache[editorType] = []
                 self.tabulator.originalCache[editorType] = []
 
+                // Beautify it
+                string = beautifyJS(string, beautifyOptions);
+
                 let JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
 
                 for (let key in JSONFuncObj) {
@@ -254,10 +277,10 @@ apos.define('custom-code-editor', {
 
             // This is where it all started
             self.tabulator.setValue = function($form, type, reset) {
-                let beautify = ace.require('ace/ext/beautify');
+                let beautify = beautifyJS.js;
                 let existsObject = {}
                 type.forEach(function(val, i, arr) {
-                    let strings = apos.dynamicTableUtils.tabulator.callbackStrings(val);
+                    let strings = beautifyJS(apos.dynamicTableUtils.tabulator.callbackStrings(val), beautifyOptions);
 
                     // Set Worker to be false to disable error highlighting
                     self[val].editor.session.setUseWorker(false);
@@ -305,18 +328,12 @@ apos.define('custom-code-editor', {
 
                                     // Apply to editor string value
                                     self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj))
-
-                                    // Beautify it back
-                                    beautify.beautify(self[val].editor.session);
                                 }
                             }
                         }
                     } else {
                         // Set Value to Editor after checking the exists object
-                        self[val].editor.session.setValue(strings);
-
-                        // Beautify the Javascript Object in Editor
-                        beautify.beautify(self[val].editor.session);
+                        self[val].editor.session.setValue(self.tabulator.convertToString(strings));
                     }
 
                     // Apply on change events (Must trigger last!)
