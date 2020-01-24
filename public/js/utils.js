@@ -854,7 +854,7 @@ var table = function table(self, options) {
     }
 
     self.resetCustomTable();
-    return self.initTable();
+    self.initTable();
   };
 
   self.resetAjaxTable = function () {
