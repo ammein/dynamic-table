@@ -1,9 +1,7 @@
 /* global JSONfn */
 let callbacks = function(self, options) {
     self.resetCallbacksOptions = function () {
-        let schemaCallbacks = self.tabulator.schemas.filter(function (val) {
-            return val.name === 'callbacks';
-        })[0].choices.reduce(function (init, next, i, arr) {
+        let schemaCallbacks = self.$callbacks.data().aposChoices.reduce(function (init, next, i, arr) {
             return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(self.tabulator.callbackStrings(next.showFields[0]))))
         }, {});
 
@@ -54,15 +52,11 @@ let callbacks = function(self, options) {
         return strings;
     }
 
-    self.setCallbacksValue = function (reset) {
+    self.setCallbacksValue = function (reset = false) {
         if (reset) {
-            return apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
-                return val.name === 'callbacks';
-            })[0].choices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []), reset);
+            return apos.customCodeEditor.tabulator.setValue(self.$form, self.$callbacks.data().aposChoices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []), reset);
         } else {
-            return apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
-                return val.name === 'callbacks';
-            })[0].choices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []));
+            return apos.customCodeEditor.tabulator.setValue(self.$form, self.$callbacks.data().aposChoices.reduce((init, next, i, arr) => init.concat(next.value + 'Callback'), []));
         }
     }
 

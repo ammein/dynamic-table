@@ -9,9 +9,7 @@ exports["default"] = void 0;
 /* global JSONfn */
 var callbacks = function callbacks(self, options) {
   self.resetCallbacksOptions = function () {
-    var schemaCallbacks = self.tabulator.schemas.filter(function (val) {
-      return val.name === 'callbacks';
-    })[0].choices.reduce(function (init, next, i, arr) {
+    var schemaCallbacks = self.$callbacks.data().aposChoices.reduce(function (init, next, i, arr) {
       return Object.assign({}, init, JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(self.tabulator.callbackStrings(next.showFields[0]))));
     }, {}); // Restart Table
 
@@ -61,17 +59,15 @@ var callbacks = function callbacks(self, options) {
     return strings;
   };
 
-  self.setCallbacksValue = function (reset) {
+  self.setCallbacksValue = function () {
+    var reset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
     if (reset) {
-      return apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
-        return val.name === 'callbacks';
-      })[0].choices.reduce(function (init, next, i, arr) {
+      return apos.customCodeEditor.tabulator.setValue(self.$form, self.$callbacks.data().aposChoices.reduce(function (init, next, i, arr) {
         return init.concat(next.value + 'Callback');
       }, []), reset);
     } else {
-      return apos.customCodeEditor.tabulator.setValue(self.$form, apos.schemas.tabulator.schema.filter(function (val) {
-        return val.name === 'callbacks';
-      })[0].choices.reduce(function (init, next, i, arr) {
+      return apos.customCodeEditor.tabulator.setValue(self.$form, self.$callbacks.data().aposChoices.reduce(function (init, next, i, arr) {
         return init.concat(next.value + 'Callback');
       }, []));
     }
@@ -723,6 +719,60 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+var options = function options(self, _options) {
+  /**
+   * This will setOptionsValue to tabulatorOptions custom-code-editor
+   */
+  self.setOptionsValue = function () {
+    var reset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+
+    if (reset) {
+      return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.originalOptionsTabulator, self.tabulator.options.ajaxURL ? {
+        'ajaxURL': self.tabulator.options.ajaxURL
+      } : {}), reset);
+    } else {
+      return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, self.tabulator.options);
+    }
+  };
+  /**
+   * To Reset Options Callback API
+   */
+
+
+  self.resetOptions = function () {
+    self.resetOptionsApi({
+      id: self.$id.val() || ''
+    }, function (err) {
+      if (err) {
+        apos.utils.warn('Unable to reset options', err);
+        apos.notify('Opps! Something went wrong!', {
+          type: 'error',
+          dismiss: true
+        });
+      } // Reset Options
+
+
+      self.setOptionsValue(true);
+      self.restartTable();
+      return apos.notify('Options Reset!', {
+        type: 'success',
+        dismiss: true
+      });
+    });
+  };
+};
+
+var _default = options;
+exports["default"] = _default;
+
+},{}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
 var routes = function routes(self, options) {
   self.getFieldsApi = function (query, callback) {
     return $.get('/modules/dynamic-table/get-fields', query, function (data) {
@@ -736,6 +786,16 @@ var routes = function routes(self, options) {
 
   self.resetCallbacksApi = function (query, callback) {
     return apos.modules['dynamic-table'].api('reset-callbacks', query, function (data) {
+      if (data.status === 'success') {
+        return callback(null, data.message);
+      }
+
+      return callback(data.message);
+    });
+  };
+
+  self.resetOptionsApi = function (query, callback) {
+    return apos.modules['dynamic-table'].api('reset-options', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -768,7 +828,7 @@ var routes = function routes(self, options) {
 var _default = routes;
 exports["default"] = _default;
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -839,6 +899,8 @@ var table = function table(self, options) {
 
 
   self.executeAjax = function (options) {
+    var mergeOptions = Object.assign({}, self.tabulator.options, typeof options !== 'string' ? options : {});
+
     if (self.tabulator.table) {
       self.destroyTable();
     } // Reset Data
@@ -848,9 +910,9 @@ var table = function table(self, options) {
     self.columnData = [];
 
     if (options !== (null || undefined)) {
-      self.tabulator.options = Object.assign({}, self.tabulator.options, {
+      self.tabulator.options = Object.assign({}, {
         ajaxURL: typeof options === 'string' ? options : options.ajaxURL
-      });
+      }, mergeOptions);
     }
 
     self.resetCustomTable();
@@ -861,13 +923,21 @@ var table = function table(self, options) {
     self.tabulator.options.ajaxURL = undefined;
   };
 
-  self.restartTable = function () {
+  self.restartTable = function (options) {
     // Restart Table
     if (self.tabulator.options.ajaxURL) {
       // If Ajax enabled, use executeAjax function
-      self.executeAjax(self.tabulator.options);
+      self.executeAjax(options || self.tabulator.options);
     } else {
-      // Restart normal custom table
+      if (self.tabulator.options.ajaxURL) {
+        self.resetAjaxTable();
+      }
+
+      if (options) {
+        self.tabulator.options = Object.assign({}, self.tabulator.options, options);
+      } // Restart normal custom table
+
+
       self.initTable();
     }
   };
@@ -876,7 +946,7 @@ var table = function table(self, options) {
 var _default = table;
 exports["default"] = _default;
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 var _table = _interopRequireDefault(require("./sub-utils/table"));
@@ -894,6 +964,8 @@ var _events = _interopRequireDefault(require("./sub-utils/events"));
 var _modal = _interopRequireDefault(require("./sub-utils/modal"));
 
 var _downloads = _interopRequireDefault(require("./sub-utils/downloads"));
+
+var _options = _interopRequireDefault(require("./sub-utils/options"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -925,6 +997,7 @@ apos.define('dynamic-table-utils', {
     (0, _events["default"])(self, options);
     (0, _modal["default"])(self, options);
     (0, _downloads["default"])(self, options);
+    (0, _options["default"])(self, options);
 
     self.beforeShowDynamicTable = function ($form, data) {
       // Reset rows & columns
@@ -942,13 +1015,15 @@ apos.define('dynamic-table-utils', {
       self.$url = apos.schemas.findFieldset(self.$form, 'url');
       self.$title = apos.schemas.findFieldset(self.$form, 'title');
       self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
+      self.$options = apos.schemas.findFieldset(self.$form, 'tabulatorOptions');
       self.$id.val(data.id);
       this.link('apos', 'downloadcsv', self.downloadCSV);
       this.link('apos', 'downloadjson', self.downloadJSON);
       this.link('apos', 'downloadxlsx', self.downloadXlsx);
       this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
       this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
-      this.link('apos', 'resetCallbacks', self.resetCallbacks);
+      this.link('apos', 'resetcallbacks', self.resetCallbacks);
+      this.link('apos', 'resetoptions', self.resetOptions);
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');
@@ -1049,13 +1124,18 @@ apos.define('dynamic-table-utils', {
       } // Run Custom Code Editor for Dynamic Table
 
 
-      if (apos.customCodeEditor.tabulator && this.__meta.name !== 'dynamic-table-widgets-editor') {
+      if (self.$callbacks.length > 0) {
         // For Callback
         self.setCallbacksValue();
+      } // Options Comes Last
+
+
+      if (self.$options.length > 0) {
+        self.setOptionsValue();
       }
     }; // End of Utils
 
   }
 });
 
-},{"./sub-utils/callbacks":1,"./sub-utils/data-management":2,"./sub-utils/downloads":3,"./sub-utils/events":4,"./sub-utils/helpers":5,"./sub-utils/modal":6,"./sub-utils/routes":7,"./sub-utils/table":8}]},{},[9]);
+},{"./sub-utils/callbacks":1,"./sub-utils/data-management":2,"./sub-utils/downloads":3,"./sub-utils/events":4,"./sub-utils/helpers":5,"./sub-utils/modal":6,"./sub-utils/options":7,"./sub-utils/routes":8,"./sub-utils/table":9}]},{},[10]);

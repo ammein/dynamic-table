@@ -50,6 +50,22 @@ module.exports = function(self, options) {
         })
     })
 
+    self.route('post', 'reset-options', function (req, res) {
+        return self.routes.resetOptions(req, function (err) {
+            if (err) {
+                return res.send({
+                    status: 'error',
+                    message: err
+                })
+            }
+
+            return res.send({
+                status: 'success',
+                message: 'Options Reset !'
+            })
+        })
+    })
+
     self.route('get', 'get-fields', function (req, res) {
         return self.routes.getFields(req, function (err, result) {
             if (err) {
@@ -96,6 +112,30 @@ module.exports = function(self, options) {
             delete newPiece['callbacks'];
 
             // Update it!
+            return self.update(req, newPiece, {
+                permissions: false
+            }, callback);
+        })
+    }
+
+    self.routes.resetOptions = function(req, callback) {
+        if (!req.body.id) {
+            return callback('Id not found');
+        }
+
+        var criteria = {
+            _id: req.body.id
+        }
+
+        return self.find(req, criteria).toObject(function(err, result) {
+            if (err) {
+                return callback(err);
+            }
+
+            var newPiece = _.cloneDeep(result);
+
+            delete newPiece['tabulatorOptions'];
+
             return self.update(req, newPiece, {
                 permissions: false
             }, callback);

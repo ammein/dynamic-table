@@ -1,7 +1,18 @@
 {% import 'apostrophe-ui:components/buttons.html' as buttons with context %}
 {% import 'apostrophe-ui:components/dropdowns.html' as dropdowns with context %}
 
-{{ buttons.minor('Reset Callbacks', { action: 'resetCallbacks' }) }}
+{{ dropdowns.base({
+    label : 'Reset',
+    items: [
+        { label: 'Callbacks', action: 'resetCallbacks' },
+        { label: 'Options', action: 'resetOptions' }
+    ]
+}, 'button',
+{
+    direction: 'down',
+    class: 'arrow-down'
+}) }}
+
 {{ dropdowns.base({
     label : 'Download',
     items: [

@@ -241,5 +241,6 @@ module.exports = {
         ace: aceDefault
     }
     ],
-    arrangeFields: myArrangeFields
+    arrangeFields: myArrangeFields,
+    aceDefault: aceDefault
 }

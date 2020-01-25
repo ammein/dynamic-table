@@ -7,6 +7,7 @@ import routes from './sub-utils/routes';
 import events from './sub-utils/events';
 import modal from './sub-utils/modal';
 import downloads from './sub-utils/downloads';
+import customOptions from './sub-utils/options';
 apos.define('dynamic-table-utils', {
     afterConstruct: function (self) {
         // To let others extend it
@@ -34,6 +35,7 @@ apos.define('dynamic-table-utils', {
         events(self, options);
         modal(self, options);
         downloads(self, options);
+        customOptions(self, options);
 
         self.beforeShowDynamicTable = function ($form, data) {
             // Reset rows & columns
@@ -51,13 +53,15 @@ apos.define('dynamic-table-utils', {
             self.$url = apos.schemas.findFieldset(self.$form, 'url');
             self.$title = apos.schemas.findFieldset(self.$form, 'title');
             self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
+            self.$options = apos.schemas.findFieldset(self.$form, 'tabulatorOptions');
             self.$id.val(data.id);
             this.link('apos', 'downloadcsv', self.downloadCSV);
             this.link('apos', 'downloadjson', self.downloadJSON);
             this.link('apos', 'downloadxlsx', self.downloadXlsx);
             this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
             this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
-            this.link('apos', 'resetCallbacks', self.resetCallbacks);
+            this.link('apos', 'resetcallbacks', self.resetCallbacks);
+            this.link('apos', 'resetoptions', self.resetOptions);
 
             let rowInput = self.$row.find('input');
             let columnInput = self.$column.find('input');
@@ -182,9 +186,14 @@ apos.define('dynamic-table-utils', {
             }
 
             // Run Custom Code Editor for Dynamic Table
-            if (apos.customCodeEditor.tabulator && this.__meta.name !== 'dynamic-table-widgets-editor') {
+            if (self.$callbacks.length > 0) {
                 // For Callback
                 self.setCallbacksValue();
+            }
+
+            // Options Comes Last
+            if (self.$options.length > 0) {
+                self.setOptionsValue();
             }
         }
         // End of Utils

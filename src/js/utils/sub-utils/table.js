@@ -65,6 +65,7 @@ let table = function(self, options) {
 
     // Ajax Begins
     self.executeAjax = function (options) {
+        let mergeOptions = Object.assign({}, self.tabulator.options, typeof options !== 'string' ? options : {});
         if (self.tabulator.table) {
             self.destroyTable();
         }
@@ -73,9 +74,9 @@ let table = function(self, options) {
         self.rowData = [];
         self.columnData = [];
         if (options !== (null || undefined)) {
-            self.tabulator.options = Object.assign({}, self.tabulator.options, {
+            self.tabulator.options = Object.assign({}, {
                 ajaxURL: typeof options === 'string' ? options : options.ajaxURL
-            })
+            }, mergeOptions)
         }
         self.resetCustomTable();
         self.initTable();
@@ -85,12 +86,18 @@ let table = function(self, options) {
         self.tabulator.options.ajaxURL = undefined;
     }
 
-    self.restartTable = function () {
+    self.restartTable = function (options) {
         // Restart Table
         if (self.tabulator.options.ajaxURL) {
             // If Ajax enabled, use executeAjax function
-            self.executeAjax(self.tabulator.options)
+            self.executeAjax(options || self.tabulator.options)
         } else {
+            if (self.tabulator.options.ajaxURL) {
+                self.resetAjaxTable();
+            }
+            if (options) {
+                self.tabulator.options = Object.assign({}, self.tabulator.options, options);
+            }
             // Restart normal custom table
             self.initTable();
         }

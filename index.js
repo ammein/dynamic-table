@@ -96,7 +96,12 @@ module.exports = {
         ].concat(options.addFields || []);
 
         if (options.apos.customCodeEditor) {
-            options.addFields = options.addFields.concat(require('./callbackFields.js').addFields || []);
+            options.addFields = options.addFields.concat(require('./callbackFields.js').addFields || []).concat([{
+                type: 'custom-code-editor',
+                name: 'tabulatorOptions',
+                help: 'Feel free to add your own options for your own Tabulator table. Make sure you use this quote string \" to wrap a string value',
+                ace: require('./callbackFields.js').aceDefault
+            }] || [])
         }
 
         options.addColumns = [
@@ -117,12 +122,12 @@ module.exports = {
         options.arrangeFields = [
             {
                 name: "table",
-                label: "Custom Table",
+                label: "Tabulator Data",
                 fields: ["title", "row", "column", "data" , "adjustRow" , "adjustColumn"]
             },
             {
                 name: "ajax",
-                label: "Ajax Table",
+                label: "Tabulator Ajax",
                 fields: ["ajaxURL"]
             },
             {
@@ -133,7 +138,11 @@ module.exports = {
             }
         ].concat(options.arrangeFields || []);
 
-        options.arrangeFields = options.arrangeFields.concat(require("./callbackFields.js").arrangeFields || []);
+        options.arrangeFields = options.arrangeFields.concat(require("./callbackFields.js").arrangeFields || []).concat([{
+            name: 'options',
+            label: 'Tabulator Options',
+            fields: ['tabulatorOptions']
+        }] || [])
 
         // Path submodules
         options.pathSubModules = path.join(__dirname, '/sub-modules');

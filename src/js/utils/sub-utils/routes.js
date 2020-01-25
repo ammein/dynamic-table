@@ -18,6 +18,16 @@ let routes = function(self, options) {
         })
     }
 
+    self.resetOptionsApi = function (query, callback) {
+        return apos.modules['dynamic-table'].api('reset-options', query, function (data) {
+            if (data.status === 'success') {
+                return callback(null, data.message);
+            }
+
+            return callback(data.message);
+        })
+    }
+
     self.updateFieldsApi = function (query, callback) {
         return apos.modules['dynamic-table'].api('update-fields', query, function (data) {
             if (data.status === 'success') {

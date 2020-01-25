@@ -31,11 +31,14 @@ apos.define('custom-code-editor', {
 
         // Clean up data and reject if unacceptable
         self.convert = function (data, name, $field, $el, field, callback) {
-            return superConvert(data, name, $field, $el, field, function() {
+            return superConvert(data, name, $field, $el, field, function(err) {
+                if (err) {
+                    return callback(err)
+                }
 
-                if (self.tabulator && self.tabulator.originalCache[name]) {
-                    let returnObj = {}
+                let returnObj = {}
 
+                if (self.tabulator.originalCache[name]) {
                     let dataObj = JSONfn.parse(self.tabulator.convertJSONFunction(data[name].code))
                     let originalObj = self.tabulator.originalCache[name].reduce((init, next, i) => Object.assign({}, init, next), {});
                     let cacheObj = self.tabulator.cache[name].reduce((init, next, i) => Object.assign({}, init, next), {});
@@ -60,12 +63,29 @@ apos.define('custom-code-editor', {
                     }
                 }
 
+                if (apos.dynamicTableUtils.$options.data().name === name) {
+                    returnObj = JSONfn.parse(self.tabulator.convertJSONFunction(data[name].code))
+                    // Set into object serverside
+                    if (Object.getOwnPropertyNames(returnObj).length > 0) {
+                        data[name].code = JSONfn.stringify(returnObj);
+                    } else {
+                        delete data[name]
+                    }
+                }
+
                 return setImmediate(callback);
             });
         }
 
         self.populate = function (object, name, $field, $el, field, callback) {
-            superPopulate(object, name, $field, $el, field, callback);
+            superPopulate(object, name, $field, $el, field, callback)
+
+            // Set tabulator object when only this value is perform
+            self.tabulator = {
+                callbacks: {},
+                cache: {},
+                originalCache: {}
+            };
 
             // Locate the element on specific schema
             let $fieldSet = apos.schemas.findFieldset($el, name);
@@ -77,36 +97,52 @@ apos.define('custom-code-editor', {
             // eslint-disable-next-line no-undef
             let editor = ace.edit($fieldInput);
 
-            self.tabulator = {
-                callbacks: {},
-                cache: {},
-                originalCache: {}
-            };
+            self.tabulator.events = function (editorType, cacheCheck = true) {
 
-            self.tabulator.events = function(editorType) {
+                let onChange = null;
 
-                let onChange = debounce(function (delta) {
-                    // delta.start, delta.end, delta.lines, delta.action
-                    let value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
+                if (cacheCheck) {
+                    onChange = debounce(function (delta) {
+                        // delta.start, delta.end, delta.lines, delta.action
+                        let value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
 
-                    try {
-                        value = self.tabulator.convertJSONFunction(value);
+                        try {
+                            value = self.tabulator.convertJSONFunction(value);
 
-                        // Check only that is change
-                        value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value));
+                            // Check only that is change
+                            value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value));
 
-                        // Restart Table
-                        self.tabulator.restartTableCallback(value);
+                            // Restart Table
+                            self.tabulator.restartTableCallback(value);
 
-                    } catch (e) {
-                        if (value !== '{}') {
+                        } catch (e) {
+                            if (value !== '{}') {
+                                apos.notify('' + editorType + ' : ' + e.message + '.', {
+                                    type: 'error',
+                                    dismiss: 3
+                                });
+                            }
+                        }
+                    }, 2000)
+                } else {
+                    onChange = debounce(function (delta) {
+                        // delta.start, delta.end, delta.lines, delta.action
+                        let value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
+
+                        try {
+                            value = self.tabulator.convertJSONFunction(value);
+
+                            // Restart Table
+                            self.tabulator.restartTableCallback(JSONfn.parse(value));
+
+                        } catch (e) {
                             apos.notify('' + editorType + ' : ' + e.message + '.', {
                                 type: 'error',
                                 dismiss: 3
                             });
                         }
-                    }
-                }, 2000)
+                    }, 2000)
+                }
 
                 // Will off the event listener for not triggering this type of events too many times when switching tabs (Bugs)
                 self[editorType].editor.session.off('change', onChange);
@@ -115,12 +151,9 @@ apos.define('custom-code-editor', {
                 self[editorType].editor.session.on('change', onChange);
             }
 
-            self.tabulator.restartTableCallback = function(callbackObj) {
-                // eslint-disable-next-line no-undef
-                apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj)
-
+            self.tabulator.restartTableCallback = function (callbackObj) {
                 // Restart Table
-                apos.dynamicTableUtils.restartTable();
+                apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
             }
 
             // Thanks to the article https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
@@ -138,7 +171,7 @@ apos.define('custom-code-editor', {
             /**
              * To convert string inputs to JSONFn format so that able to use JSONfn.parse(value) later
              */
-            self.tabulator.convertJSONFunction = function(value) {
+            self.tabulator.convertJSONFunction = function (value) {
                 value = self.tabulator.JSONFunctionStringify(value);
                 value = self.tabulator.addNewLineInFunction(value);
                 value = self.tabulator.removeBreakLines(value);
@@ -149,7 +182,7 @@ apos.define('custom-code-editor', {
             /**
              * To convert object to string for for friendly inputs adjustment on custom-code-editor
              */
-            self.tabulator.convertToString = function(value) {
+            self.tabulator.convertToString = function (value) {
                 value = JSONfn.stringify(value);
                 value = self.tabulator.JSONFunctionParse(value);
                 value = self.tabulator.JSONFuncToNormalString(value);
@@ -157,7 +190,7 @@ apos.define('custom-code-editor', {
             }
 
             // Remove break lines and replace with '\n' string for JSONfn.parse() to use
-            self.tabulator.removeBreakLines = function(text) {
+            self.tabulator.removeBreakLines = function (text) {
                 try {
                     text = text.replace(/\s+(?!\S)/g, '');
                 } catch (e) {
@@ -167,7 +200,7 @@ apos.define('custom-code-editor', {
             }
 
             // Restructurize string into friendly & familiar string. Good case for Objects Javascript for Custom-Code-Editor display
-            self.tabulator.JSONFuncToNormalString = function(text) {
+            self.tabulator.JSONFuncToNormalString = function (text) {
                 try {
                     text = text.replace(/(\\n|\\r)+/g, '\n');
                     text = text.replace(/\\"/g, '"');
@@ -180,7 +213,7 @@ apos.define('custom-code-editor', {
             }
 
             // Remove all string quotes from function and keys to make it normal string object display on custom-code-editor
-            self.tabulator.JSONFunctionParse = function(text) {
+            self.tabulator.JSONFunctionParse = function (text) {
                 try {
                     text = text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
                 } catch (e) {
@@ -190,11 +223,12 @@ apos.define('custom-code-editor', {
             }
 
             // Anything that has break lines replace it with '\n'. Also make the strings of all of them in single line of string. Easy for JSONfn.parse()
-            self.tabulator.addNewLineInFunction = function(text) {
+            self.tabulator.addNewLineInFunction = function (text) {
+                let textArr = null;
 
                 try {
                     // Store Match String
-                    let textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g);
+                    textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g);
 
                     // Replace with empty string
                     text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
@@ -209,22 +243,24 @@ apos.define('custom-code-editor', {
                         return '"' + textArr[i] + '"';
                     });
                 } catch (e) {
-                    apos.utils.warn('Unable to add new line in function for: \n', text)
+                    if (textArr) {
+                        apos.utils.warn('Unable to add new line in function for: \n', text)
+                    }
                 }
 
                 return text;
             }
 
             // Convert everything from string that has Object Javascript format with double quotes string. Later to be use on JSON.parse()
-            self.tabulator.JSONFunctionStringify = function(text) {
-                return text.replace(/(\w+?)(?=(\s*:+?))|(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})|(\w+?)(?=(\s*?):\s*function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})/g, '"$&"');
+            self.tabulator.JSONFunctionStringify = function (text) {
+                return text.replace(/(\w+?)(?=(\s*?:\s*?([""]|['']|[\w]))|(\s*?:\s*?([[\]]|[{}]|[\w\s\d]+?,)))|(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})|(\w+?)(?=(\s*?):\s*function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})/g, '"$&"');
             }
 
             // To check and compare with cache. If changes detected, replace the value. Also return with new object on changes
-            self.tabulator.cacheCheck = function(editorType, valueObj) {
+            self.tabulator.cacheCheck = function (editorType, valueObj) {
                 let returnObj = {}
                 // Return Adjusted Changes Only
-                self.tabulator.cache[editorType].forEach(function(val, i, arr) {
+                self.tabulator.cache[editorType].forEach(function (val, i, arr) {
                     for (let key in valueObj) {
                         if (valueObj.hasOwnProperty(key)) {
                             if (Object.getOwnPropertyNames(val)[0] === key &&
@@ -254,7 +290,7 @@ apos.define('custom-code-editor', {
             }
 
             // Store all editor cache
-            self.tabulator.editorCache = function(editorType, string) {
+            self.tabulator.editorCache = function (editorType, string) {
                 self.tabulator.cache[editorType] = []
                 self.tabulator.originalCache[editorType] = []
 
@@ -275,11 +311,35 @@ apos.define('custom-code-editor', {
                 }
             }
 
-            // This is where it all started
-            self.tabulator.setValue = function($form, type, reset) {
-                let beautify = beautifyJS.js;
+            self.tabulator.optionsValue = function ($form, type, options = {}, reset = false) {
+                if (Object.getOwnPropertyNames(options).length > 0) {
+                    self.originalOptions = Object.assign({}, options);
+                }
                 let existsObject = {}
-                type.forEach(function(val, i, arr) {
+                self[type].editor.session.setUseWorker(false);
+
+                if (object[type] && Object.getOwnPropertyNames(JSONfn.parse(object[type].code)).length > 0 && !reset) {
+                    existsObject = Object.assign({}, existsObject, self.originalOptions, JSONfn.parse(object[type].code))
+                    let strings = beautifyJS(self.tabulator.convertToString(JSONfn.parse(object[type].code)), beautifyOptions);
+
+                    self[type].editor.setValue(strings);
+                } else {
+                    self[type].editor.setValue(beautifyJS(self.tabulator.convertToString(self.originalOptions), beautifyOptions));
+
+                    apos.dynamicTableUtils.tabulator.options = Object.assign({}, self.originalOptions);
+                }
+
+                self.tabulator.events(type, false);
+
+                if (Object.getOwnPropertyNames(existsObject).length > 0) {
+                    self.tabulator.restartTableCallback(existsObject)
+                }
+            }
+
+            // This is where it all started
+            self.tabulator.setValue = function ($form, types, reset) {
+                let existsObject = {}
+                types.forEach(function (val, i, arr) {
                     let strings = beautifyJS(apos.dynamicTableUtils.tabulator.callbackStrings(val), beautifyOptions);
 
                     // Set Worker to be false to disable error highlighting
@@ -291,7 +351,7 @@ apos.define('custom-code-editor', {
                     if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0 && !reset) {
                         let obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings))
                         // Restart Table
-                        existsObject = Object.assign({}, existsObject, JSONfn.parse(object[val].code))
+                        existsObject = Object.assign({}, existsObject, apos.dynamicTableUtils.tabulator.options, JSONfn.parse(object[val].code))
 
                         // Change on cache if its match
                         for (let key in obj) {
@@ -299,9 +359,11 @@ apos.define('custom-code-editor', {
                                 let objectKey = Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).filter((val, i) => val === key)[0];
                                 let objectFunc = JSONfn.parse(object[val].code)[key]
                                 if (objectKey === key) {
-                                    self.tabulator.cache[val] = self.tabulator.cache[val].map(function(cacheObj, i, arr) {
+                                    self.tabulator.cache[val] = self.tabulator.cache[val].map(function (cacheObj, i, arr) {
                                         if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
-                                            return { [key]: objectFunc }
+                                            return {
+                                                [key]: objectFunc
+                                            }
                                         } else {
                                             return cacheObj
                                         }
@@ -333,7 +395,7 @@ apos.define('custom-code-editor', {
                         }
                     } else {
                         // Set Value to Editor after checking the exists object
-                        self[val].editor.session.setValue(self.tabulator.convertToString(strings));
+                        self[val].editor.session.setValue(strings);
                     }
 
                     // Apply on change events (Must trigger last!)
@@ -345,7 +407,6 @@ apos.define('custom-code-editor', {
                     self.tabulator.restartTableCallback(existsObject)
                 }
             }
-
             // End Custom Code Editor Extends
         }
     }

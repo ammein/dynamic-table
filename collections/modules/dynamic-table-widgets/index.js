@@ -54,7 +54,7 @@ module.exports = {
         self.addHelpers({
             tabulator: function(value) {
                 var newOptions = {}
-                var acceptKey = ["data", "ajaxURL"].concat(callbackFields.fields.filter((val) => val !== 'callbacks') || []);
+                var acceptKey = ["data", "ajaxURL", "options"].concat(callbackFields.fields.filter((val) => val !== 'callbacks') || []);
 
                 for (let key in value) {
                     if (value.hasOwnProperty(key)) {
