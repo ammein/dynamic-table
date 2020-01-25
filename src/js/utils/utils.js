@@ -62,6 +62,7 @@ apos.define('dynamic-table-utils', {
             this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
             this.link('apos', 'resetcallbacks', self.resetCallbacks);
             this.link('apos', 'resetoptions', self.resetOptions);
+            this.link('apos', 'reloadTable', self.reloadTable);
 
             let rowInput = self.$row.find('input');
             let columnInput = self.$column.find('input');

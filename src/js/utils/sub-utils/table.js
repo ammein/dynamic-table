@@ -86,6 +86,10 @@ let table = function(self, options) {
         self.tabulator.options.ajaxURL = undefined;
     }
 
+    self.reloadTable = function() {
+        self.restartTable(self.tabulator.options);
+    }
+
     self.restartTable = function (options) {
         // Restart Table
         if (self.tabulator.options.ajaxURL) {

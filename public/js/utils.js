@@ -923,6 +923,10 @@ var table = function table(self, options) {
     self.tabulator.options.ajaxURL = undefined;
   };
 
+  self.reloadTable = function () {
+    self.restartTable(self.tabulator.options);
+  };
+
   self.restartTable = function (options) {
     // Restart Table
     if (self.tabulator.options.ajaxURL) {
@@ -1024,6 +1028,7 @@ apos.define('dynamic-table-utils', {
       this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
       this.link('apos', 'resetcallbacks', self.resetCallbacks);
       this.link('apos', 'resetoptions', self.resetOptions);
+      this.link('apos', 'reloadTable', self.reloadTable);
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');

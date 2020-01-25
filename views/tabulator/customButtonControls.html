@@ -1,6 +1,8 @@
 {% import 'apostrophe-ui:components/buttons.html' as buttons with context %}
 {% import 'apostrophe-ui:components/dropdowns.html' as dropdowns with context %}
 
+{{ buttons.minor('', {action: 'reloadTable', icon: 'refresh'}) }}
+
 {{ dropdowns.base({
     label : 'Reset',
     items: [
