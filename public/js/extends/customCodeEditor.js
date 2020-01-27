@@ -6166,7 +6166,8 @@ apos.define('custom-code-editor', {
 
               self.tabulator.restartTableCallback(value);
             } catch (e) {
-              if (value !== '{}') {
+              // Only allow if the format is wrong.
+              if (e.name === 'SyntaxError') {
                 apos.notify('' + editorType + ' : ' + e.message + '.', {
                   type: 'error',
                   dismiss: 3
@@ -6184,10 +6185,13 @@ apos.define('custom-code-editor', {
 
               self.tabulator.restartTableCallback(JSONfn.parse(value));
             } catch (e) {
-              apos.notify('' + editorType + ' : ' + e.message + '.', {
-                type: 'error',
-                dismiss: 3
-              });
+              // Only allow if the format is wrong.
+              if (e.name === 'SyntaxError') {
+                apos.notify('' + editorType + ' : ' + e.message + '.', {
+                  type: 'error',
+                  dismiss: 3
+                });
+              }
             }
           }, 2000);
         } // Will off the event listener for not triggering this type of events too many times when switching tabs (Bugs)
@@ -6361,6 +6365,10 @@ apos.define('custom-code-editor', {
 
         if (Object.getOwnPropertyNames(options).length > 0) {
           self.originalOptions = Object.assign({}, options);
+
+          if (self.originalOptions.ajaxURL) {
+            delete self.originalOptions.ajaxURL;
+          }
         }
 
         var existsObject = {};
@@ -6372,7 +6380,7 @@ apos.define('custom-code-editor', {
           self[type].editor.setValue(strings);
         } else {
           self[type].editor.setValue((0, _jsBeautify["default"])(self.tabulator.convertToString(self.originalOptions), beautifyOptions));
-          apos.dynamicTableUtils.tabulator.options = Object.assign({}, self.originalOptions);
+          apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, self.originalOptions);
         }
 
         self.tabulator.events(type, false);

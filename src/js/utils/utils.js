@@ -14,6 +14,7 @@ apos.define('dynamic-table-utils', {
         self.allListener();
     },
     construct: function (self, options) {
+        self.options = options;
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
         self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
         self.tableEscapeChar = options.tableEscapeChar;

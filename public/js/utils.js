@@ -731,7 +731,7 @@ var options = function options(self, _options) {
         'ajaxURL': self.tabulator.options.ajaxURL
       } : {}), reset);
     } else {
-      return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, self.tabulator.options);
+      return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.tabulator.options));
     }
   };
   /**
@@ -775,7 +775,7 @@ exports["default"] = void 0;
 
 var routes = function routes(self, options) {
   self.getFieldsApi = function (query, callback) {
-    return $.get('/modules/dynamic-table/get-fields', query, function (data) {
+    return $.get('/modules/' + options.apiModuleName + '/get-fields', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -785,7 +785,7 @@ var routes = function routes(self, options) {
   };
 
   self.resetCallbacksApi = function (query, callback) {
-    return apos.modules['dynamic-table'].api('reset-callbacks', query, function (data) {
+    return apos.modules[options.apiModuleName].api('reset-callbacks', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -795,7 +795,7 @@ var routes = function routes(self, options) {
   };
 
   self.resetOptionsApi = function (query, callback) {
-    return apos.modules['dynamic-table'].api('reset-options', query, function (data) {
+    return apos.modules[options.apiModuleName].api('reset-options', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -805,7 +805,7 @@ var routes = function routes(self, options) {
   };
 
   self.updateFieldsApi = function (query, callback) {
-    return apos.modules['dynamic-table'].api('update-fields', query, function (data) {
+    return apos.modules[options.apiModuleName].api('update-fields', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -815,7 +815,7 @@ var routes = function routes(self, options) {
   };
 
   self.removeUrlsApi = function (query, callback) {
-    return apos.modules['dynamic-table'].api('remove-urls', query, function (data) {
+    return apos.modules[options.apiModuleName].api('remove-urls', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -980,7 +980,8 @@ apos.define('dynamic-table-utils', {
     self.allListener();
   },
   construct: function construct(self, options) {
-    // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
+    self.options = options; // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
+
     self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
     self.tableEscapeChar = options.tableEscapeChar;
 

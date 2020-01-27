@@ -3,29 +3,31 @@
 
 {{ buttons.minor('', {action: 'reloadTable', icon: 'refresh'}) }}
 
-{{ dropdowns.base({
-    label : 'Reset',
-    items: [
-        { label: 'Callbacks', action: 'resetCallbacks' },
-        { label: 'Options', action: 'resetOptions' }
-    ]
-}, 'button',
-{
-    direction: 'down',
-    class: 'arrow-down'
-}) }}
+{% if apos.dynamicTable.checkSchema({ type: 'custom-code-editor' } ,data.schema) %}
+    {{ dropdowns.base({
+        label : 'Download',
+        items: [
+            { label: 'CSV', action: 'downloadCSV' },
+            { label: 'JSON', action: 'downloadJSON' },
+            { label: 'Xlsx', action: 'downloadXlsx' },
+            { label: 'PDF Potrait', action: 'downloadPDFPotrait' },
+            { label: 'PDF Landscape', action: 'downloadPDFLandscape' }
+        ]
+    }, 'button',
+    {
+        direction: 'down',
+        class: 'arrow-down'
+    }) }}
 
-{{ dropdowns.base({
-    label : 'Download',
-    items: [
-        { label: 'CSV', action: 'downloadCSV' },
-        { label: 'JSON', action: 'downloadJSON' },
-        { label: 'Xlsx', action: 'downloadXlsx' },
-        { label: 'PDF Potrait', action: 'downloadPDFPotrait' },
-        { label: 'PDF Landscape', action: 'downloadPDFLandscape' }
-    ]
-}, 'button',
-{
-    direction: 'down',
-    class: 'arrow-down'
-}) }}
+    {{ dropdowns.base({
+        label : 'Reset',
+        items: [
+            { label: 'Callbacks', action: 'resetCallbacks' },
+            { label: 'Options', action: 'resetOptions' }
+        ]
+    }, 'button',
+    {
+        direction: 'down',
+        class: 'arrow-down'
+    }) }}
+{% endif %}

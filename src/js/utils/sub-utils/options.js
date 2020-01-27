@@ -6,7 +6,7 @@ let options = function(self, options) {
         if (reset) {
             return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.originalOptionsTabulator, self.tabulator.options.ajaxURL ? { 'ajaxURL': self.tabulator.options.ajaxURL } : {}), reset);
         } else {
-            return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, self.tabulator.options);
+            return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.tabulator.options));
         }
     }
 

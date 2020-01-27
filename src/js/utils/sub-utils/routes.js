@@ -1,6 +1,6 @@
 let routes = function(self, options) {
     self.getFieldsApi = function (query, callback) {
-        return $.get('/modules/dynamic-table/get-fields', query, function (data) {
+        return $.get('/modules/' + options.apiModuleName + '/get-fields', query, function (data) {
             if (data.status === 'success') {
                 return callback(null, data.message);
             }
@@ -9,7 +9,7 @@ let routes = function(self, options) {
     }
 
     self.resetCallbacksApi = function (query, callback) {
-        return apos.modules['dynamic-table'].api('reset-callbacks', query, function (data) {
+        return apos.modules[options.apiModuleName].api('reset-callbacks', query, function (data) {
             if (data.status === 'success') {
                 return callback(null, data.message);
             }
@@ -19,7 +19,7 @@ let routes = function(self, options) {
     }
 
     self.resetOptionsApi = function (query, callback) {
-        return apos.modules['dynamic-table'].api('reset-options', query, function (data) {
+        return apos.modules[options.apiModuleName].api('reset-options', query, function (data) {
             if (data.status === 'success') {
                 return callback(null, data.message);
             }
@@ -29,7 +29,7 @@ let routes = function(self, options) {
     }
 
     self.updateFieldsApi = function (query, callback) {
-        return apos.modules['dynamic-table'].api('update-fields', query, function (data) {
+        return apos.modules[options.apiModuleName].api('update-fields', query, function (data) {
             if (data.status === 'success') {
                 return callback(null, data.message)
             }
@@ -38,7 +38,7 @@ let routes = function(self, options) {
     }
 
     self.removeUrlsApi = function (query, callback) {
-        return apos.modules['dynamic-table'].api('remove-urls', query, function (data) {
+        return apos.modules[options.apiModuleName].api('remove-urls', query, function (data) {
             if (data.status === 'success') {
                 return callback(null, data.message);
             }

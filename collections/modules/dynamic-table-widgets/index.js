@@ -3,7 +3,7 @@ const callbackFields = require('../../../callbackFields.js').arrangeFields;
 module.exports = {
     extend : "apostrophe-widgets",
     label : "Table Widget",
-    alias: 'table' ,
+    alias: 'tableWidget' ,
     scene : "user",
     beforeConstruct : function(self,options){
         let fields = callbackFields.fields.filter(function(val, i) {
@@ -54,7 +54,7 @@ module.exports = {
         self.addHelpers({
             tabulator: function(value) {
                 var newOptions = {}
-                var acceptKey = ["data", "ajaxURL", "options"].concat(callbackFields.fields.filter((val) => val !== 'callbacks') || []);
+                var acceptKey = ["data", "ajaxURL", "tabulatorOptions"].concat(callbackFields.fields.filter((val) => val !== 'callbacks') || []);
 
                 for (let key in value) {
                     if (value.hasOwnProperty(key)) {

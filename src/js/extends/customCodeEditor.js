@@ -116,7 +116,8 @@ apos.define('custom-code-editor', {
                             self.tabulator.restartTableCallback(value);
 
                         } catch (e) {
-                            if (value !== '{}') {
+                            // Only allow if the format is wrong.
+                            if (e.name === 'SyntaxError') {
                                 apos.notify('' + editorType + ' : ' + e.message + '.', {
                                     type: 'error',
                                     dismiss: 3
@@ -136,10 +137,13 @@ apos.define('custom-code-editor', {
                             self.tabulator.restartTableCallback(JSONfn.parse(value));
 
                         } catch (e) {
-                            apos.notify('' + editorType + ' : ' + e.message + '.', {
-                                type: 'error',
-                                dismiss: 3
-                            });
+                            // Only allow if the format is wrong.
+                            if (e.name === 'SyntaxError') {
+                                apos.notify('' + editorType + ' : ' + e.message + '.', {
+                                    type: 'error',
+                                    dismiss: 3
+                                });
+                            }
                         }
                     }, 2000)
                 }
@@ -314,6 +318,9 @@ apos.define('custom-code-editor', {
             self.tabulator.optionsValue = function ($form, type, options = {}, reset = false) {
                 if (Object.getOwnPropertyNames(options).length > 0) {
                     self.originalOptions = Object.assign({}, options);
+                    if (self.originalOptions.ajaxURL) {
+                        delete self.originalOptions.ajaxURL;
+                    }
                 }
                 let existsObject = {}
                 self[type].editor.session.setUseWorker(false);
@@ -326,7 +333,7 @@ apos.define('custom-code-editor', {
                 } else {
                     self[type].editor.setValue(beautifyJS(self.tabulator.convertToString(self.originalOptions), beautifyOptions));
 
-                    apos.dynamicTableUtils.tabulator.options = Object.assign({}, self.originalOptions);
+                    apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, self.originalOptions);
                 }
 
                 self.tabulator.events(type, false);
