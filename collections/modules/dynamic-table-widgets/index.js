@@ -20,7 +20,8 @@ module.exports = {
                         title: 1,
                         data: 1,
                         ajaxURL: 1,
-                        id: 1,
+                        tabulatorOptions: 1,
+                        id: 1
                     }, fields)
                 }
             }
@@ -58,7 +59,7 @@ module.exports = {
 
                 for (let key in value) {
                     if (value.hasOwnProperty(key)) {
-                        if (acceptKey.includes(key) && value[key] && value[key].length > 0) {
+                        if ((acceptKey.includes(key) && ((typeof value[key] === 'string' && value[key].length > 0) || value[key]))) {
                             newOptions[key] = value[key];
                         }
                     }
