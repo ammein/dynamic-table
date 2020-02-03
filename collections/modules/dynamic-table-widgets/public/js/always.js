@@ -49,17 +49,17 @@ apos.define('dynamic-table-widgets', {
       return returnObject;
     };
 
-    self.updateOptions = function (options) {
+    self.updateOptions = function (myOptions) {
       var allOptions = {};
 
-      for (var _i = 0, _Object$keys = Object.keys(options); _i < _Object$keys.length; _i++) {
+      for (var _i = 0, _Object$keys = Object.keys(myOptions); _i < _Object$keys.length; _i++) {
         var property = _Object$keys[_i];
 
-        if (options.hasOwnProperty(property)) {
+        if (myOptions.hasOwnProperty(property)) {
           switch (true) {
-            case property === 'ajaxURL' && options[property].length > 0:
+            case property === 'ajaxURL' && myOptions[property].length > 0:
               try {
-                allOptions[property] = options[property];
+                allOptions[property] = myOptions[property];
               } catch (e) {
                 // Leave the error alone
                 apos.utils.warn('Error Init Ajax Table', e);
@@ -67,9 +67,9 @@ apos.define('dynamic-table-widgets', {
 
               break;
 
-            case property === 'data' && options[property].length > 0:
+            case property === 'data' && myOptions[property].length > 0:
               try {
-                var data = self.dataToArrayOfObjects(JSON5.parse(options[property]));
+                var data = self.dataToArrayOfObjects(JSON5.parse(myOptions[property]));
 
                 for (var key in data) {
                   if (data.hasOwnProperty(key)) {
@@ -89,13 +89,13 @@ apos.define('dynamic-table-widgets', {
       self.tabulator.options = Object.assign({}, self.tabulator.options, allOptions, self.options.tabulatorOptions);
     };
 
-    self.initTable = function (tableDOM, options) {
+    self.initTable = function (tableDOM, myOptions) {
       if (self.tabulator.table) {
         self.tabulator.table.destroy();
         self.tabulator.table = null;
       }
 
-      self.updateOptions(options);
+      self.updateOptions(JSON5.parse(myOptions));
       var table = null;
 
       if (self.tabulator.options['data']) {

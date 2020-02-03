@@ -167,11 +167,11 @@ let modal = function(self, options) {
                 for (let row = 0; row < arrayItems.length; row++) {
                     // Tough parsing but it works !
                     self.rowData[row] = Papa.parse(arrayItems[row].rowContent, {
-                        escapeChar: self.tableEscapeChar || '"',
+                        escapeChar: config.escapeChar || '"',
                         transform: function (value) {
                             let store = value;
                             // Replace the quote value to normal
-                            store = store.replace(new RegExp(`\\\\([\\s\\S])|(${self.tableEscapeChar || '"'})`, 'g'), '$1')
+                            store = store.replace(new RegExp(`\\\\([\\s\\S])|(${config.escapeChar || '"'})`, 'g'), '$1')
                             return store;
                         }
                     }).data[0]

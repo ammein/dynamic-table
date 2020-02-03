@@ -6363,16 +6363,19 @@ apos.define('custom-code-editor', {
         var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
         var reset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
 
+        // Delete if ajaxURL is available
         if (Object.getOwnPropertyNames(options).length > 0) {
           self.originalOptions = Object.assign({}, options);
 
           if (self.originalOptions.ajaxURL) {
             delete self.originalOptions.ajaxURL;
           }
-        }
+        } // To Store any existsObject available for object[type]
 
-        var existsObject = {};
-        self[type].editor.session.setUseWorker(false);
+
+        var existsObject = {}; // To disable highlight linting
+
+        self[type].editor.session.setUseWorker(false); // Check if exists object[type] is available
 
         if (object[type] && Object.getOwnPropertyNames(JSONfn.parse(object[type].code)).length > 0 && !reset) {
           existsObject = Object.assign({}, existsObject, self.originalOptions, JSONfn.parse(object[type].code));

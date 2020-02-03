@@ -567,11 +567,11 @@ var modal = function modal(self, options) {
         for (var row = 0; row < arrayItems.length; row++) {
           // Tough parsing but it works !
           self.rowData[row] = Papa.parse(arrayItems[row].rowContent, {
-            escapeChar: self.tableEscapeChar || '"',
+            escapeChar: config.escapeChar || '"',
             transform: function transform(value) {
               var store = value; // Replace the quote value to normal
 
-              store = store.replace(new RegExp("\\\\([\\s\\S])|(".concat(self.tableEscapeChar || '"', ")"), 'g'), '$1');
+              store = store.replace(new RegExp("\\\\([\\s\\S])|(".concat(config.escapeChar || '"', ")"), 'g'), '$1');
               return store;
             }
           }).data[0];

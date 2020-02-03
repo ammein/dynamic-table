@@ -42,23 +42,23 @@ apos.define('dynamic-table-widgets', {
             return returnObject;
         }
 
-        self.updateOptions = function (options) {
+        self.updateOptions = function (myOptions) {
             let allOptions = {}
-            for (let property of Object.keys(options)) {
-                if (options.hasOwnProperty(property)) {
+            for (let property of Object.keys(myOptions)) {
+                if (myOptions.hasOwnProperty(property)) {
                     switch (true) {
-                        case property === 'ajaxURL' && options[property].length > 0:
+                        case property === 'ajaxURL' && myOptions[property].length > 0:
                             try {
-                                allOptions[property] = options[property]
+                                allOptions[property] = myOptions[property]
                             } catch (e) {
                                 // Leave the error alone
                                 apos.utils.warn('Error Init Ajax Table', e);
                             }
                             break;
 
-                        case property === 'data' && options[property].length > 0:
+                        case property === 'data' && myOptions[property].length > 0:
                             try {
-                                let data = self.dataToArrayOfObjects(JSON5.parse(options[property]))
+                                let data = self.dataToArrayOfObjects(JSON5.parse(myOptions[property]))
                                 for (let key in data) {
                                     if (data.hasOwnProperty(key)) {
                                         allOptions[key] = data[key]
@@ -76,12 +76,12 @@ apos.define('dynamic-table-widgets', {
             self.tabulator.options = Object.assign({}, self.tabulator.options, allOptions, self.options.tabulatorOptions);
         }
 
-        self.initTable = function (tableDOM, options) {
+        self.initTable = function (tableDOM, myOptions) {
             if (self.tabulator.table) {
                 self.tabulator.table.destroy();
                 self.tabulator.table = null;
             }
-            self.updateOptions(options);
+            self.updateOptions(JSON5.parse(myOptions));
             let table = null
             if (self.tabulator.options['data']) {
                 table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator.options);

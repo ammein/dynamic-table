@@ -1,7 +1,7 @@
 {% extends "templateWidget.html" %}
 
 {% block table %}
-    <table id="{{ data.widget._id }}" data-query="{{ data.widget._dynamicTable | jsonAttribute() }}" data-table-options="{{ apos.tableWidget.tabulator(data.widget._dynamicTable) }}">
+    <table id="{{ data.widget._id }}" data-query="{{ data.widget._dynamicTable | jsonAttribute() }}" data-table-options="{{ apos.tableWidget.tabulator(data.widget._dynamicTable) }}" data-table-originalOptions="{{ apos.tableWidget.originalOptionsTabulator() }}">
     {# This is where tabulator begins #}
     </table>
 {% endblock %}

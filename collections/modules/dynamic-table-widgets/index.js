@@ -1,5 +1,6 @@
 const async = require('async');
 const callbackFields = require('../../../callbackFields.js').arrangeFields;
+const JSONfn = require('jsonfn').JSONfn;
 module.exports = {
     extend : "apostrophe-widgets",
     label : "Table Widget",
@@ -66,6 +67,9 @@ module.exports = {
                 }
 
                 return JSON.stringify(newOptions);
+            },
+            originalOptionsTabulator : function(){
+                return JSONfn.stringify(self.options.tabulatorOptions)
             }
         })
 
