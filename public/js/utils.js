@@ -393,7 +393,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-/* global Tabulator, Papa, JSON5 */
+/* global Tabulator, Papa, JSON5, JSONfn */
 var modal = function modal(self, options) {
   self.getJoin = function ($chooser) {
     var superAfterManagerSave = $chooser.afterManagerSave;
@@ -651,6 +651,20 @@ var modal = function modal(self, options) {
             } catch (e) {
               // Leave the error alone
               apos.utils.warn('Error Init Data Table', e);
+            }
+
+            break;
+
+          case property === 'tabulatorOptions' && ajaxResult[property].code.length > 0:
+            try {
+              self.tabulator.options = Object.assign({}, self.tabulator.options, JSONfn.parse(ajaxResult[property].code));
+
+              if (self.tabulator.table) {
+                self.restartTable();
+              }
+            } catch (e) {
+              // Leave the error alone
+              apos.utils.warn('Error Init Ajax Table', e);
             }
 
             break;

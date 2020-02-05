@@ -1,4 +1,4 @@
-/* global JSON5, Tabulator */
+/* global JSON5, Tabulator, JSONfn */
 apos.define('dynamic-table-widgets', {
     extend: 'apostrophe-widgets',
     construct: function (self, options) {
@@ -69,11 +69,20 @@ apos.define('dynamic-table-widgets', {
                                 apos.utils.warn('Error Init Data Table', e);
                             }
                             break;
+
+                        case property === 'tabulatorOptions' && myOptions[property].code.length > 0:
+                            try {
+                                allOptions = { ...allOptions, ...JSONfn.parse(myOptions[property].code) }
+                            } catch (e) {
+                                // Leave the error alone
+                                apos.utils.warn('Error Init Ajax Table', e);
+                            }
+                            break;
                     }
                 }
             }
 
-            self.tabulator.options = Object.assign({}, self.tabulator.options, allOptions, self.options.tabulatorOptions);
+            self.tabulator.options = Object.assign({}, self.tabulator.options, self.options.tabulatorOptions, allOptions);
         }
 
         self.initTable = function (tableDOM, myOptions) {

@@ -1,9 +1,13 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 
+function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
+
+function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
+
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/* global JSON5, Tabulator */
+/* global JSON5, Tabulator, JSONfn */
 apos.define('dynamic-table-widgets', {
   extend: 'apostrophe-widgets',
   construct: function construct(self, options) {
@@ -82,11 +86,21 @@ apos.define('dynamic-table-widgets', {
               }
 
               break;
+
+            case property === 'tabulatorOptions' && myOptions[property].code.length > 0:
+              try {
+                allOptions = _objectSpread({}, allOptions, {}, JSONfn.parse(myOptions[property].code));
+              } catch (e) {
+                // Leave the error alone
+                apos.utils.warn('Error Init Ajax Table', e);
+              }
+
+              break;
           }
         }
       }
 
-      self.tabulator.options = Object.assign({}, self.tabulator.options, allOptions, self.options.tabulatorOptions);
+      self.tabulator.options = Object.assign({}, self.tabulator.options, self.options.tabulatorOptions, allOptions);
     };
 
     self.initTable = function (tableDOM, myOptions) {

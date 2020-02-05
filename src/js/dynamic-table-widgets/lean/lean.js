@@ -74,11 +74,19 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
                             apos.utils.warn('Error Init Data Table', e);
                         }
                         break;
+
+                    case property === 'tabulatorOptions' && myOptions[property].code.length > 0:
+                        try {
+                            allOptions = { ...allOptions, ...JSONfn.parse(myOptions[property].code) }
+                        } catch (e) {
+                            // Leave the error alone
+                            apos.utils.warn('Error Init Ajax Table', e);
+                        }
+                        break;
                 }
             }
         }
-
-        apos.dynamicTableLean.options = Object.assign({}, apos.dynamicTableLean.options, allOptions, options);
+        apos.dynamicTableLean[data._id].options = Object.assign({}, apos.dynamicTableLean[data._id].options, options, allOptions);
     }
 
     utils.initTable = function (tableDOM, tableOptions) {
@@ -90,11 +98,11 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
         updateOptions(tableOptions);
 
         let initTable = null
-        if (apos.dynamicTableLean.options['data']) {
-            initTable = new Tabulator(document.getElementById(tableDOM.id), apos.dynamicTableLean.options);
-            initTable.setData(apos.dynamicTableLean.options['data'])
+        if (apos.dynamicTableLean[data._id].options['data']) {
+            initTable = new Tabulator(document.getElementById(tableDOM.id), apos.dynamicTableLean[data._id].options);
+            initTable.setData(apos.dynamicTableLean[data._id].options['data'])
         } else {
-            initTable = new Tabulator(document.getElementById(tableDOM.id), apos.dynamicTableLean.options);
+            initTable = new Tabulator(document.getElementById(tableDOM.id), apos.dynamicTableLean[data._id].options);
         }
         table.tabulator = initTable;
 
@@ -129,7 +137,6 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
     apos.dynamicTableLean = apos.utils.assign(apos.dynamicTableLean || {}, {
         utils: utils,
-        options: options,
         [data._id]: table
     })
 }
