@@ -89,7 +89,7 @@ let insertCode = function (self, options, object) {
                             }
 
                             // Apply to editor string value
-                            self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj))
+                            self[val].editor.session.setValue(beautifyJS(self.tabulator.convertToString(editorStringObj), beautifyOptions))
                         }
                     }
                 }

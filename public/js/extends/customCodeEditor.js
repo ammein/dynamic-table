@@ -6439,7 +6439,7 @@ var insertCode = function insertCode(self, options, object) {
               } // Apply to editor string value
 
 
-              self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj));
+              self[val].editor.session.setValue((0, _beautifier["default"])(self.tabulator.convertToString(editorStringObj), _beautifier.beautifyOptions));
             }
           }
         };
