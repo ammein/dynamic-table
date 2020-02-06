@@ -98,14 +98,14 @@ module.exports = function(self, options) {
             }
 
             var newPiece = _.cloneDeep(result);
-
             // Find Choices in callbacks checkboxes showFields
-            var choices = self.tableSchemas.filter((val, i) => val.name === 'callbacks').reduce((init, next) => Object.assign({}, init, next), {})['choices'];
+
+            var choices = self.tableSchemas.filter((val, i) => val.group.name === 'callbacks')
 
             // Loop each choices that matched with results. Then delete it on newPiece object
             choices.forEach(function (val, i, arr) {
-                if (val.showFields[0] === Object.getOwnPropertyNames(newPiece).filter((value) => value === val.showFields[0])[0]) {
-                    delete newPiece[val.showFields[0]];
+                if (Object.getOwnPropertyNames(newPiece).includes(val.name)) {
+                    delete newPiece[val.name];
                 }
             })
 

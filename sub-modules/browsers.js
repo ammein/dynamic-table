@@ -16,11 +16,7 @@ module.exports = function(self, options) {
 
         // To push apos.modules["dynamic-table-utils"] && also other options to pass on
         self.apos.push.browserCall('user', 'apos.createModule(? , ? , ?)', 'dynamic-table-utils', {
-            tabulator: self.options.tabulator || {
-                layout: 'fitColumns',
-                autoColumns: true,
-                responsiveLayout: true
-            },
+            tabulator: self.options.tabulatorOptions,
             apiModuleName: self.__meta.name,
             callbacks: self.callbacks,
             ...myOptions

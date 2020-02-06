@@ -1,7 +1,7 @@
 module.exports = function(self, options) {
     self.dynamicTableSchemas = function () {
-        self.tableSchemas = self.apos.schemas.subset(self.schema,
-            ['title', 'row', 'column', 'data', 'ajaxURL', 'id', 'url', 'adjustRow', 'adjustColumn', 'tabulatorOptions', 'callbacks', 'tableCallback', 'columnCallback', 'ajaxCallback', 'rowCallback', 'cellCallback', 'dataCallback', 'filterCallback', 'sortingCallback', 'layoutCallback', 'paginationCallback', 'selectionCallback', 'rowMovementCallback', 'validationCallback', 'historyCallback', 'clipboardCallback', 'downloadCallback', 'dataTreeCallback', 'scrollingCallback'])
+        let subsetSchemaLists = self.schema.filter(val => val.browserSchema).map(val => val.name);
+        self.tableSchemas = self.apos.schemas.subset(self.schema, subsetSchemaLists)
         self.tableSchemasGroup = self.apos.schemas.toGroups(self.schema);
     };
 }

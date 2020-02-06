@@ -6041,33 +6041,17 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 (function (setImmediate){
 "use strict";
 
-var _jsBeautify = _interopRequireDefault(require("js-beautify"));
+var _cache = _interopRequireDefault(require("./sub-customCodeEditor/cache"));
+
+var _strings = _interopRequireDefault(require("./sub-customCodeEditor/strings"));
+
+var _insertCode = _interopRequireDefault(require("./sub-customCodeEditor/insertCode"));
+
+var _events = _interopRequireDefault(require("./sub-customCodeEditor/events"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-var beautifyOptions = {
-  'indent_size': '4',
-  'indent_char': ' ',
-  'max_preserve_newlines': '5',
-  'preserve_newlines': true,
-  'keep_array_indentation': false,
-  'break_chained_methods': false,
-  'indent_scripts': 'normal',
-  'brace_style': 'collapse',
-  'space_before_conditional': true,
-  'unescape_strings': false,
-  'jslint_happy': true,
-  'end_with_newline': false,
-  'wrap_line_length': '0',
-  'indent_inner_html': false,
-  'comma_first': false,
-  'e4x': false,
-  'indent_empty_lines': false
-};
 /* global JSONfn, ace */
-
 apos.define('custom-code-editor', {
   construct: function construct(self, options) {
     // create superPopulate to extend method
@@ -6150,323 +6134,439 @@ apos.define('custom-code-editor', {
 
       var editor = ace.edit($fieldInput);
 
-      self.tabulator.events = function (editorType) {
-        var cacheCheck = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
-        var onChange = null;
-
-        if (cacheCheck) {
-          onChange = debounce(function (delta) {
-            // delta.start, delta.end, delta.lines, delta.action
-            var value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
-
-            try {
-              value = self.tabulator.convertJSONFunction(value); // Check only that is change
-
-              value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value)); // Restart Table
-
-              self.tabulator.restartTableCallback(value);
-            } catch (e) {
-              // Only allow if the format is wrong.
-              if (e.name === 'SyntaxError') {
-                apos.notify('' + editorType + ' : ' + e.message + '.', {
-                  type: 'error',
-                  dismiss: 3
-                });
-              }
-            }
-          }, 2000);
-        } else {
-          onChange = debounce(function (delta) {
-            // delta.start, delta.end, delta.lines, delta.action
-            var value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
-
-            try {
-              value = self.tabulator.convertJSONFunction(value); // Restart Table
-
-              self.tabulator.restartTableCallback(JSONfn.parse(value));
-            } catch (e) {
-              // Only allow if the format is wrong.
-              if (e.name === 'SyntaxError') {
-                apos.notify('' + editorType + ' : ' + e.message + '.', {
-                  type: 'error',
-                  dismiss: 3
-                });
-              }
-            }
-          }, 2000);
-        } // Will off the event listener for not triggering this type of events too many times when switching tabs (Bugs)
-
-
-        self[editorType].editor.session.off('change', onChange); // Add new event listener on change
-
-        self[editorType].editor.session.on('change', onChange);
-      };
-
       self.tabulator.restartTableCallback = function (callbackObj) {
         // Restart Table
         apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
-      }; // Thanks to the article https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
-
-
-      var debounce = function debounce(func, delay) {
-        var inDebounce;
-        return function () {
-          var context = this;
-          var args = arguments;
-          clearTimeout(inDebounce);
-          inDebounce = setTimeout(function () {
-            return func.apply(context, args);
-          }, delay);
-        };
-      }; // Using JSONfn (https://github.com/vkiryukhin/jsonfn) to make function enable on JSON Object
-
-      /**
-       * To convert string inputs to JSONFn format so that able to use JSONfn.parse(value) later
-       */
-
-
-      self.tabulator.convertJSONFunction = function (value) {
-        value = self.tabulator.JSONFunctionStringify(value);
-        value = self.tabulator.addNewLineInFunction(value);
-        value = self.tabulator.removeBreakLines(value);
-        return value;
-      };
-      /**
-       * To convert object to string for for friendly inputs adjustment on custom-code-editor
-       */
-
-
-      self.tabulator.convertToString = function (value) {
-        value = JSONfn.stringify(value);
-        value = self.tabulator.JSONFunctionParse(value);
-        value = self.tabulator.JSONFuncToNormalString(value);
-        return value;
-      }; // Remove break lines and replace with '\n' string for JSONfn.parse() to use
-
-
-      self.tabulator.removeBreakLines = function (text) {
-        try {
-          text = text.replace(/\s+(?!\S)/g, '');
-        } catch (e) {
-          apos.utils.warn('Unable to remove break line for: \n', text);
-        }
-
-        return text;
-      }; // Restructurize string into friendly & familiar string. Good case for Objects Javascript for Custom-Code-Editor display
-
-
-      self.tabulator.JSONFuncToNormalString = function (text) {
-        try {
-          text = text.replace(/(\\n|\\r)+/g, '\n');
-          text = text.replace(/\\"/g, '"');
-          text = text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
-        } catch (e) {
-          apos.utils.warn('Unable to convert to string for: \n', text);
-        }
-
-        return text;
-      }; // Remove all string quotes from function and keys to make it normal string object display on custom-code-editor
-
-
-      self.tabulator.JSONFunctionParse = function (text) {
-        try {
-          text = text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
-        } catch (e) {
-          apos.utils.warn('Unable to JSONfn parse format for: \n', text);
-        }
-
-        return text;
-      }; // Anything that has break lines replace it with '\n'. Also make the strings of all of them in single line of string. Easy for JSONfn.parse()
-
-
-      self.tabulator.addNewLineInFunction = function (text) {
-        var textArr = null;
-
-        try {
-          // Store Match String
-          textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g); // Replace with empty string
-
-          text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
-          textArr = textArr.map(function (val, i, arr) {
-            val = val.replace(/"/g, '\\"');
-            return val.replace(/(\r\n|\n|\r)/g, '\\n');
-          });
-          var i = -1;
-          text = text.replace(/""/g, function (val) {
-            i++;
-            return '"' + textArr[i] + '"';
-          });
-        } catch (e) {
-          if (textArr) {
-            apos.utils.warn('Unable to add new line in function for: \n', text);
-          }
-        }
-
-        return text;
-      }; // Convert everything from string that has Object Javascript format with double quotes string. Later to be use on JSON.parse()
-
-
-      self.tabulator.JSONFunctionStringify = function (text) {
-        return text.replace(/(\w+?)(?=(\s*?:\s*?([""]|['']|[\w]))|(\s*?:\s*?([[\]]|[{}]|[\w\s\d]+?,)))|(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})|(\w+?)(?=(\s*?):\s*function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})/g, '"$&"');
-      }; // To check and compare with cache. If changes detected, replace the value. Also return with new object on changes
-
-
-      self.tabulator.cacheCheck = function (editorType, valueObj) {
-        var returnObj = {}; // Return Adjusted Changes Only
-
-        self.tabulator.cache[editorType].forEach(function (val, i, arr) {
-          for (var key in valueObj) {
-            if (valueObj.hasOwnProperty(key)) {
-              if (Object.getOwnPropertyNames(val)[0] === key && val[key].toString() !== valueObj[key].toString()) {
-                returnObj[key] = valueObj[key];
-              }
-            }
-          }
-        }); // Adjust Cache
-
-        var _loop2 = function _loop2(key) {
-          if (valueObj.hasOwnProperty(key)) {
-            self.tabulator.cache[editorType] = self.tabulator.cache[editorType].map(function (val, i, arr) {
-              if (key === Object.getOwnPropertyNames(val)[0]) {
-                return _defineProperty({}, key, valueObj[key]);
-              } else {
-                return val;
-              }
-            });
-          }
-        };
-
-        for (var key in valueObj) {
-          _loop2(key);
-        }
-
-        return returnObj;
-      }; // Store all editor cache
-
-
-      self.tabulator.editorCache = function (editorType, string) {
-        self.tabulator.cache[editorType] = [];
-        self.tabulator.originalCache[editorType] = []; // Beautify it
-
-        string = (0, _jsBeautify["default"])(string, beautifyOptions);
-        var JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
-
-        for (var key in JSONFuncObj) {
-          if (JSONFuncObj.hasOwnProperty(key)) {
-            self.tabulator.cache[editorType] = self.tabulator.cache[editorType].concat(_defineProperty({}, key, JSONFuncObj[key]));
-            self.tabulator.originalCache[editorType] = self.tabulator.originalCache[editorType].concat(_defineProperty({}, key, JSONFuncObj[key]));
-          }
-        }
       };
 
-      self.tabulator.optionsValue = function ($form, type) {
-        var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-        var reset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
-
-        // Delete if ajaxURL is available
-        if (Object.getOwnPropertyNames(options).length > 0) {
-          self.originalOptions = Object.assign({}, options);
-
-          if (self.originalOptions.ajaxURL) {
-            delete self.originalOptions.ajaxURL;
-          }
-        } // To Store any existsObject available for object[type]
-
-
-        var existsObject = {}; // To disable highlight linting
-
-        self[type].editor.session.setUseWorker(false); // Check if exists object[type] is available
-
-        if (object[type] && Object.getOwnPropertyNames(JSONfn.parse(object[type].code)).length > 0 && !reset) {
-          existsObject = Object.assign({}, existsObject, self.originalOptions, JSONfn.parse(object[type].code));
-          var strings = (0, _jsBeautify["default"])(self.tabulator.convertToString(JSONfn.parse(object[type].code)), beautifyOptions);
-          self[type].editor.setValue(strings);
-        } else {
-          self[type].editor.setValue((0, _jsBeautify["default"])(self.tabulator.convertToString(self.originalOptions), beautifyOptions));
-          apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, self.originalOptions);
-        }
-
-        self.tabulator.events(type, false);
-
-        if (Object.getOwnPropertyNames(existsObject).length > 0) {
-          self.tabulator.restartTableCallback(existsObject);
-        }
-      }; // This is where it all started
-
-
-      self.tabulator.setValue = function ($form, types, reset) {
-        var existsObject = {};
-        types.forEach(function (val, i, arr) {
-          var strings = (0, _jsBeautify["default"])(apos.dynamicTableUtils.tabulator.callbackStrings(val), beautifyOptions); // Set Worker to be false to disable error highlighting
-
-          self[val].editor.session.setUseWorker(false); // Store to cache for comparison check
-
-          self.tabulator.editorCache(val, strings);
-
-          if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0 && !reset) {
-            var obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings)); // Restart Table
-
-            existsObject = Object.assign({}, existsObject, apos.dynamicTableUtils.tabulator.options, JSONfn.parse(object[val].code)); // Change on cache if its match
-
-            var _loop3 = function _loop3(key) {
-              if (obj.hasOwnProperty(key)) {
-                var objectKey = Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).filter(function (val, i) {
-                  return val === key;
-                })[0];
-                var objectFunc = JSONfn.parse(object[val].code)[key];
-
-                if (objectKey === key) {
-                  self.tabulator.cache[val] = self.tabulator.cache[val].map(function (cacheObj, i, arr) {
-                    if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
-                      return _defineProperty({}, key, objectFunc);
-                    } else {
-                      return cacheObj;
-                    }
-                  });
-                  self.tabulator.originalCache[val] = self.tabulator.originalCache[val].map(function (cacheObj, i, arr) {
-                    if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
-                      return _defineProperty({}, key, objectFunc);
-                    } else {
-                      return cacheObj;
-                    }
-                  }); // Parse the objects of functions and convert to string
-
-                  var editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(strings));
-
-                  for (var editorKey in editorStringObj) {
-                    if (editorStringObj.hasOwnProperty(editorKey)) {
-                      if (editorKey === key) {
-                        editorStringObj[editorKey] = objectFunc;
-                      }
-                    }
-                  } // Apply to editor string value
-
-
-                  self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj));
-                }
-              }
-            };
-
-            for (var key in obj) {
-              _loop3(key);
-            }
-          } else {
-            // Set Value to Editor after checking the exists object
-            self[val].editor.session.setValue(strings);
-          } // Apply on change events (Must trigger last!)
-
-
-          self.tabulator.events(val); // End Set Value
-        }); // End loop
-
-        if (Object.getOwnPropertyNames(existsObject).length > 0) {
-          self.tabulator.restartTableCallback(existsObject);
-        }
-      }; // End Custom Code Editor Extends
-
+      (0, _events["default"])(self, options);
+      (0, _strings["default"])(self, options);
+      (0, _cache["default"])(self, options);
+      (0, _insertCode["default"])(self, options, object); // End Custom Code Editor Extends
     };
   }
 });
 
 }).call(this,require("timers").setImmediate)
-},{"js-beautify":1,"timers":26}]},{},[27]);
+},{"./sub-customCodeEditor/cache":29,"./sub-customCodeEditor/events":30,"./sub-customCodeEditor/insertCode":31,"./sub-customCodeEditor/strings":32,"timers":26}],28:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = exports.beautifyOptions = void 0;
+
+var _jsBeautify = _interopRequireDefault(require("js-beautify"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var beautifyOptions = {
+  'indent_size': '4',
+  'indent_char': ' ',
+  'max_preserve_newlines': '5',
+  'preserve_newlines': true,
+  'keep_array_indentation': false,
+  'break_chained_methods': false,
+  'indent_scripts': 'normal',
+  'brace_style': 'collapse',
+  'space_before_conditional': true,
+  'unescape_strings': false,
+  'jslint_happy': true,
+  'end_with_newline': false,
+  'wrap_line_length': '0',
+  'indent_inner_html': false,
+  'comma_first': false,
+  'e4x': false,
+  'indent_empty_lines': false
+};
+exports.beautifyOptions = beautifyOptions;
+var _default = _jsBeautify["default"];
+exports["default"] = _default;
+
+},{"js-beautify":1}],29:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _beautifier = _interopRequireWildcard(require("./beautifier"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/* global JSONfn  */
+var cache = function cache(self, options) {
+  // To check and compare with cache. If changes detected, replace the value. Also return with new object on changes
+  self.tabulator.cacheCheck = function (editorType, valueObj) {
+    var returnObj = {}; // Return Adjusted Changes Only
+
+    self.tabulator.cache[editorType].forEach(function (val, i, arr) {
+      for (var key in valueObj) {
+        if (valueObj.hasOwnProperty(key)) {
+          if (Object.getOwnPropertyNames(val)[0] === key && val[key].toString() !== valueObj[key].toString()) {
+            returnObj[key] = valueObj[key];
+          }
+        }
+      }
+    }); // Adjust Cache
+
+    var _loop = function _loop(key) {
+      if (valueObj.hasOwnProperty(key)) {
+        self.tabulator.cache[editorType] = self.tabulator.cache[editorType].map(function (val, i, arr) {
+          if (key === Object.getOwnPropertyNames(val)[0]) {
+            return _defineProperty({}, key, valueObj[key]);
+          } else {
+            return val;
+          }
+        });
+      }
+    };
+
+    for (var key in valueObj) {
+      _loop(key);
+    }
+
+    return returnObj;
+  }; // Store all editor cache
+
+
+  self.tabulator.editorCache = function (editorType, string) {
+    self.tabulator.cache[editorType] = [];
+    self.tabulator.originalCache[editorType] = []; // Beautify it
+
+    string = (0, _beautifier["default"])(string, _beautifier.beautifyOptions);
+    var JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
+
+    for (var key in JSONFuncObj) {
+      if (JSONFuncObj.hasOwnProperty(key)) {
+        self.tabulator.cache[editorType] = self.tabulator.cache[editorType].concat(_defineProperty({}, key, JSONFuncObj[key]));
+        self.tabulator.originalCache[editorType] = self.tabulator.originalCache[editorType].concat(_defineProperty({}, key, JSONFuncObj[key]));
+      }
+    }
+  };
+};
+
+var _default = cache;
+exports["default"] = _default;
+
+},{"./beautifier":28}],30:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = exports.debounce = void 0;
+
+/* global JSONfn */
+var events = function events(self, options) {
+  self.tabulator.events = function (editorType) {
+    var cacheCheck = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var onChange = null;
+
+    if (cacheCheck) {
+      onChange = debounce(function (delta) {
+        // delta.start, delta.end, delta.lines, delta.action
+        var value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
+
+        try {
+          value = self.tabulator.convertJSONFunction(value); // Check only that is change
+
+          value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value)); // Restart Table
+
+          self.tabulator.restartTableCallback(value);
+        } catch (e) {
+          // Only allow if the format is wrong.
+          if (e.name === 'SyntaxError') {
+            apos.notify('' + editorType + ' : ' + e.message + '.', {
+              type: 'error',
+              dismiss: 3
+            });
+          }
+        }
+      }, 2000);
+    } else {
+      onChange = debounce(function (delta) {
+        // delta.start, delta.end, delta.lines, delta.action
+        var value = self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g) !== null ? self[editorType].editor.session.getValue().match(/(\{(.|[\r\n])+\})/g)[0] : '{}';
+
+        try {
+          value = self.tabulator.convertJSONFunction(value); // Restart Table
+
+          self.tabulator.restartTableCallback(JSONfn.parse(value));
+        } catch (e) {
+          // Only allow if the format is wrong.
+          if (e.name === 'SyntaxError') {
+            apos.notify('' + editorType + ' : ' + e.message + '.', {
+              type: 'error',
+              dismiss: 3
+            });
+          }
+        }
+      }, 2000);
+    } // Will off the event listener for not triggering this type of events too many times when switching tabs (Bugs)
+
+
+    self[editorType].editor.session.off('change', onChange); // Add new event listener on change
+
+    self[editorType].editor.session.on('change', onChange);
+  };
+}; // Thanks to the article https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
+
+
+var debounce = function debounce(func, delay) {
+  var inDebounce;
+  return function () {
+    var context = this;
+    var args = arguments;
+    clearTimeout(inDebounce);
+    inDebounce = setTimeout(function () {
+      return func.apply(context, args);
+    }, delay);
+  };
+};
+
+exports.debounce = debounce;
+var _default = events;
+exports["default"] = _default;
+
+},{}],31:[function(require,module,exports){
+"use strict";
+
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var _beautifier = _interopRequireWildcard(require("./beautifier"));
+
+function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
+
+function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } if (obj === null || _typeof(obj) !== "object" && typeof obj !== "function") { return { "default": obj }; } var cache = _getRequireWildcardCache(); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj["default"] = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/* global JSONfn */
+var insertCode = function insertCode(self, options, object) {
+  self.tabulator.optionsValue = function ($form, type) {
+    var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    var reset = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+    // Delete if ajaxURL is available
+    if (Object.getOwnPropertyNames(options).length > 0) {
+      self.originalOptions = Object.assign({}, options);
+
+      if (self.originalOptions.ajaxURL) {
+        delete self.originalOptions.ajaxURL;
+      }
+    } // To Store any existsObject available for object[type]
+
+
+    var existsObject = {}; // To disable highlight linting
+
+    self[type].editor.session.setUseWorker(false); // Check if exists object[type] is available
+
+    if (object[type] && Object.getOwnPropertyNames(JSONfn.parse(object[type].code)).length > 0 && !reset) {
+      existsObject = Object.assign({}, existsObject, self.originalOptions, JSONfn.parse(object[type].code));
+      var strings = (0, _beautifier["default"])(self.tabulator.convertToString(JSONfn.parse(object[type].code)), _beautifier.beautifyOptions);
+      self[type].editor.setValue(strings);
+    } else {
+      self[type].editor.setValue((0, _beautifier["default"])(self.tabulator.convertToString(self.originalOptions), _beautifier.beautifyOptions));
+      apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, self.originalOptions);
+    }
+
+    self.tabulator.events(type, false);
+
+    if (Object.getOwnPropertyNames(existsObject).length > 0) {
+      self.tabulator.restartTableCallback(existsObject);
+    }
+  }; // This is where it all started
+
+
+  self.tabulator.setValue = function ($form, types, reset) {
+    var existsObject = {};
+    types.forEach(function (val, i, arr) {
+      var strings = (0, _beautifier["default"])(apos.dynamicTableUtils.tabulator.callbackStrings(val), _beautifier.beautifyOptions); // Set Worker to be false to disable error highlighting
+
+      self[val].editor.session.setUseWorker(false); // Store to cache for comparison check
+
+      self.tabulator.editorCache(val, strings);
+
+      if (object[val] && Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).length > 0 && !reset) {
+        var obj = JSONfn.parse(self.tabulator.convertJSONFunction(strings)); // Restart Table
+
+        existsObject = Object.assign({}, existsObject, apos.dynamicTableUtils.tabulator.options, JSONfn.parse(object[val].code)); // Change on cache if its match
+
+        var _loop = function _loop(key) {
+          if (obj.hasOwnProperty(key)) {
+            var objectKey = Object.getOwnPropertyNames(JSONfn.parse(object[val].code)).filter(function (val, i) {
+              return val === key;
+            })[0];
+            var objectFunc = JSONfn.parse(object[val].code)[key];
+
+            if (objectKey === key) {
+              self.tabulator.cache[val] = self.tabulator.cache[val].map(function (cacheObj, i, arr) {
+                if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
+                  return _defineProperty({}, key, objectFunc);
+                } else {
+                  return cacheObj;
+                }
+              });
+              self.tabulator.originalCache[val] = self.tabulator.originalCache[val].map(function (cacheObj, i, arr) {
+                if (Object.getOwnPropertyNames(cacheObj)[0] === key) {
+                  return _defineProperty({}, key, objectFunc);
+                } else {
+                  return cacheObj;
+                }
+              }); // Parse the objects of functions and convert to string
+
+              var editorStringObj = JSONfn.parse(self.tabulator.convertJSONFunction(strings));
+
+              for (var editorKey in editorStringObj) {
+                if (editorStringObj.hasOwnProperty(editorKey)) {
+                  if (editorKey === key) {
+                    editorStringObj[editorKey] = objectFunc;
+                  }
+                }
+              } // Apply to editor string value
+
+
+              self[val].editor.session.setValue(self.tabulator.convertToString(editorStringObj));
+            }
+          }
+        };
+
+        for (var key in obj) {
+          _loop(key);
+        }
+      } else {
+        // Set Value to Editor after checking the exists object
+        self[val].editor.session.setValue(strings);
+      } // Apply on change events (Must trigger last!)
+
+
+      self.tabulator.events(val); // End Set Value
+    }); // End loop
+
+    if (Object.getOwnPropertyNames(existsObject).length > 0) {
+      self.tabulator.restartTableCallback(existsObject);
+    }
+  };
+};
+
+var _default = insertCode;
+exports["default"] = _default;
+
+},{"./beautifier":28}],32:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+/* global JSONfn */
+var strings = function strings(self, options) {
+  // Using JSONfn (https://github.com/vkiryukhin/jsonfn) to make function enable on JSON Object
+
+  /**
+   * To convert string inputs to JSONFn format so that able to use JSONfn.parse(value) later
+   */
+  self.tabulator.convertJSONFunction = function (value) {
+    value = self.tabulator.JSONFunctionStringify(value);
+    value = self.tabulator.addNewLineInFunction(value);
+    value = self.tabulator.removeBreakLines(value);
+    return value;
+  };
+  /**
+   * To convert object to string for for friendly inputs adjustment on custom-code-editor
+   */
+
+
+  self.tabulator.convertToString = function (value) {
+    value = JSONfn.stringify(value);
+    value = self.tabulator.JSONFunctionParse(value);
+    value = self.tabulator.JSONFuncToNormalString(value);
+    return value;
+  }; // Remove break lines and replace with '\n' string for JSONfn.parse() to use
+
+
+  self.tabulator.removeBreakLines = function (text) {
+    try {
+      text = text.replace(/\s+(?!\S)/g, '');
+    } catch (e) {
+      apos.utils.warn('Unable to remove break line for: \n', text);
+    }
+
+    return text;
+  }; // Restructurize string into friendly & familiar string. Good case for Objects Javascript for Custom-Code-Editor display
+
+
+  self.tabulator.JSONFuncToNormalString = function (text) {
+    try {
+      text = text.replace(/(\\n|\\r)+/g, '\n');
+      text = text.replace(/\\"/g, '"');
+      text = text.replace(/"(\{(.|[\r\n])+\})"/g, '$1');
+    } catch (e) {
+      apos.utils.warn('Unable to convert to string for: \n', text);
+    }
+
+    return text;
+  }; // Remove all string quotes from function and keys to make it normal string object display on custom-code-editor
+
+
+  self.tabulator.JSONFunctionParse = function (text) {
+    try {
+      text = text.replace(/(?:"(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})")|"(\w+?)"(?=(\s*?):\s*(?!function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}))/g, '$1$3');
+    } catch (e) {
+      apos.utils.warn('Unable to JSONfn parse format for: \n', text);
+    }
+
+    return text;
+  }; // Anything that has break lines replace it with '\n'. Also make the strings of all of them in single line of string. Easy for JSONfn.parse()
+
+
+  self.tabulator.addNewLineInFunction = function (text) {
+    var textArr = null;
+
+    try {
+      // Store Match String
+      textArr = text.match(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g); // Replace with empty string
+
+      text = text.replace(/function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\}/g, '');
+      textArr = textArr.map(function (val, i, arr) {
+        val = val.replace(/"/g, '\\"');
+        return val.replace(/(\r\n|\n|\r)/g, '\\n');
+      });
+      var i = -1;
+      text = text.replace(/""/g, function (val) {
+        i++;
+        return '"' + textArr[i] + '"';
+      });
+    } catch (e) {
+      if (textArr) {
+        apos.utils.warn('Unable to add new line in function for: \n', text);
+      }
+    }
+
+    return text;
+  }; // Convert everything from string that has Object Javascript format with double quotes string. Later to be use on JSON.parse()
+
+
+  self.tabulator.JSONFunctionStringify = function (text) {
+    return text.replace(/(\w+?)(?=(\s*?:\s*?([""]|['']|[\w]))|(\s*?:\s*?([[\]]|[{}]|[\w\s\d]+?,)))|(function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})|(\w+?)(?=(\s*?):\s*function\s*([A-z0-9]+)?\s*\((?:[^)(]+|\((?:[^)(]+|\([^)(]*\))*\))*\)\s*\{(?:[^}{]+|\{(?:[^}{]+|\{[^}{]*\})*\})*\})/g, '"$&"');
+  };
+};
+
+var _default = strings;
+exports["default"] = _default;
+
+},{}]},{},[27]);
