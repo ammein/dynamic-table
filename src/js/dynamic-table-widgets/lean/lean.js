@@ -1,6 +1,4 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-redeclare */
-// eslint-disable-next-line no-undef
+/* global Tabulator, JSON5, JSONfn */
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     // Use object so that devs can extend or
     let utils = {};
