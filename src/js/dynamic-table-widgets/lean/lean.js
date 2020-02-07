@@ -122,12 +122,16 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
         table['el'] = el.querySelector('table#' + data._id);
         table.cloneTable = table.el.cloneNode();
 
+        // Append new table, ALWAYS
         let parent = table.el.parentElement;
         parent.innerHTML = '';
         parent.appendChild(table.cloneTable.cloneNode());
         table.el = parent.querySelector('table#' + data._id);
+
+        // Get Options
         let getOptions = table.el.getAttribute('data-table-options');
 
+        // Assign to this options (Only for lean)
         options = Object.assign({}, JSONfn.parse(table.el.getAttribute('data-table-originalOptions')))
 
         return utils.initTable(table.el, JSONfn.parse(getOptions));
