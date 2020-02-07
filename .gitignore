@@ -2,5 +2,10 @@ node_modules
 .DS_Store
 package-lock.json
 src/js/**
+.eslintignore
+.eslintrc
+.stylelintrc
+gulpfile.babel.js
+.babelrc
 *.log
 *-test

@@ -1,6 +1,0 @@
-{
-    "extends": "stylelint-config-punkave",
-    "rules" :{
-        "indentation" : 4
-    }
-}

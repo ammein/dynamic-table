@@ -1,8 +1,0 @@
-# In Lib Modules
-/collections/modules/**/*.js
-monitor-config.js
-index.js
-gulpfile.babel.js
-
-# In public folders
-public/js/**/*.js
