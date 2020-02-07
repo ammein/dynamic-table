@@ -2,3 +2,9 @@
 # Make this branch clean as possible
 # https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes#_merge_strategies
 .gitignore merge=ours
+src/** merge=ours
+.eslintignore merge=ours
+.eslintrc merge=ours
+.stylelintrc merge=ours
+gulpfile.babel.js merge=ours
+.babelrc merge=ours
