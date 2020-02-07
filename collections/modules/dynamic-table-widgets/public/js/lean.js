@@ -7,10 +7,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/* eslint-disable no-undef */
-
-/* eslint-disable no-redeclare */
-// eslint-disable-next-line no-undef
+/* global Tabulator, JSON5, JSONfn */
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
   // Use object so that devs can extend or
   var utils = {};
