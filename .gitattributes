@@ -1,1 +1,3 @@
+# Not allow this file to be merge from other branch.
+# Make this branch clean as possible
 .gitignore merge=ours
