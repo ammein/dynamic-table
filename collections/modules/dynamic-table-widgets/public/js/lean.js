@@ -141,15 +141,12 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
   apos.utils.onReady(function () {
     table['el'] = el.querySelector('table#' + data._id);
-    table.cloneTable = table.el.cloneNode(); // Append new table, ALWAYS
-
+    table.cloneTable = table.el.cloneNode();
     var parent = table.el.parentElement;
     parent.innerHTML = '';
     parent.appendChild(table.cloneTable.cloneNode());
-    table.el = parent.querySelector('table#' + data._id); // Get Options
-
-    var getOptions = table.el.getAttribute('data-table-options'); // Assign to this options (Only for lean)
-
+    table.el = parent.querySelector('table#' + data._id);
+    var getOptions = table.el.getAttribute('data-table-options');
     options = Object.assign({}, JSONfn.parse(table.el.getAttribute('data-table-originalOptions')));
     return utils.initTable(table.el, JSONfn.parse(getOptions));
   });
