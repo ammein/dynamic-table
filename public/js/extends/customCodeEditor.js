@@ -6142,7 +6142,7 @@ apos.define('custom-code-editor', {
       (0, _events["default"])(self, options);
       (0, _strings["default"])(self, options);
       (0, _cache["default"])(self, options);
-      (0, _insertCode["default"])(self, options, object); // End Custom Code Editor Extends
+      (0, _insertCode["default"])(self, options, object);
     };
   }
 });

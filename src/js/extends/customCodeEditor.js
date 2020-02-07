@@ -90,7 +90,6 @@ apos.define('custom-code-editor', {
             stringsHelper(self, options);
             cache(self, options);
             insertCode(self, options, object);
-            // End Custom Code Editor Extends
         }
     }
 })
