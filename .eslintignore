@@ -1,5 +1,5 @@
 # In Lib Modules
-/lib/modules/**/*.js
+/collections/modules/**/*.js
 monitor-config.js
 index.js
 gulpfile.babel.js

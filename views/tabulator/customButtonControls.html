@@ -3,6 +3,18 @@
 
 {{ buttons.minor('', {action: 'reloadTable', icon: 'refresh'}) }}
 
+{{ dropdowns.base({
+    label : 'Load',
+    items: [
+        { label: 'JSON', action: 'loadJSON' },
+        { label: 'Txt', action: 'loadTxt' }
+    ]
+}, 'button',
+{
+    direction: 'down',
+    class: 'arrow-down'
+}) }}
+
 {% if apos.dynamicTable.checkSchema({ type: 'custom-code-editor' } ,data.schema) %}
     {{ dropdowns.base({
         label : 'Download',

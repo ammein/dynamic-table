@@ -393,6 +393,51 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+var links = function links(self, options) {
+  this.link('apos', 'downloadcsv', self.downloadCSV);
+  this.link('apos', 'downloadjson', self.downloadJSON);
+  this.link('apos', 'downloadxlsx', self.downloadXlsx);
+  this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
+  this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
+  this.link('apos', 'resetcallbacks', self.resetCallbacks);
+  this.link('apos', 'resetoptions', self.resetOptions);
+  this.link('apos', 'reloadTable', self.reloadTable);
+  this.link('apos', 'loadjson', self.loadJSON);
+  this.link('apos', 'loadtxt', self.loadTxt);
+};
+
+var _default = links;
+exports["default"] = _default;
+
+},{}],7:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var load = function load(self, options) {
+  self.loadJSON = function () {
+    self.tabulator.table.setDataFromLocalFile();
+  };
+
+  self.loadTxt = function () {
+    self.tabulator.table.setDataFromLocalFile('.txt');
+  };
+};
+
+var _default = load;
+exports["default"] = _default;
+
+},{}],8:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
 /* global Tabulator, Papa, JSON5, JSONfn */
 var modal = function modal(self, options) {
   self.getJoin = function ($chooser) {
@@ -725,7 +770,7 @@ var modal = function modal(self, options) {
 var _default = modal;
 exports["default"] = _default;
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -779,7 +824,7 @@ var options = function options(self, _options) {
 var _default = options;
 exports["default"] = _default;
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -842,7 +887,7 @@ var routes = function routes(self, options) {
 var _default = routes;
 exports["default"] = _default;
 
-},{}],9:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -964,7 +1009,7 @@ var table = function table(self, options) {
 var _default = table;
 exports["default"] = _default;
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 
 var _table = _interopRequireDefault(require("./sub-utils/table"));
@@ -984,6 +1029,10 @@ var _modal = _interopRequireDefault(require("./sub-utils/modal"));
 var _downloads = _interopRequireDefault(require("./sub-utils/downloads"));
 
 var _options = _interopRequireDefault(require("./sub-utils/options"));
+
+var _links = _interopRequireDefault(require("./sub-utils/links"));
+
+var _load = _interopRequireDefault(require("./sub-utils/load"));
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
 
@@ -1017,6 +1066,7 @@ apos.define('dynamic-table-utils', {
     (0, _modal["default"])(self, options);
     (0, _downloads["default"])(self, options);
     (0, _options["default"])(self, options);
+    (0, _load["default"])(self, options);
 
     self.beforeShowDynamicTable = function ($form, data) {
       // Reset rows & columns
@@ -1036,14 +1086,9 @@ apos.define('dynamic-table-utils', {
       self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
       self.$options = apos.schemas.findFieldset(self.$form, 'tabulatorOptions');
       self.$id.val(data.id);
-      this.link('apos', 'downloadcsv', self.downloadCSV);
-      this.link('apos', 'downloadjson', self.downloadJSON);
-      this.link('apos', 'downloadxlsx', self.downloadXlsx);
-      this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
-      this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
-      this.link('apos', 'resetcallbacks', self.resetCallbacks);
-      this.link('apos', 'resetoptions', self.resetOptions);
-      this.link('apos', 'reloadTable', self.reloadTable);
+
+      _links["default"].call(this, self, options);
+
       var rowInput = self.$row.find('input');
       var columnInput = self.$column.find('input');
       var dataInput = self.$data.find('textarea');
@@ -1158,4 +1203,4 @@ apos.define('dynamic-table-utils', {
   }
 });
 
-},{"./sub-utils/callbacks":1,"./sub-utils/data-management":2,"./sub-utils/downloads":3,"./sub-utils/events":4,"./sub-utils/helpers":5,"./sub-utils/modal":6,"./sub-utils/options":7,"./sub-utils/routes":8,"./sub-utils/table":9}]},{},[10]);
+},{"./sub-utils/callbacks":1,"./sub-utils/data-management":2,"./sub-utils/downloads":3,"./sub-utils/events":4,"./sub-utils/helpers":5,"./sub-utils/links":6,"./sub-utils/load":7,"./sub-utils/modal":8,"./sub-utils/options":9,"./sub-utils/routes":10,"./sub-utils/table":11}]},{},[12]);

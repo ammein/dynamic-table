@@ -8,6 +8,8 @@ import events from './sub-utils/events';
 import modal from './sub-utils/modal';
 import downloads from './sub-utils/downloads';
 import customOptions from './sub-utils/options';
+import links from './sub-utils/links';
+import load from './sub-utils/load';
 apos.define('dynamic-table-utils', {
     afterConstruct: function (self) {
         // To let others extend it
@@ -37,6 +39,7 @@ apos.define('dynamic-table-utils', {
         modal(self, options);
         downloads(self, options);
         customOptions(self, options);
+        load(self, options);
 
         self.beforeShowDynamicTable = function ($form, data) {
             // Reset rows & columns
@@ -56,14 +59,8 @@ apos.define('dynamic-table-utils', {
             self.$callbacks = apos.schemas.findFieldset(self.$form, 'callbacks');
             self.$options = apos.schemas.findFieldset(self.$form, 'tabulatorOptions');
             self.$id.val(data.id);
-            this.link('apos', 'downloadcsv', self.downloadCSV);
-            this.link('apos', 'downloadjson', self.downloadJSON);
-            this.link('apos', 'downloadxlsx', self.downloadXlsx);
-            this.link('apos', 'downloadpdfpotrait', self.downloadPDFPotrait);
-            this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
-            this.link('apos', 'resetcallbacks', self.resetCallbacks);
-            this.link('apos', 'resetoptions', self.resetOptions);
-            this.link('apos', 'reloadTable', self.reloadTable);
+
+            links.call(this, self, options);
 
             let rowInput = self.$row.find('input');
             let columnInput = self.$column.find('input');
