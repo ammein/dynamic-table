@@ -1,3 +1,5 @@
+const fs = require('fs');
+const path = require('path');
 module.exports = function(self, options) {
     // eslint-disable-next-line no-var
     var superPushAssets = self.pushAssets;
@@ -20,6 +22,12 @@ module.exports = function(self, options) {
         self.pushAsset('stylesheet', 'modal', {
             when: 'user'
         });
+
+        const theme = 'vendor/tabulator/tabulator' + (options.theme ? '_' + options.theme : '') + '.min';
+
+        self.pushAsset('stylesheet', theme, {
+            when: 'always'
+        })
 
         self.pushAsset('script', 'vendor/papaparse/papaparse.min', {
             when: 'user'

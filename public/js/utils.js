@@ -143,7 +143,8 @@ var dataManagement = function dataManagement(self, options) {
         }
 
         self.columnData.push({
-          title: 'Header' + (a + 1)
+          title: 'Header ' + (a + 1),
+          field: 'header' + (a + 1)
         });
       } // Reupload data to column change
 
@@ -154,9 +155,7 @@ var dataManagement = function dataManagement(self, options) {
             continue;
           }
 
-          if (!self.rowData[row]) {
-            self.rowData[row].push('untitled');
-          }
+          self.rowData[row].push('untitled');
         } // Delete unecessary rows data based on columns
 
 
@@ -197,14 +196,14 @@ var dataManagement = function dataManagement(self, options) {
     var _loop = function _loop(row) {
       // Loop over column to determine its property
       for (var column = 0; column < self.columnData.length; column++) {
-        self.rowsAndColumns[row] = Object.assign(self.rowsAndColumns[row] || {}, _defineProperty({}, self.columnData[column].title, self.rowData[row][column]));
+        self.rowsAndColumns[row] = Object.assign({}, self.rowsAndColumns[row] || {}, _defineProperty({}, self.columnData[column].field, self.rowData[row][column]));
       } // Run checking column
 
 
       if (Object.keys(self.rowsAndColumns[row]).length !== self.columnData.length) {
         Object.keys(self.rowsAndColumns[row]).forEach(function (val, i) {
           var filter = self.columnData.filter(function (value, index) {
-            return value.title === val;
+            return value.field === val;
           });
 
           if (filter.length === 0) {
@@ -1043,7 +1042,7 @@ var table = function table(self, options) {
   };
 
   self.resetAjaxOptions = function () {
-    self.tabulator.options.ajaxURL = undefined;
+    delete self.tabulator.options.ajaxURL;
   };
 
   self.reloadTable = function () {

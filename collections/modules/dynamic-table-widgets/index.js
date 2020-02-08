@@ -9,10 +9,10 @@ module.exports = {
     beforeConstruct : function(self,options){
         options.addFields = [
             {
-                name : "_dynamicTable",
-                label : "Choose Your Created Dynamic Table",
-                type : "joinByOne",
-                withType : "dynamic-tables"
+                name : '_dynamicTable',
+                label : 'Choose Your Created Dynamic Table',
+                type : 'joinByOne',
+                withType : 'dynamic-tables'
             }
         ].concat(options.addFields || []);
     },
@@ -24,13 +24,13 @@ module.exports = {
         var superPushAssets = self.pushAssets;
         self.table = self.apos.dynamicTable;
 
-        const adjustJoin = options.addFields.filter(val => val.name === "_dynamicTable").map(obj => {
+        const adjustJoin = options.addFields.filter(val => val.name === '_dynamicTable').map(obj => {
 
             let browserSchemas = self.table.options.addFields.filter(val => val.browserSchema).reduce((init, next) => {
                 return Object.assign({}, init, { [next.name]: 1 })
             }, {});
 
-            return obj["filters"] = {
+            return obj['filters'] = {
                 projection: browserSchemas
             }
         })
@@ -71,38 +71,34 @@ module.exports = {
             }
         })
 
-        self.route("post", "submit", function(req,res){
+        self.route('post', 'submit', function(req,res){
             if(!req.body.table){
                 return res.send({
-                    status : "error",
-                    message : "Data Not Received"
+                    status : 'error',
+                    message : 'Data Not Received'
                 })
             }
 
             return res.send({
-                status : "success",
-                message : "Data Received"
+                status : 'success',
+                message : 'Data Received'
             })
         })
 
         self.pushAssets = function(){
             self.pushAsset('script', 'editor', {
-                when : "user"
+                when : 'user'
             });
-
-            self.pushAsset('stylesheet', 'tabulator/tabulator.min',{
-                when: "always"
-            })
 
             if(self.apos.assets.options.lean){
                 if(options.player){
                     self.pushAsset('script', 'lean', {
-                        when: "lean"
+                        when: 'lean'
                     });
                 }
             }else{
                 self.pushAsset('script', 'always', {
-                    when: "always"
+                    when: 'always'
                 });
             }
 
