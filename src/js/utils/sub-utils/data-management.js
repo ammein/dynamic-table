@@ -52,7 +52,8 @@ let dataManagement = function(self, options) {
                 }
 
                 self.columnData.push({
-                    title: 'Header' + (a + 1)
+                    title: 'Header ' + (a + 1),
+                    field: 'header' + (a + 1)
                 })
             }
 
@@ -63,9 +64,7 @@ let dataManagement = function(self, options) {
                         continue;
                     }
 
-                    if (!self.rowData[row]) {
-                        self.rowData[row].push('untitled');
-                    }
+                    self.rowData[row].push('untitled');
                 }
                 // Delete unecessary rows data based on columns
                 if (self.rowData[row].length !== self.columnData.length) {
@@ -107,15 +106,15 @@ let dataManagement = function(self, options) {
         for (let row = 0; row < self.rowData.length; row++) {
             // Loop over column to determine its property
             for (let column = 0; column < self.columnData.length; column++) {
-                self.rowsAndColumns[row] = Object.assign(self.rowsAndColumns[row] || {}, {
-                    [self.columnData[column].title]: self.rowData[row][column]
+                self.rowsAndColumns[row] = Object.assign({}, self.rowsAndColumns[row] || {}, {
+                    [self.columnData[column].field]: self.rowData[row][column]
                 })
             }
 
             // Run checking column
             if (Object.keys(self.rowsAndColumns[row]).length !== self.columnData.length) {
                 Object.keys(self.rowsAndColumns[row]).forEach((val, i) => {
-                    let filter = self.columnData.filter((value, index) => value.title === val)
+                    let filter = self.columnData.filter((value, index) => value.field === val)
                     if (filter.length === 0) {
                         delete self.rowsAndColumns[row][val];
                     }

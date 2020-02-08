@@ -84,7 +84,7 @@ let table = function(self, options) {
     }
 
     self.resetAjaxOptions = function () {
-        self.tabulator.options.ajaxURL = undefined;
+        delete self.tabulator.options.ajaxURL;
     }
 
     self.reloadTable = function() {

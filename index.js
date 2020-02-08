@@ -159,7 +159,8 @@ module.exports = {
             layout: 'fitColumns',
             autoColumns: true,
             responsiveLayout: true,
-            paginationSize: 10,
+            paginationSize: 6,
+            pagination: "local"
         };
     },
     afterConstruct : function(self){
