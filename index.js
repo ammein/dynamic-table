@@ -155,10 +155,11 @@ module.exports = {
         // Path submodules
         options.pathSubModules = path.join(__dirname, '/sub-modules');
 
-        options.tabulatorOptions = {
+        options.tabulatorOptions = options.tabulatorOptions || {
             layout: 'fitColumns',
             autoColumns: true,
-            responsiveLayout: true
+            responsiveLayout: true,
+            paginationSize: 10,
         };
     },
     afterConstruct : function(self){

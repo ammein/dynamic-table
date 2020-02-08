@@ -82,6 +82,7 @@ apos.define('dynamic-table-utils', {
                     if (confirm) {
                         ajaxURL.val('');
                         self.resetAjaxTable();
+                        self.resetAjaxOptions();
                         self.executeRow(num);
                     }
                 } else {

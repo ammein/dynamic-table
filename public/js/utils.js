@@ -143,7 +143,7 @@ var dataManagement = function dataManagement(self, options) {
         }
 
         self.columnData.push({
-          title: 'header' + (a + 1)
+          title: 'Header' + (a + 1)
         });
       } // Reupload data to column change
 
@@ -154,7 +154,9 @@ var dataManagement = function dataManagement(self, options) {
             continue;
           }
 
-          self.rowData[row].push('untitled');
+          if (!self.rowData[row]) {
+            self.rowData[row].push('untitled');
+          }
         } // Delete unecessary rows data based on columns
 
 
@@ -244,6 +246,18 @@ var dataManagement = function dataManagement(self, options) {
         space: 2
       }));
       self.executeAutoResize(convertData.get(0));
+    } // Check if the inputs value are the same as self.rowData & self.columnData value
+
+
+    var rowInput = apos.schemas.findFieldset(self.$form, 'row').find('input');
+    var columnInput = apos.schemas.findFieldset(self.$form, 'column').find('input');
+
+    if (rowInput.length > 0 && rowInput.val().length < 0) {
+      rowInput.val(self.rowData.length);
+    }
+
+    if (columnInput.length > 0 && columnInput.val().length < 0) {
+      columnInput.val(self.columnData.length);
     }
   };
 
@@ -269,7 +283,7 @@ var dataManagement = function dataManagement(self, options) {
   self.resetAjaxTable = function () {
     var ajaxURL = apos.schemas.findFieldset(self.$form, 'ajaxURL').find('input');
 
-    if (ajaxURL.val().length > 0) {
+    if (ajaxURL.length > 0 && ajaxURL.val().length > 0) {
       ajaxURL.val('');
     }
   };
@@ -419,11 +433,59 @@ exports["default"] = void 0;
 
 var load = function load(self, options) {
   self.loadJSON = function () {
-    self.tabulator.table.setDataFromLocalFile();
+    self.tabulator.table.setDataFromLocalFile().then(function () {
+      self.updateRowsAndColumns(self.getTableData());
+
+      if (self.tabulator.options.ajaxURL) {
+        self.resetAjaxTable();
+        self.resetAjaxOptions();
+      }
+
+      self.restartTable();
+      self.convertData();
+    })["catch"](function (e) {
+      console.warn(e);
+    });
   };
 
   self.loadTxt = function () {
-    self.tabulator.table.setDataFromLocalFile('.txt');
+    self.tabulator.table.setDataFromLocalFile('.txt').then(function () {
+      self.updateRowsAndColumns(self.getTableData());
+
+      if (self.tabulator.options.ajaxURL) {
+        self.resetAjaxTable();
+        self.resetAjaxOptions();
+      }
+
+      self.restartTable();
+      self.convertData();
+    })["catch"](function (e) {
+      console.warn(e);
+    });
+  };
+
+  self.getTableData = function () {
+    var tableData = self.tabulator.table.getData().map(function (val) {
+      return Object.getOwnPropertyNames(val).map(function (key) {
+        return val[key];
+      });
+    });
+    var columns = self.tabulator.table.getData() // Get the keys
+    .map(function (igKey, i) {
+      return Object.getOwnPropertyNames(igKey);
+    }) // Only merge that is unique array value
+    .reduce(function (init, next) {
+      return init = _.union(next);
+    }, []) // Produce array of object
+    .map(function (val) {
+      return val = {
+        title: val
+      };
+    });
+    return {
+      data: tableData,
+      columns: columns
+    };
   };
 };
 
@@ -535,6 +597,7 @@ var modal = function modal(self, options) {
     } else if (self.$ajaxURL.find('input').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
       if (self.tabulator.options.ajaxURL) {
         self.resetAjaxTable();
+        self.resetAjaxOptions();
       }
 
       table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
@@ -918,6 +981,7 @@ var table = function table(self, options) {
           } else {
             if (self.tabulator.options.ajaxURL) {
               self.resetAjaxTable();
+              self.resetAjaxOptions();
             } // eslint-disable-next-line no-undef
 
 
@@ -978,7 +1042,7 @@ var table = function table(self, options) {
     self.initTable();
   };
 
-  self.resetAjaxTable = function () {
+  self.resetAjaxOptions = function () {
     self.tabulator.options.ajaxURL = undefined;
   };
 
@@ -993,6 +1057,7 @@ var table = function table(self, options) {
       self.executeAjax(options || self.tabulator.options);
     } else {
       if (self.tabulator.options.ajaxURL) {
+        self.resetAjaxOptions();
         self.resetAjaxTable();
       }
 
@@ -1109,6 +1174,7 @@ apos.define('dynamic-table-utils', {
           if (confirm) {
             ajaxURL.val('');
             self.resetAjaxTable();
+            self.resetAjaxOptions();
             self.executeRow(num);
           }
         } else {

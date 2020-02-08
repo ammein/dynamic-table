@@ -98,6 +98,7 @@ let modal = function(self, options) {
         } else if (self.$ajaxURL.find('input').val().length === 0 && self.rowData.length > 0 && self.columnData.length > 0) {
             if (self.tabulator.options.ajaxURL) {
                 self.resetAjaxTable();
+                self.resetAjaxOptions();
             }
             table = new Tabulator(element.querySelector('table'), Object.assign({}, self.tabulator.options, {
                 columns: self.columnData

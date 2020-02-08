@@ -25,6 +25,7 @@ let table = function(self, options) {
                     } else {
                         if (self.tabulator.options.ajaxURL) {
                             self.resetAjaxTable();
+                            self.resetAjaxOptions();
                         }
                         // eslint-disable-next-line no-undef
                         table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
@@ -82,7 +83,7 @@ let table = function(self, options) {
         self.initTable();
     }
 
-    self.resetAjaxTable = function () {
+    self.resetAjaxOptions = function () {
         self.tabulator.options.ajaxURL = undefined;
     }
 
@@ -97,6 +98,7 @@ let table = function(self, options) {
             self.executeAjax(options || self.tabulator.options)
         } else {
             if (self.tabulator.options.ajaxURL) {
+                self.resetAjaxOptions();
                 self.resetAjaxTable();
             }
             if (options) {

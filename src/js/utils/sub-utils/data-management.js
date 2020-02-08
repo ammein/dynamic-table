@@ -50,8 +50,9 @@ let dataManagement = function(self, options) {
                 if (self.columnData[a]) {
                     continue;
                 }
+
                 self.columnData.push({
-                    title: 'header' + (a + 1)
+                    title: 'Header' + (a + 1)
                 })
             }
 
@@ -61,7 +62,10 @@ let dataManagement = function(self, options) {
                     if (self.rowData[row][column]) {
                         continue;
                     }
-                    self.rowData[row].push('untitled');
+
+                    if (!self.rowData[row]) {
+                        self.rowData[row].push('untitled');
+                    }
                 }
                 // Delete unecessary rows data based on columns
                 if (self.rowData[row].length !== self.columnData.length) {
@@ -145,6 +149,18 @@ let dataManagement = function(self, options) {
             }));
             self.executeAutoResize(convertData.get(0));
         }
+
+        // Check if the inputs value are the same as self.rowData & self.columnData value
+        let rowInput = apos.schemas.findFieldset(self.$form, 'row').find('input');
+        let columnInput = apos.schemas.findFieldset(self.$form, 'column').find('input');
+
+        if (rowInput.length > 0 && rowInput.val().length < 0) {
+            rowInput.val(self.rowData.length)
+        }
+
+        if (columnInput.length > 0 && columnInput.val().length < 0) {
+            columnInput.val(self.columnData.length)
+        }
     }
 
     self.resetCustomTable = function () {
@@ -166,7 +182,7 @@ let dataManagement = function(self, options) {
 
     self.resetAjaxTable = function () {
         let ajaxURL = apos.schemas.findFieldset(self.$form, 'ajaxURL').find('input');
-        if (ajaxURL.val().length > 0) {
+        if (ajaxURL.length > 0 && ajaxURL.val().length > 0) {
             ajaxURL.val('');
         }
     }
