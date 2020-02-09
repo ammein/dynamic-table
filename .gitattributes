@@ -1,6 +1,7 @@
 # Not allow this file to be merge from other branch.
 # Make this branch clean as possible
 # https://git-scm.com/book/en/v2/Customizing-Git-Git-Attributes#_merge_strategies
+.vscode/launch.json
 .gitignore merge=ours
 src/** merge=ours
 .eslintignore merge=ours
