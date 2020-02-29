@@ -57,7 +57,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     return returnObject;
   };
 
-  function updateOptions(myOptions) {
+  utils.updateOptions = function (myOptions) {
     var allOptions = {};
 
     for (var _i = 0, _Object$keys = Object.keys(myOptions); _i < _Object$keys.length; _i++) {
@@ -105,7 +105,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     }
 
     apos.dynamicTableLean[data._id].options = Object.assign({}, apos.dynamicTableLean[data._id].options, options, allOptions);
-  }
+  };
 
   utils.initTable = function (tableDOM, tableOptions) {
     if (table.tabulator) {
@@ -113,7 +113,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
       table.tabulator = null;
     }
 
-    updateOptions(tableOptions);
+    utils.updateOptions(typeof tableOptions === 'string' ? JSONfn.parse(tableOptions) : tableOptions);
     var initTable = null;
 
     if (apos.dynamicTableLean[data._id].options['data']) {

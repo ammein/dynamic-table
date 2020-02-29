@@ -48,7 +48,13 @@ let dataManagement = function(self, options) {
             // Loop each row to append new data to it
             for (let a = 0; a < value; a++) {
                 if (self.columnData[a]) {
-                    continue;
+                    if (self.columnData[a].field) {
+                        // Rename the field based on the title changed automatically
+                        self.columnData[a].field = apos.utils.camelName(self.columnData[a].title);
+                        continue;
+                    } else {
+                        continue;
+                    }
                 }
 
                 self.columnData.push({

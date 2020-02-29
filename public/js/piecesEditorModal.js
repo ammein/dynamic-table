@@ -1,8 +1,8 @@
 apos.define('dynamic-table-editor-modal', {
     extend: 'apostrophe-pieces-editor-modal',
     construct: function(self, options) {
-        let superBeforeShow = self.beforeShow;
-        let superAfterShow = self.afterShow;
+        var superBeforeShow = self.beforeShow;
+        var superAfterShow = self.afterShow;
         self.dynamicTablePieces = apos.dynamicTable;
         var myOptions = {}
         myOptions.id = options["_id"];

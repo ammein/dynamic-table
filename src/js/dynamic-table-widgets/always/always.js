@@ -90,7 +90,7 @@ apos.define('dynamic-table-widgets', {
                 self.tabulator.table.destroy();
                 self.tabulator.table = null;
             }
-            self.updateOptions(JSON5.parse(myOptions));
+            self.updateOptions(typeof myOptions === 'string' ? JSONfn.parse(myOptions) : myOptions);
             let table = null
             if (self.tabulator.options['data']) {
                 table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator.options);

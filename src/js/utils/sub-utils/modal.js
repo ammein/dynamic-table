@@ -187,8 +187,11 @@ let modal = function(self, options) {
                         for (let property of Object.keys(value)) {
                             if (value.hasOwnProperty(property)) {
                                 // Make sure its on same array
-                                if (i === column) {
+                                if (i === column && property !== 'field') {
                                     value[property] = arrayItems[column].columnContent;
+                                } else if (i === column && property === 'field') {
+                                    // Rename the field based on the title property using ApostropheCMS Camel Name utils.
+                                    value[property] = apos.utils.camelName(arrayItems[column].columnContent);
                                 }
                             }
                         }

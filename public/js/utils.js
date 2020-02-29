@@ -139,7 +139,13 @@ var dataManagement = function dataManagement(self, options) {
 
       for (var a = 0; a < value; a++) {
         if (self.columnData[a]) {
-          continue;
+          if (self.columnData[a].field) {
+            // Rename the field based on the title changed automatically
+            self.columnData[a].field = apos.utils.camelName(self.columnData[a].title);
+            continue;
+          } else {
+            continue;
+          }
         }
 
         self.columnData.push({
@@ -695,8 +701,11 @@ var modal = function modal(self, options) {
 
               if (value.hasOwnProperty(property)) {
                 // Make sure its on same array
-                if (i === column) {
+                if (i === column && property !== 'field') {
                   value[property] = arrayItems[column].columnContent;
+                } else if (i === column && property === 'field') {
+                  // Rename the field based on the title property using ApostropheCMS Camel Name utils.
+                  value[property] = apos.utils.camelName(arrayItems[column].columnContent);
                 }
               }
             }

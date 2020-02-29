@@ -57,7 +57,6 @@ module.exports = {
                 label : "Link",
                 type : "array",
                 titleField : "urls",
-                browserSchema: true,
                 schema : [
                     {
                         name : "widgetLocation",

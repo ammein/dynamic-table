@@ -71,20 +71,6 @@ module.exports = {
             }
         })
 
-        self.route('post', 'submit', function(req,res){
-            if(!req.body.table){
-                return res.send({
-                    status : 'error',
-                    message : 'Data Not Received'
-                })
-            }
-
-            return res.send({
-                status : 'success',
-                message : 'Data Received'
-            })
-        })
-
         self.pushAssets = function(){
             self.pushAsset('script', 'editor', {
                 when : 'user'

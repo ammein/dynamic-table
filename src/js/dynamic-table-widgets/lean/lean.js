@@ -45,7 +45,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
         return returnObject;
     }
 
-    function updateOptions(myOptions) {
+    utils.updateOptions = function (myOptions) {
         let allOptions = {}
         for (let property of Object.keys(myOptions)) {
             if (myOptions.hasOwnProperty(property)) {
@@ -93,7 +93,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
             table.tabulator = null;
         }
 
-        updateOptions(tableOptions);
+        utils.updateOptions(typeof tableOptions === 'string' ? JSONfn.parse(tableOptions) : tableOptions);
 
         let initTable = null
         if (apos.dynamicTableLean[data._id].options['data']) {
