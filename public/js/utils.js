@@ -423,6 +423,7 @@ var links = function links(self, options) {
   this.link('apos', 'reloadTable', self.reloadTable);
   this.link('apos', 'loadjson', self.loadJSON);
   this.link('apos', 'loadtxt', self.loadTxt);
+  this.link('apos', 'loadcsv', self.loadCSV);
 };
 
 var _default = links;
@@ -436,8 +437,86 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+/* global FileReader, Papa */
 var load = function load(self, options) {
+  self.readFile = function (accept) {
+    var convertData = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+    return new Promise(function (resolve, reject) {
+      var fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      fileInput.accept = accept || '.json,application/json';
+      fileInput.addEventListener('change', function (t) {
+        var result;
+        var r = fileInput.files[0];
+        var filereader = new FileReader();
+        filereader.readAsText(r);
+
+        filereader.onload = function (t) {
+          try {
+            if (accept === '.json,application/json') {
+              result = JSON.parse(filereader.result);
+              return resolve(result);
+            } else {
+              result = filereader.result;
+
+              if (convertData) {
+                return Papa.parse(result, {
+                  worker: true,
+                  complete: function complete(papaResults, file) {
+                    return resolve(papaResults.data);
+                  },
+                  error: function error(_error, file) {
+                    return apos.utils.warn('Unable to parse file: ' + file + '\n', _error) && void reject(_error);
+                  }
+                });
+              }
+
+              return resolve(result);
+            }
+          } catch (t) {
+            return apos.utils.warn('File Load Error - File contents is invalid JSON', t) && void reject(t);
+          }
+        };
+
+        filereader.onerror = function (t) {
+          apos.utils.warn('File Load Error - Unable to read file');
+          reject(t);
+        };
+      });
+      fileInput.click();
+    });
+  };
+
+  function convertReadFileData(data) {
+    var columnData = [];
+    var rowData = [];
+
+    for (var a = 0; a < data.length; a++) {
+      if (a === 0) {
+        for (var b = 0; b < data[a].length; b++) {
+          columnData.push({
+            title: data[a][b],
+            field: apos.utils.camelName(data[a][b])
+          });
+        }
+
+        continue;
+      } else {
+        rowData.push(data[a]);
+      }
+    }
+
+    return {
+      columns: columnData,
+      data: rowData
+    };
+  }
+
   self.loadJSON = function () {
+    if (!self.tabulator.table) {
+      self.initTable();
+    }
+
     self.tabulator.table.setDataFromLocalFile().then(function () {
       self.updateRowsAndColumns(self.getTableData());
 
@@ -449,11 +528,15 @@ var load = function load(self, options) {
       self.restartTable();
       self.convertData();
     })["catch"](function (e) {
-      console.warn(e);
+      apos.utils.warn(e);
     });
   };
 
   self.loadTxt = function () {
+    if (!self.tabulator.table) {
+      self.initTable();
+    }
+
     self.tabulator.table.setDataFromLocalFile('.txt').then(function () {
       self.updateRowsAndColumns(self.getTableData());
 
@@ -465,7 +548,31 @@ var load = function load(self, options) {
       self.restartTable();
       self.convertData();
     })["catch"](function (e) {
-      console.warn(e);
+      apos.utils.warn(e);
+    });
+  };
+
+  self.loadCSV = function () {
+    if (!self.tabulator.table) {
+      self.initTable();
+    }
+
+    self.readFile('.csv', true).then(function (data) {
+      var getData = convertReadFileData(data);
+      return getData;
+    }).then(function (convertData) {
+      self.resetDataOptions();
+
+      if (self.tabulator.options.ajaxURL) {
+        self.resetAjaxTable();
+        self.resetAjaxOptions();
+      }
+
+      self.updateRowsAndColumns(convertData);
+      self.restartTable(convertData);
+      self.convertData();
+    })["catch"](function (e) {
+      apos.utils.warn(e);
     });
   };
 
@@ -994,11 +1101,13 @@ var table = function table(self, options) {
 
 
             _table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
+              data: self.rowsAndColumns,
               columns: self.columnData
             }));
-            self.tabulator.table = _table;
 
-            _table.setData(self.rowsAndColumns);
+            _table.setColumns(self.columnData);
+
+            self.tabulator.table = _table;
           }
         }
       });

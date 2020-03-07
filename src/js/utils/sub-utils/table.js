@@ -29,11 +29,11 @@ let table = function(self, options) {
                         }
                         // eslint-disable-next-line no-undef
                         table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
+                            data: self.rowsAndColumns,
                             columns: self.columnData
                         }));
-
+                        table.setColumns(self.columnData);
                         self.tabulator.table = table;
-                        table.setData(self.rowsAndColumns);
                     }
                 }
             });

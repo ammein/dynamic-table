@@ -4,8 +4,9 @@
 {{ buttons.minor('', {action: 'reloadTable', icon: 'refresh'}) }}
 
 {{ dropdowns.base({
-    label : 'Load',
+    label : 'Upload',
     items: [
+        { label: 'CSV', action: 'loadCSV' },
         { label: 'JSON', action: 'loadJSON' },
         { label: 'Txt', action: 'loadTxt' }
     ]

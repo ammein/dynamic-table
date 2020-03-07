@@ -9,6 +9,7 @@ let links = function (self, options) {
     this.link('apos', 'reloadTable', self.reloadTable);
     this.link('apos', 'loadjson', self.loadJSON);
     this.link('apos', 'loadtxt', self.loadTxt);
+    this.link('apos', 'loadcsv', self.loadCSV);
 }
 
 export default links;

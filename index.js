@@ -172,12 +172,6 @@ module.exports = {
 
         fs.readdirSync(self.pathSubModules).filter((file)=>{
             require(path.join(self.pathSubModules,file))(self, options);
-        })
-
-        self.apos.permissions.add({
-            value: 'edit-dynamic-table',
-            label: 'Edit Dynamic Table'
         });
-        
     }
 }
