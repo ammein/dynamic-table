@@ -20,7 +20,7 @@ apos.define('dynamic-table-widgets', {
       var _loop = function _loop(row) {
         // Loop over column to determine its property
         for (var column = 0; column < objectData.columns.length; column++) {
-          arrayOfObjects[row] = Object.assign(arrayOfObjects[row] || {}, _defineProperty({}, objectData.columns[column].title, objectData.data[row][column]));
+          arrayOfObjects[row] = Object.assign(arrayOfObjects[row] || {}, _defineProperty({}, objectData.columns[column].field, objectData.data[row][column]));
         } // Run checking column
 
 

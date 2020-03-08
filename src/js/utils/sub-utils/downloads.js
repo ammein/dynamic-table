@@ -1,4 +1,4 @@
-module.exports = function(self, options) {
+let downloads = function(self, options) {
        self.downloadCSV = function() {
            self.tabulator.table.download('csv', self.$id.val() + '.csv');
        }
@@ -9,21 +9,23 @@ module.exports = function(self, options) {
 
        self.downloadXlsx = function() {
            self.tabulator.table.download('xlsx', self.$id.val() + '.xlsx', {
-               sheetName: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+               sheetName: self.$title.val().length > 0 ? self.$title.val() + '-' + self.$id.val() : 'Dynamic Table-' + self.$id.val()
            });
        }
 
        self.downloadPDFPotrait = function() {
            self.tabulator.table.download('pdf', self.$id.val() + ' (Potrait).pdf', {
                orientation: 'portrait',
-               title: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+               title: self.$title.val().length > 0 ? self.$title.val() + '-' + self.$id.val() : 'Dynamic Table-' + self.$id.val()
            });
        }
 
        self.downloadPDFLandscape = function() {
            self.tabulator.table.download('pdf', self.$id.val() + ' (Landscape).pdf', {
                orientation: 'landscape',
-               title: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+               title: self.$title.val().length > 0 ? self.$title.val() + '-' + self.$id.val() : 'Dynamic Table-' + self.$id.val()
            });
        }
 }
+
+export default downloads;

@@ -43,7 +43,7 @@ let load = function (self, options) {
         })
     }
 
-    function convertReadFileData (data) {
+    self.toTabulatorData = function (data) {
         let columnData = [];
         let rowData = [];
         for (let a = 0; a < data.length; a++) {
@@ -75,7 +75,9 @@ let load = function (self, options) {
                 self.resetAjaxTable();
                 self.resetAjaxOptions();
             }
-            self.restartTable();
+            self.hardReloadTable(Object.assign({}, {
+                autoColumns: false
+            }));
             self.convertData();
         }).catch((e) => {
             apos.utils.warn(e);
@@ -92,7 +94,9 @@ let load = function (self, options) {
                 self.resetAjaxTable();
                 self.resetAjaxOptions();
             }
-            self.restartTable();
+            self.hardReloadTable(Object.assign({}, {
+                autoColumns: false
+            }));
             self.convertData();
         }).catch((e) => {
             apos.utils.warn(e);
@@ -106,7 +110,7 @@ let load = function (self, options) {
 
         self.readFile('.csv', true)
         .then((data) => {
-            let getData = convertReadFileData(data);
+            let getData = self.toTabulatorData(data);
             return getData;
         })
         .then((convertData) => {
@@ -116,7 +120,9 @@ let load = function (self, options) {
                 self.resetAjaxOptions();
             }
             self.updateRowsAndColumns(convertData)
-            self.restartTable(convertData);
+            self.hardReloadTable(Object.assign({}, convertData, {
+                autoColumns: false
+            }));
             self.convertData();
         })
         .catch((e) => {

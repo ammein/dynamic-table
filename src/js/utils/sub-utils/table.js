@@ -1,6 +1,6 @@
 let table = function(self, options) {
     self.initTable = function () {
-        if (self.tabulator.table) {
+        if (self.tabulator.table && self.tabulator.table.getData().length > 0) {
             // Clear Data and setData again
             self.tabulator.table.clearData();
             self.tabulator.table.setData(self.rowsAndColumns);
@@ -19,6 +19,7 @@ let table = function(self, options) {
                         self.rowData.length === 0 &&
                         self.columnData.length === 0
                     ) {
+                        self.tabulator.options = Object.assign({}, self.tabulator.options, self.originalOptionsTabulator)
                         // eslint-disable-next-line no-undef
                         table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
                         self.tabulator.table = table;
@@ -27,12 +28,13 @@ let table = function(self, options) {
                             self.resetAjaxTable();
                             self.resetAjaxOptions();
                         }
-                        // eslint-disable-next-line no-undef
-                        table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
-                            data: self.rowsAndColumns,
+                        self.tabulator.options = Object.assign({}, self.tabulator.options, {
+                            autoColumns: false,
                             columns: self.columnData
-                        }));
-                        table.setColumns(self.columnData);
+                        })
+                        // eslint-disable-next-line no-undef
+                        table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
+                        table.setData(self.rowsAndColumns);
                         self.tabulator.table = table;
                     }
                 }
@@ -87,22 +89,38 @@ let table = function(self, options) {
         delete self.tabulator.options.ajaxURL;
     }
 
-    self.reloadTable = function() {
+    self.hardReloadTable = function(tabulatorOptions) {
+        // Saves all exisiting data to new variable to destroy the table
+        const columnData = [...self.columnData];
+        const rowData = [...self.rowData];
+        const rowsAndColumns = [...self.rowsAndColumns];
+        const options = Object.assign({}, self.tabulator.options, tabulatorOptions);
+
+        // Destroy Table
+        self.destroyTable();
+
+        // Store the existing data back
+        self.columnData = columnData;
+        self.rowData = rowData;
+        self.rowsAndColumns = rowsAndColumns;
+        self.tabulator.options = options;
+
+        // Restart Table Manually via passing options
         self.restartTable(self.tabulator.options);
     }
 
-    self.restartTable = function (options) {
+    self.restartTable = function (tabulatorOptions) {
         // Restart Table
         if (self.tabulator.options.ajaxURL) {
             // If Ajax enabled, use executeAjax function
-            self.executeAjax(options || self.tabulator.options)
+            self.executeAjax(tabulatorOptions || self.tabulator.options)
         } else {
             if (self.tabulator.options.ajaxURL) {
                 self.resetAjaxOptions();
                 self.resetAjaxTable();
             }
-            if (options) {
-                self.tabulator.options = Object.assign({}, self.tabulator.options, options);
+            if (tabulatorOptions) {
+                self.tabulator.options = Object.assign({}, self.tabulator.options, tabulatorOptions);
             }
             // Restart normal custom table
             self.initTable();

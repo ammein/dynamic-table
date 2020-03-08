@@ -14,7 +14,7 @@ apos.define('dynamic-table-widgets', {
                 // Loop over column to determine its property
                 for (let column = 0; column < objectData.columns.length; column++) {
                     arrayOfObjects[row] = Object.assign(arrayOfObjects[row] || {}, {
-                        [objectData.columns[column].title]: objectData.data[row][column]
+                        [objectData.columns[column].field]: objectData.data[row][column]
                     })
                 }
 

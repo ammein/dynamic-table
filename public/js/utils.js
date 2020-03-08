@@ -300,7 +300,12 @@ exports["default"] = _default;
 },{}],3:[function(require,module,exports){
 "use strict";
 
-module.exports = function (self, options) {
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = void 0;
+
+var downloads = function downloads(self, options) {
   self.downloadCSV = function () {
     self.tabulator.table.download('csv', self.$id.val() + '.csv');
   };
@@ -311,24 +316,27 @@ module.exports = function (self, options) {
 
   self.downloadXlsx = function () {
     self.tabulator.table.download('xlsx', self.$id.val() + '.xlsx', {
-      sheetName: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+      sheetName: self.$title.val().length > 0 ? self.$title.val() + '-' + self.$id.val() : 'Dynamic Table-' + self.$id.val()
     });
   };
 
   self.downloadPDFPotrait = function () {
     self.tabulator.table.download('pdf', self.$id.val() + ' (Potrait).pdf', {
       orientation: 'portrait',
-      title: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+      title: self.$title.val().length > 0 ? self.$title.val() + '-' + self.$id.val() : 'Dynamic Table-' + self.$id.val()
     });
   };
 
   self.downloadPDFLandscape = function () {
     self.tabulator.table.download('pdf', self.$id.val() + ' (Landscape).pdf', {
       orientation: 'landscape',
-      title: self.$title.val().length > 0 ? 'Tabulator' : self.$title.val()
+      title: self.$title.val().length > 0 ? self.$title.val() + '-' + self.$id.val() : 'Dynamic Table-' + self.$id.val()
     });
   };
 };
+
+var _default = downloads;
+exports["default"] = _default;
 
 },{}],4:[function(require,module,exports){
 "use strict";
@@ -420,7 +428,7 @@ var links = function links(self, options) {
   this.link('apos', 'downloadpdflandscape', self.downloadPDFLandscape);
   this.link('apos', 'resetcallbacks', self.resetCallbacks);
   this.link('apos', 'resetoptions', self.resetOptions);
-  this.link('apos', 'reloadTable', self.reloadTable);
+  this.link('apos', 'reloadTable', self.hardReloadTable);
   this.link('apos', 'loadjson', self.loadJSON);
   this.link('apos', 'loadtxt', self.loadTxt);
   this.link('apos', 'loadcsv', self.loadCSV);
@@ -487,7 +495,7 @@ var load = function load(self, options) {
     });
   };
 
-  function convertReadFileData(data) {
+  self.toTabulatorData = function (data) {
     var columnData = [];
     var rowData = [];
 
@@ -510,7 +518,7 @@ var load = function load(self, options) {
       columns: columnData,
       data: rowData
     };
-  }
+  };
 
   self.loadJSON = function () {
     if (!self.tabulator.table) {
@@ -525,7 +533,9 @@ var load = function load(self, options) {
         self.resetAjaxOptions();
       }
 
-      self.restartTable();
+      self.hardReloadTable(Object.assign({}, {
+        autoColumns: false
+      }));
       self.convertData();
     })["catch"](function (e) {
       apos.utils.warn(e);
@@ -545,7 +555,9 @@ var load = function load(self, options) {
         self.resetAjaxOptions();
       }
 
-      self.restartTable();
+      self.hardReloadTable(Object.assign({}, {
+        autoColumns: false
+      }));
       self.convertData();
     })["catch"](function (e) {
       apos.utils.warn(e);
@@ -558,7 +570,7 @@ var load = function load(self, options) {
     }
 
     self.readFile('.csv', true).then(function (data) {
-      var getData = convertReadFileData(data);
+      var getData = self.toTabulatorData(data);
       return getData;
     }).then(function (convertData) {
       self.resetDataOptions();
@@ -569,7 +581,9 @@ var load = function load(self, options) {
       }
 
       self.updateRowsAndColumns(convertData);
-      self.restartTable(convertData);
+      self.hardReloadTable(Object.assign({}, convertData, {
+        autoColumns: false
+      }));
       self.convertData();
     })["catch"](function (e) {
       apos.utils.warn(e);
@@ -1073,9 +1087,17 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 var table = function table(self, options) {
   self.initTable = function () {
-    if (self.tabulator.table) {
+    if (self.tabulator.table && self.tabulator.table.getData().length > 0) {
       // Clear Data and setData again
       self.tabulator.table.clearData();
       self.tabulator.table.setData(self.rowsAndColumns);
@@ -1090,22 +1112,24 @@ var table = function table(self, options) {
           var _table = null;
 
           if (self.tabulator.options.ajaxURL && self.rowData.length === 0 && self.columnData.length === 0) {
-            // eslint-disable-next-line no-undef
+            self.tabulator.options = Object.assign({}, self.tabulator.options, self.originalOptionsTabulator); // eslint-disable-next-line no-undef
+
             _table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
             self.tabulator.table = _table;
           } else {
             if (self.tabulator.options.ajaxURL) {
               self.resetAjaxTable();
               self.resetAjaxOptions();
-            } // eslint-disable-next-line no-undef
+            }
 
-
-            _table = new Tabulator(self.$tableHTML[i], Object.assign({}, self.tabulator.options, {
-              data: self.rowsAndColumns,
+            self.tabulator.options = Object.assign({}, self.tabulator.options, {
+              autoColumns: false,
               columns: self.columnData
-            }));
+            }); // eslint-disable-next-line no-undef
 
-            _table.setColumns(self.columnData);
+            _table = new Tabulator(self.$tableHTML[i], self.tabulator.options);
+
+            _table.setData(self.rowsAndColumns);
 
             self.tabulator.table = _table;
           }
@@ -1163,23 +1187,39 @@ var table = function table(self, options) {
     delete self.tabulator.options.ajaxURL;
   };
 
-  self.reloadTable = function () {
+  self.hardReloadTable = function (tabulatorOptions) {
+    // Saves all exisiting data to new variable to destroy the table
+    var columnData = _toConsumableArray(self.columnData);
+
+    var rowData = _toConsumableArray(self.rowData);
+
+    var rowsAndColumns = _toConsumableArray(self.rowsAndColumns);
+
+    var options = Object.assign({}, self.tabulator.options, tabulatorOptions); // Destroy Table
+
+    self.destroyTable(); // Store the existing data back
+
+    self.columnData = columnData;
+    self.rowData = rowData;
+    self.rowsAndColumns = rowsAndColumns;
+    self.tabulator.options = options; // Restart Table Manually via passing options
+
     self.restartTable(self.tabulator.options);
   };
 
-  self.restartTable = function (options) {
+  self.restartTable = function (tabulatorOptions) {
     // Restart Table
     if (self.tabulator.options.ajaxURL) {
       // If Ajax enabled, use executeAjax function
-      self.executeAjax(options || self.tabulator.options);
+      self.executeAjax(tabulatorOptions || self.tabulator.options);
     } else {
       if (self.tabulator.options.ajaxURL) {
         self.resetAjaxOptions();
         self.resetAjaxTable();
       }
 
-      if (options) {
-        self.tabulator.options = Object.assign({}, self.tabulator.options, options);
+      if (tabulatorOptions) {
+        self.tabulator.options = Object.assign({}, self.tabulator.options, tabulatorOptions);
       } // Restart normal custom table
 
 
