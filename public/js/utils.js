@@ -526,6 +526,7 @@ var load = function load(self, options) {
     }
 
     self.tabulator.table.setDataFromLocalFile().then(function () {
+      self.resetCustomTable();
       self.updateRowsAndColumns(self.getTableData());
 
       if (self.tabulator.options.ajaxURL) {
@@ -548,6 +549,7 @@ var load = function load(self, options) {
     }
 
     self.tabulator.table.setDataFromLocalFile('.txt').then(function () {
+      self.resetCustomTable();
       self.updateRowsAndColumns(self.getTableData());
 
       if (self.tabulator.options.ajaxURL) {
@@ -573,6 +575,7 @@ var load = function load(self, options) {
       var getData = self.toTabulatorData(data);
       return getData;
     }).then(function (convertData) {
+      self.resetCustomTable();
       self.resetDataOptions();
 
       if (self.tabulator.options.ajaxURL) {
@@ -1098,9 +1101,9 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var table = function table(self, options) {
   self.initTable = function () {
     if (self.tabulator.table && self.tabulator.table.getData().length > 0) {
-      // Clear Data and setData again
-      self.tabulator.table.clearData();
+      // Set Data and Columns if Table exists. No need to initialize the table
       self.tabulator.table.setData(self.rowsAndColumns);
+      self.tabulator.table.setColumns(self.columnData);
     } else {
       // Refresh Existing Table
       self.$tableHTML = self.$form.find('table#dynamicTable'); // Safe method. Table may display many
@@ -1123,6 +1126,7 @@ var table = function table(self, options) {
             }
 
             self.tabulator.options = Object.assign({}, self.tabulator.options, {
+              // Always make the autoColumns: false for `title` to be visible
               autoColumns: false,
               columns: self.columnData
             }); // eslint-disable-next-line no-undef
@@ -1219,7 +1223,7 @@ var table = function table(self, options) {
       }
 
       if (tabulatorOptions) {
-        self.tabulator.options = Object.assign({}, self.tabulator.options, tabulatorOptions);
+        self.tabulator.options = Object.assign({}, self.tabulator.options, tabulatorOptions || {});
       } // Restart normal custom table
 
 
@@ -1372,8 +1376,6 @@ apos.define('dynamic-table-utils', {
             columnInput.val(_data.columns.length);
           }
 
-          self.executeRow(_data.data.length);
-          self.executeColumn(_data.columns.length);
           self.initTable();
         } catch (e) {
           console.warn(e);

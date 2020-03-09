@@ -197,10 +197,10 @@ module.exports = function(self, options) {
             var newPiece = _.cloneDeep(result);
             newPiece.id = req.body.id;
             var filter = result.url.filter((val, i) => val && val.widgetLocation === req.body.url);
-            newPiece.url = filter && filter.length > 0 ? newPiece.url : _.uniq(_.union(newPiece.url, [{
+            newPiece.url = filter && filter.length > 0 ? _.uniq(_.union(newPiece.url, [{
                 id: self.apos.utils.generateId(),
                 widgetLocation: req.body.url
-            }]), 'url')
+            }]), 'url') : newPiece.url
             newPiece.published = true;
 
             return self.update(req, newPiece, {

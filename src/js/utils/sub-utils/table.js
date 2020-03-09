@@ -1,9 +1,9 @@
 let table = function(self, options) {
     self.initTable = function () {
         if (self.tabulator.table && self.tabulator.table.getData().length > 0) {
-            // Clear Data and setData again
-            self.tabulator.table.clearData();
+            // Set Data and Columns if Table exists. No need to initialize the table
             self.tabulator.table.setData(self.rowsAndColumns);
+            self.tabulator.table.setColumns(self.columnData);
         } else {
             // Refresh Existing Table
             self.$tableHTML = self.$form.find('table#dynamicTable');
@@ -29,6 +29,7 @@ let table = function(self, options) {
                             self.resetAjaxOptions();
                         }
                         self.tabulator.options = Object.assign({}, self.tabulator.options, {
+                            // Always make the autoColumns: false for `title` to be visible
                             autoColumns: false,
                             columns: self.columnData
                         })
@@ -120,7 +121,7 @@ let table = function(self, options) {
                 self.resetAjaxTable();
             }
             if (tabulatorOptions) {
-                self.tabulator.options = Object.assign({}, self.tabulator.options, tabulatorOptions);
+                self.tabulator.options = Object.assign({}, self.tabulator.options, tabulatorOptions || {});
             }
             // Restart normal custom table
             self.initTable();

@@ -138,8 +138,6 @@ apos.define('dynamic-table-utils', {
                     if (columnInput.length > 0) {
                         columnInput.val(data.columns.length);
                     }
-                    self.executeRow(data.data.length);
-                    self.executeColumn(data.columns.length);
 
                     self.initTable();
                 } catch (e) {

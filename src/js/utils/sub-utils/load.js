@@ -70,6 +70,7 @@ let load = function (self, options) {
             self.initTable();
         }
         self.tabulator.table.setDataFromLocalFile().then(() => {
+            self.resetCustomTable();
             self.updateRowsAndColumns(self.getTableData());
             if (self.tabulator.options.ajaxURL) {
                 self.resetAjaxTable();
@@ -89,6 +90,7 @@ let load = function (self, options) {
             self.initTable();
         }
         self.tabulator.table.setDataFromLocalFile('.txt').then(() => {
+            self.resetCustomTable();
             self.updateRowsAndColumns(self.getTableData());
             if (self.tabulator.options.ajaxURL) {
                 self.resetAjaxTable();
@@ -114,6 +116,7 @@ let load = function (self, options) {
             return getData;
         })
         .then((convertData) => {
+            self.resetCustomTable();
             self.resetDataOptions();
             if (self.tabulator.options.ajaxURL) {
                 self.resetAjaxTable();
