@@ -18,8 +18,8 @@ module.exports = function(self, options) {
         })
     })
 
-    self.route('post', 'update-fields', function (req, res) {
-        return self.routes.updateFields(req, function (err) {
+    self.route('post', 'update-urls', function (req, res) {
+        return self.routes.updateUrls(req, function (err) {
             if (err) {
                 return res.send({
                     status: 'error',
@@ -168,7 +168,18 @@ module.exports = function(self, options) {
                     widgetLocation: req.body.url.filter((val, i) => next.widgetLocation === val)[0]
                 }), []).filter((val, i) => val.widgetLocation);
             } else {
-                filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url);
+                /**
+                 * Error on delete widgetLocation if it has the same table name and same page
+                 *{
+                     id: "ck7lj559q0008a83d6wemyxqf",
+                     widgetLocation: "/"
+                 }
+                 {
+                     id: "ck7lj59vw000da83d4nqpfojh",
+                     widgetLocation: "/"
+                 }
+                 */
+                filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url && val.id === req.body.id);
             }
             newPiece.url = filter;
             newPiece.published = true;
@@ -179,7 +190,7 @@ module.exports = function(self, options) {
         })
     }
 
-    self.routes.updateFields = function (req, callback) {
+    self.routes.updateUrls = function (req, callback) {
 
         if (!req.body.id) {
             return callback('Id not found')
@@ -196,11 +207,16 @@ module.exports = function(self, options) {
 
             var newPiece = _.cloneDeep(result);
             newPiece.id = req.body.id;
-            var filter = result.url.filter((val, i) => val && val.widgetLocation === req.body.url);
-            newPiece.url = filter && filter.length > 0 ? _.uniq(_.union(newPiece.url, [{
-                id: self.apos.utils.generateId(),
-                widgetLocation: req.body.url
-            }]), 'url') : newPiece.url
+            var filter = null;
+            if (Array.isArray(result.url)) {
+                filter = _.uniq(_.union(newPiece.url, [{
+                    id: self.apos.utils.generateId(),
+                    widgetLocation: req.body.url
+                }]), 'url')
+            } else {
+                filter = result.url.filter((val, i) => val && val.widgetLocation === req.body.url);
+            }
+            newPiece.url = filter;
             newPiece.published = true;
 
             return self.update(req, newPiece, {

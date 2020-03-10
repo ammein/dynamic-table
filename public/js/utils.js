@@ -941,7 +941,7 @@ var modal = function modal(self, options) {
           return callback(null);
         });
       });
-    } else if (self.getNewChoiceId && !self.getChoiceId) {
+    } else {
       // Update latest piece
       return self.updateFieldsApi({
         id: self.getNewChoiceId,
@@ -957,8 +957,6 @@ var modal = function modal(self, options) {
         return callback(null);
       });
     }
-
-    return callback(null);
   };
 };
 
@@ -1029,7 +1027,7 @@ exports["default"] = void 0;
 
 var routes = function routes(self, options) {
   self.getFieldsApi = function (query, callback) {
-    return $.get('/modules/' + options.apiModuleName + '/get-fields', query, function (data) {
+    return $.get('/modules/' + self.options.apiModuleName + '/get-fields', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -1039,7 +1037,7 @@ var routes = function routes(self, options) {
   };
 
   self.resetCallbacksApi = function (query, callback) {
-    return apos.modules[options.apiModuleName].api('reset-callbacks', query, function (data) {
+    return apos.modules[self.options.apiModuleName].api('reset-callbacks', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -1049,7 +1047,7 @@ var routes = function routes(self, options) {
   };
 
   self.resetOptionsApi = function (query, callback) {
-    return apos.modules[options.apiModuleName].api('reset-options', query, function (data) {
+    return apos.modules[self.options.apiModuleName].api('reset-options', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -1059,7 +1057,7 @@ var routes = function routes(self, options) {
   };
 
   self.updateFieldsApi = function (query, callback) {
-    return apos.modules[options.apiModuleName].api('update-fields', query, function (data) {
+    return apos.modules[self.options.apiModuleName].api('update-urls', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }
@@ -1069,7 +1067,7 @@ var routes = function routes(self, options) {
   };
 
   self.removeUrlsApi = function (query, callback) {
-    return apos.modules[options.apiModuleName].api('remove-urls', query, function (data) {
+    return apos.modules[self.options.apiModuleName].api('remove-urls', query, function (data) {
       if (data.status === 'success') {
         return callback(null, data.message);
       }

@@ -288,7 +288,7 @@ let modal = function(self, options) {
                     return callback(null);
                 })
             })
-        } else if (self.getNewChoiceId && !self.getChoiceId) {
+        } else {
             // Update latest piece
             return self.updateFieldsApi({
                 id: self.getNewChoiceId,
@@ -304,8 +304,6 @@ let modal = function(self, options) {
                 return callback(null);
             })
         }
-
-        return callback(null);
     }
 }
 
