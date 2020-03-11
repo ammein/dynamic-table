@@ -1,4 +1,4 @@
-/* global JSONfn, JSON5 */
+/* global JSONfn */
 import table from './sub-utils/table';
 import callbacks from './sub-utils/callbacks';
 import helpers from './sub-utils/helpers';
@@ -102,7 +102,7 @@ apos.define('dynamic-table-utils', {
 
             self.$data.on('change', function (e) {
                 try {
-                    let data = JSON5.parse(e.currentTarget.querySelector('textarea').value);
+                    let data = JSONfn.parse(e.currentTarget.querySelector('textarea').value);
 
                     // Auto Convert Columns Title
                     data.columns = data.columns.map(function (item, i) {
@@ -166,7 +166,7 @@ apos.define('dynamic-table-utils', {
                 rowInput.val().length > 0 &&
                 columnInput.val().length > 0 &&
                 ajaxURL.val().length === 0) {
-                self.updateRowsAndColumns(JSON5.parse(dataInput.val()));
+                self.updateRowsAndColumns(JSONfn.parse(dataInput.val()));
                 self.initTable();
             }
 

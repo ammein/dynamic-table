@@ -32,6 +32,14 @@ let table = function(self, options) {
                             self.resetAjaxTable();
                             self.resetAjaxOptions();
                         }
+                        let customColumn = self.tabulator.options.columns ? self.columnData.map((val, i, arr) => {
+                            let field = self.tabulator.options.columns.filter((columnVal) => columnVal.field === val.field);
+                            if (val.field === field[0].field) {
+                                return Object.assign({}, val, field[0])
+                            }
+                            return val;
+                        }) : self.columnData;
+                        self.columnData = [...customColumn];
                         self.tabulator.options = Object.assign({}, self.tabulator.options, {
                             // Always make the autoColumns: false for `title` to be visible
                             autoColumns: false,

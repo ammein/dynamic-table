@@ -1,4 +1,6 @@
-/* global JSON5, JSONfn */
+/* global JSONfn */
+import beautify, { beautifyOptions } from './beautifer';
+import beautifyJS from '../../extends/sub-customCodeEditor/beautifier';
 let dataManagement = function(self, options) {
     self.executeRow = function (value) {
         let isNaN = window.isNaN(value);
@@ -146,12 +148,14 @@ let dataManagement = function(self, options) {
     self.convertData = function () {
         let convertData = apos.schemas.findFieldset(self.$form, 'data').find('textarea');
         if (convertData.length > 0) {
-            convertData.val(JSON5.stringify({
-                data: self.rowData,
-                columns: self.columnData
-            }, {
-                space: 2
-            }));
+            convertData.val(
+                beautifyJS(
+                    JSONfn.stringify({
+                        data: self.rowData,
+                        columns: self.columnData
+                    })
+                , beautifyOptions)
+            );
             self.executeAutoResize(convertData.get(0));
         }
 

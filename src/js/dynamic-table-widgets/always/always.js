@@ -1,4 +1,4 @@
-/* global JSON5, Tabulator, JSONfn */
+/* global Tabulator, JSONfn */
 apos.define('dynamic-table-widgets', {
     extend: 'apostrophe-widgets',
     construct: function (self, options) {
@@ -58,7 +58,7 @@ apos.define('dynamic-table-widgets', {
 
                         case property === 'data' && myOptions[property].length > 0:
                             try {
-                                let data = self.dataToArrayOfObjects(JSON5.parse(myOptions[property]))
+                                let data = self.dataToArrayOfObjects(JSONfn.parse(myOptions[property]))
                                 for (let key in data) {
                                     if (data.hasOwnProperty(key)) {
                                         allOptions[key] = data[key]

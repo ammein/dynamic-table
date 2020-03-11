@@ -7,7 +7,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/* global Tabulator, JSON5, JSONfn */
+/* global Tabulator, JSONfn */
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
   // Use object so that devs can extend or
   var utils = {};
@@ -77,7 +77,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
           case property === 'data' && myOptions[property].length > 0:
             try {
-              var _data = utils.dataToArrayOfObjects(JSON5.parse(myOptions[property]));
+              var _data = utils.dataToArrayOfObjects(JSONfn.parse(myOptions[property]));
 
               for (var key in _data) {
                 if (_data.hasOwnProperty(key)) {

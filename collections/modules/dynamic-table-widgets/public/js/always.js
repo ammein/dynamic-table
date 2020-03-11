@@ -7,7 +7,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-/* global JSON5, Tabulator, JSONfn */
+/* global Tabulator, JSONfn */
 apos.define('dynamic-table-widgets', {
   extend: 'apostrophe-widgets',
   construct: function construct(self, options) {
@@ -73,7 +73,7 @@ apos.define('dynamic-table-widgets', {
 
             case property === 'data' && myOptions[property].length > 0:
               try {
-                var data = self.dataToArrayOfObjects(JSON5.parse(myOptions[property]));
+                var data = self.dataToArrayOfObjects(JSONfn.parse(myOptions[property]));
 
                 for (var key in data) {
                   if (data.hasOwnProperty(key)) {

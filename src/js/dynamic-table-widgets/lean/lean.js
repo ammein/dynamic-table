@@ -1,4 +1,4 @@
-/* global Tabulator, JSON5, JSONfn */
+/* global Tabulator, JSONfn */
 apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
     // Use object so that devs can extend or
     let utils = {};
@@ -61,7 +61,7 @@ apos.utils.widgetPlayers['dynamic-table'] = function (el, data, options) {
 
                     case property === 'data' && myOptions[property].length > 0:
                         try {
-                            let data = utils.dataToArrayOfObjects(JSON5.parse(myOptions[property]))
+                            let data = utils.dataToArrayOfObjects(JSONfn.parse(myOptions[property]))
                             for (let key in data) {
                                 if (data.hasOwnProperty(key)) {
                                     allOptions[key] = data[key]

@@ -1,4 +1,4 @@
-/* global Tabulator, Papa, JSON5, JSONfn */
+/* global Tabulator, Papa, JSONfn */
 let modal = function(self, options) {
     self.getJoin = function ($chooser) {
         let superAfterManagerSave = $chooser.afterManagerSave;
@@ -235,7 +235,7 @@ let modal = function(self, options) {
 
                     case property === 'data' && ajaxResult[property].length > 0:
                         try {
-                            self.updateRowsAndColumns(JSON5.parse(ajaxResult[property]));
+                            self.updateRowsAndColumns(JSONfn.parse(ajaxResult[property]));
                             if (self.tabulator.table) {
                                 self.restartTable();
                             }
