@@ -20,7 +20,6 @@ let modal = function(self, options) {
                 id: self.getChoiceId
             }, function (err, result) {
                 if (err) {
-                    // Reset self.getChoiceId
                     self.getChoiceId = undefined;
                     return apos.utils.warn('Unable to get the table piece. Are you sure it saves correctly ?')
                 }
@@ -32,6 +31,7 @@ let modal = function(self, options) {
             superAfterManagerSave();
             // Refresh Form
             self.$form = $chooser.$choices.parent().parent().parent();
+            // On save, it will always get the newChoiceId
             self.getNewChoiceId = $chooser.choices[0].value;
             // Destroy table before reinitialization
             self.destroyTable();
@@ -44,8 +44,6 @@ let modal = function(self, options) {
                     return apos.utils.warn('Dynamic Table Piece not found');
                 }
 
-                self.getChoiceId = self.getNewChoiceId;
-
                 return self.getResultAndInitTable(result);
             })
 
@@ -56,6 +54,7 @@ let modal = function(self, options) {
             self.destroyTable();
 
             if ($chooser.choices.length > 0) {
+                // On cancel, just get the previous choiceId
                 self.getChoiceId = $chooser.choices[0].value;
                 return self.getFieldsApi({
                     id: self.getChoiceId
@@ -74,6 +73,7 @@ let modal = function(self, options) {
 
             if ($chooser.choices.length > 0) {
                 self.destroyTable();
+                // On change, it will always get the newChoiceId
                 self.getNewChoiceId = $chooser.choices[0].value;
                 return self.getFieldsApi({
                     id: self.getNewChoiceId
@@ -81,9 +81,6 @@ let modal = function(self, options) {
                     if (err) {
                         return apos.utils.warn('Dynamic Table Piece not found');
                     }
-
-                    self.getChoiceId = self.getNewChoiceId;
-
                     return self.getResultAndInitTable(result);
                 })
             }
@@ -262,10 +259,8 @@ let modal = function(self, options) {
     }
 
     self.beforeSave = function (callback) {
-        // Should always return callback null. Because if you put an error to it, it will never be save.
-        // We don't want that
         if (self.getChoiceId !== self.getNewChoiceId && self.getNewChoiceId) {
-            // Update previous piece
+            // Update previous piece by delete the previous url
             return self.removeUrlsApi({
                 id: self.getChoiceId,
                 url: window.location.pathname
@@ -288,7 +283,7 @@ let modal = function(self, options) {
                     return callback(null);
                 })
             })
-        } else {
+        } else if (!self.getChoiceId && self.getNewChoiceId) {
             // Update latest piece
             return self.updateFieldsApi({
                 id: self.getNewChoiceId,
@@ -303,6 +298,10 @@ let modal = function(self, options) {
 
                 return callback(null);
             })
+        } else {
+            // Should always return callback null. Because if you put an error to it, it will never be save.
+            // Ignore cancel & save item
+            return callback(null);
         }
     }
 }

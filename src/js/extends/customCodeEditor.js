@@ -81,13 +81,9 @@ apos.define('custom-code-editor', {
             // eslint-disable-next-line no-undef
             let editor = ace.edit($fieldInput);
 
-            self.tabulator.restartTable = function (callbackObj, hardReload = false) {
+            self.tabulator.restartTable = function (callbackObj) {
                 // Restart Table
-                if (hardReload) {
-                    apos.dynamicTableUtils.hardReloadTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
-                } else {
-                    apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
-                }
+                apos.dynamicTableUtils.hardReloadTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
             }
 
             events(self, options);

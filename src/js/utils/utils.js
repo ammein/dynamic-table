@@ -191,7 +191,7 @@ apos.define('dynamic-table-utils', {
 
             // Options Comes Last
             if (self.$options.length > 0) {
-                self.setOptionsValue();
+                self.setOptionsValue(false, Object.assign({}, self.rowsAndColumns.length > 0 ? { autoColumns: false } : {}));
             }
         }
         // End of Utils

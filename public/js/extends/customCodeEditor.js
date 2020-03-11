@@ -6170,14 +6170,8 @@ apos.define('custom-code-editor', {
       var editor = ace.edit($fieldInput);
 
       self.tabulator.restartTable = function (callbackObj) {
-        var hardReload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
-
         // Restart Table
-        if (hardReload) {
-          apos.dynamicTableUtils.hardReloadTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
-        } else {
-          apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
-        }
+        apos.dynamicTableUtils.hardReloadTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
       };
 
       (0, _events["default"])(self, options);
@@ -6305,7 +6299,7 @@ var events = function events(self, options) {
         try {
           value = self.tabulator.convertJSONFunction(value); // Restart Table
 
-          self.tabulator.restartTable(JSONfn.parse(value), true);
+          self.tabulator.restartTable(JSONfn.parse(value));
         } catch (e) {
           // Only allow if the format is wrong.
           if (e.name === 'SyntaxError') {

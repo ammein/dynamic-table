@@ -26,7 +26,7 @@ let options = function(self, options) {
             }
             // Reset Options & if it is a custom table, automatically pass the data for `autoColumns: false`
             self.setOptionsValue(true, Object.assign({}, self.rowsAndColumns.length > 0 ? { autoColumns: false } : {}));
-            self.restartTable();
+            self.hardReloadTable();
             return apos.notify('Options Reset!', {
                 type: 'success',
                 dismiss: true

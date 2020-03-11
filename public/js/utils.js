@@ -6464,7 +6464,6 @@ var modal = function modal(self, options) {
         id: self.getChoiceId
       }, function (err, result) {
         if (err) {
-          // Reset self.getChoiceId
           self.getChoiceId = undefined;
           return apos.utils.warn('Unable to get the table piece. Are you sure it saves correctly ?');
         }
@@ -6476,7 +6475,8 @@ var modal = function modal(self, options) {
     $chooser.afterManagerSave = function () {
       superAfterManagerSave(); // Refresh Form
 
-      self.$form = $chooser.$choices.parent().parent().parent();
+      self.$form = $chooser.$choices.parent().parent().parent(); // On save, it will always get the newChoiceId
+
       self.getNewChoiceId = $chooser.choices[0].value; // Destroy table before reinitialization
 
       self.destroyTable(); // Get field first
@@ -6488,7 +6488,6 @@ var modal = function modal(self, options) {
           return apos.utils.warn('Dynamic Table Piece not found');
         }
 
-        self.getChoiceId = self.getNewChoiceId;
         return self.getResultAndInitTable(result);
       });
     };
@@ -6498,6 +6497,7 @@ var modal = function modal(self, options) {
       self.destroyTable();
 
       if ($chooser.choices.length > 0) {
+        // On cancel, just get the previous choiceId
         self.getChoiceId = $chooser.choices[0].value;
         return self.getFieldsApi({
           id: self.getChoiceId
@@ -6515,7 +6515,8 @@ var modal = function modal(self, options) {
       superOnChange();
 
       if ($chooser.choices.length > 0) {
-        self.destroyTable();
+        self.destroyTable(); // On change, it will always get the newChoiceId
+
         self.getNewChoiceId = $chooser.choices[0].value;
         return self.getFieldsApi({
           id: self.getNewChoiceId
@@ -6524,7 +6525,6 @@ var modal = function modal(self, options) {
             return apos.utils.warn('Dynamic Table Piece not found');
           }
 
-          self.getChoiceId = self.getNewChoiceId;
           return self.getResultAndInitTable(result);
         });
       }
@@ -6728,10 +6728,8 @@ var modal = function modal(self, options) {
   };
 
   self.beforeSave = function (callback) {
-    // Should always return callback null. Because if you put an error to it, it will never be save.
-    // We don't want that
     if (self.getChoiceId !== self.getNewChoiceId && self.getNewChoiceId) {
-      // Update previous piece
+      // Update previous piece by delete the previous url
       return self.removeUrlsApi({
         id: self.getChoiceId,
         url: window.location.pathname
@@ -6755,7 +6753,7 @@ var modal = function modal(self, options) {
           return callback(null);
         });
       });
-    } else {
+    } else if (!self.getChoiceId && self.getNewChoiceId) {
       // Update latest piece
       return self.updateFieldsApi({
         id: self.getNewChoiceId,
@@ -6770,6 +6768,10 @@ var modal = function modal(self, options) {
         self.getChoiceId = self.getNewChoiceId;
         return callback(null);
       });
+    } else {
+      // Should always return callback null. Because if you put an error to it, it will never be save.
+      // Ignore cancel & save item
+      return callback(null);
     }
   };
 };
@@ -6822,7 +6824,7 @@ var options = function options(self, _options) {
       self.setOptionsValue(true, Object.assign({}, self.rowsAndColumns.length > 0 ? {
         autoColumns: false
       } : {}));
-      self.restartTable();
+      self.hardReloadTable();
       return apos.notify('Options Reset!', {
         type: 'success',
         dismiss: true
@@ -7253,7 +7255,9 @@ apos.define('dynamic-table-utils', {
 
 
       if (self.$options.length > 0) {
-        self.setOptionsValue();
+        self.setOptionsValue(false, Object.assign({}, self.rowsAndColumns.length > 0 ? {
+          autoColumns: false
+        } : {}));
       }
     }; // End of Utils
 
