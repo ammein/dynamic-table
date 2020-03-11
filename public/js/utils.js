@@ -187,6 +187,22 @@ var dataManagement = function dataManagement(self, options) {
       self.columnData = object.columns;
       self.executeRow(self.rowData.length);
       self.executeColumn(self.columnData.length);
+    } // Checking tabulatorOptions if does have any `columns` for custom column attribute
+
+
+    if (self.tabulator.options.columns) {
+      self.tabulator.options.columns.forEach(function (optionsVal, optionsI, optionsArr) {
+        self.columnData = self.columnData.map(function (val, i, arr) {
+          if (optionsVal.field === val.field) {
+            return Object.assign({}, val, optionsVal);
+          }
+
+          return val;
+        });
+      });
+    } else if (self.tabulator.options.data) {
+      // We don't need data on options
+      delete self.tabulator.options.data;
     }
 
     self.dataToArrayOfObjects();
@@ -977,13 +993,14 @@ var options = function options(self, _options) {
    */
   self.setOptionsValue = function () {
     var reset = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : false;
+    var additionalOptions = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
     if (reset) {
       return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.originalOptionsTabulator, self.tabulator.options.ajaxURL ? {
         'ajaxURL': self.tabulator.options.ajaxURL
-      } : {}), reset);
+      } : {}, additionalOptions), reset);
     } else {
-      return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.tabulator.options));
+      return apos.customCodeEditor.tabulator.optionsValue(self.$form, self.$options.data().name, Object.assign({}, self.tabulator.options, additionalOptions));
     }
   };
   /**
@@ -996,15 +1013,17 @@ var options = function options(self, _options) {
       id: self.$id.val() || ''
     }, function (err) {
       if (err) {
-        apos.utils.warn('Unable to reset options', err);
+        apos.utils.warn('Unable to reset options: \n', err);
         apos.notify('Opps! Something went wrong!', {
           type: 'error',
           dismiss: true
         });
-      } // Reset Options
+      } // Reset Options & if it is a custom table, automatically pass the data for `autoColumns: false`
 
 
-      self.setOptionsValue(true);
+      self.setOptionsValue(true, Object.assign({}, self.rowsAndColumns.length > 0 ? {
+        autoColumns: false
+      } : {}));
       self.restartTable();
       return apos.notify('Options Reset!', {
         type: 'success',
@@ -1099,9 +1118,13 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 var table = function table(self, options) {
   self.initTable = function () {
     if (self.tabulator.table && self.tabulator.table.getData().length > 0) {
-      // Set Data and Columns if Table exists. No need to initialize the table
-      self.tabulator.table.setData(self.rowsAndColumns);
-      self.tabulator.table.setColumns(self.columnData);
+      if (self.tabulator.options.ajaxURL) {
+        self.tabulator.setData();
+      } else {
+        // Set Data and Columns if Table exists. No need to initialize the table
+        self.tabulator.table.setData(self.rowsAndColumns);
+        self.tabulator.table.setColumns(self.columnData);
+      }
     } else {
       // Refresh Existing Table
       self.$tableHTML = self.$form.find('table#dynamicTable'); // Safe method. Table may display many
@@ -1269,11 +1292,11 @@ apos.define('dynamic-table-utils', {
   construct: function construct(self, options) {
     self.options = options; // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
 
-    self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
+    self.tableDelimiter = options.tableDelimiter || ',';
     self.tableEscapeChar = options.tableEscapeChar;
 
     if (options.tabulator) {
-      self.originalOptionsTabulator = options.tabulator;
+      self.originalOptionsTabulator = Object.assign({}, options.tabulator);
     }
 
     self.tabulator = {

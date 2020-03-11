@@ -18,10 +18,10 @@ apos.define('dynamic-table-utils', {
     construct: function (self, options) {
         self.options = options;
         // options.schemas && options.object receives whenever dynamic-table-widgets-editor available
-        self.tableDelimiter = options.tableDelimiter ? options.tableDelimiter : ',';
+        self.tableDelimiter = options.tableDelimiter || ',';
         self.tableEscapeChar = options.tableEscapeChar;
         if (options.tabulator) {
-            self.originalOptionsTabulator = options.tabulator;
+            self.originalOptionsTabulator = Object.assign({}, options.tabulator);
         }
 
         self.tabulator = {

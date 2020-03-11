@@ -32,7 +32,7 @@ let insertCode = function (self, options, object) {
         self.tabulator.events(type, false);
 
         if (Object.getOwnPropertyNames(existsObject).length > 0) {
-            self.tabulator.restartTableCallback(existsObject)
+            self.tabulator.restartTable(existsObject)
         }
     }
 
@@ -104,7 +104,7 @@ let insertCode = function (self, options, object) {
         })
         // End loop
         if (Object.getOwnPropertyNames(existsObject).length > 0) {
-            self.tabulator.restartTableCallback(existsObject)
+            self.tabulator.restartTable(existsObject)
         }
     }
 }

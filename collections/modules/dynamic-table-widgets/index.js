@@ -3,8 +3,8 @@ const callbackFields = require('../../../callbackFields.js').arrangeFields;
 const JSONfn = require('jsonfn').JSONfn;
 module.exports = {
     extend : "apostrophe-widgets",
-    label : "Table Widget",
-    alias: 'tableWidget' ,
+    label : "Dynamic Table Widget",
+    alias: 'dynamicTableWidget' ,
     scene : "user",
     beforeConstruct : function(self,options){
         options.addFields = [

@@ -158,29 +158,10 @@ module.exports = function(self, options) {
                 return callback(err);
             }
 
-            var filter = null;
-
             var newPiece = _.cloneDeep(result);
             newPiece.id = req.body.id;
-            if (Array.isArray(req.body.url)) {
-                filter = result.url.reduce((init, next, i) => init.concat({
-                    id: next.id,
-                    widgetLocation: req.body.url.filter((val, i) => next.widgetLocation === val)[0]
-                }), []).filter((val, i) => val.widgetLocation);
-            } else {
-                /**
-                 * Error on delete widgetLocation if it has the same table name and same page
-                 *{
-                     id: "ck7lj559q0008a83d6wemyxqf",
-                     widgetLocation: "/"
-                 }
-                 {
-                     id: "ck7lj59vw000da83d4nqpfojh",
-                     widgetLocation: "/"
-                 }
-                 */
-                filter = result.url.filter((val, i) => val && val.widgetLocation !== req.body.url && val.id === req.body.id);
-            }
+            const find = result.url.findIndex((val, i) => val && val.widgetId === req.body.id && val.widgetLocation === req.body.url);
+            const filter = result.url.filter((val, i) => i !== find);
             newPiece.url = filter;
             newPiece.published = true;
 
@@ -207,16 +188,15 @@ module.exports = function(self, options) {
 
             var newPiece = _.cloneDeep(result);
             newPiece.id = req.body.id;
-            var filter = null;
-            if (Array.isArray(result.url)) {
-                filter = _.uniq(_.union(newPiece.url, [{
-                    id: self.apos.utils.generateId(),
-                    widgetLocation: req.body.url
-                }]), 'url')
-            } else {
-                filter = result.url.filter((val, i) => val && val.widgetLocation === req.body.url);
-            }
-            newPiece.url = filter;
+            newPiece.url = newPiece.url.length > 0 ? newPiece.url.concat({
+                id: self.apos.utils.generateId(),
+                widgetId: req.body.id,
+                widgetLocation: req.body.url
+            }) : [].concat({
+                id: self.apos.utils.generateId(),
+                widgetId: req.body.id,
+                widgetLocation: req.body.url
+            })
             newPiece.published = true;
 
             return self.update(req, newPiece, {

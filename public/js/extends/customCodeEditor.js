@@ -6134,7 +6134,7 @@ apos.define('custom-code-editor', {
 
       var editor = ace.edit($fieldInput);
 
-      self.tabulator.restartTableCallback = function (callbackObj) {
+      self.tabulator.restartTable = function (callbackObj) {
         // Restart Table
         apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
       };
@@ -6280,7 +6280,7 @@ var events = function events(self, options) {
 
           value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value)); // Restart Table
 
-          self.tabulator.restartTableCallback(value);
+          self.tabulator.restartTable(value);
         } catch (e) {
           // Only allow if the format is wrong.
           if (e.name === 'SyntaxError') {
@@ -6299,7 +6299,7 @@ var events = function events(self, options) {
         try {
           value = self.tabulator.convertJSONFunction(value); // Restart Table
 
-          self.tabulator.restartTableCallback(JSONfn.parse(value));
+          self.tabulator.restartTable(JSONfn.parse(value));
         } catch (e) {
           // Only allow if the format is wrong.
           if (e.name === 'SyntaxError') {
@@ -6386,7 +6386,7 @@ var insertCode = function insertCode(self, options, object) {
     self.tabulator.events(type, false);
 
     if (Object.getOwnPropertyNames(existsObject).length > 0) {
-      self.tabulator.restartTableCallback(existsObject);
+      self.tabulator.restartTable(existsObject);
     }
   }; // This is where it all started
 
@@ -6457,7 +6457,7 @@ var insertCode = function insertCode(self, options, object) {
     }); // End loop
 
     if (Object.getOwnPropertyNames(existsObject).length > 0) {
-      self.tabulator.restartTableCallback(existsObject);
+      self.tabulator.restartTable(existsObject);
     }
   };
 };
