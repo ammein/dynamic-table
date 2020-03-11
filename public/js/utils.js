@@ -5813,41 +5813,6 @@ exports["default"] = _default;
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports["default"] = exports.beautifyOptions = void 0;
-
-var _jsBeautify = _interopRequireDefault(require("js-beautify"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var beautifyOptions = {
-  'indent_size': '4',
-  'indent_char': ' ',
-  'max_preserve_newlines': '5',
-  'preserve_newlines': true,
-  'keep_array_indentation': false,
-  'break_chained_methods': false,
-  'indent_scripts': 'normal',
-  'brace_style': 'collapse',
-  'space_before_conditional': true,
-  'unescape_strings': false,
-  'jslint_happy': true,
-  'end_with_newline': false,
-  'wrap_line_length': '0',
-  'indent_inner_html': false,
-  'comma_first': false,
-  'e4x': false,
-  'indent_empty_lines': false
-};
-exports.beautifyOptions = beautifyOptions;
-var _default = _jsBeautify["default"];
-exports["default"] = _default;
-
-},{"js-beautify":1}],27:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
 exports["default"] = void 0;
 
 /* global JSONfn */
@@ -5921,7 +5886,7 @@ var callbacks = function callbacks(self, options) {
 var _default = callbacks;
 exports["default"] = _default;
 
-},{}],28:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -5931,11 +5896,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _beautifer = _interopRequireWildcard(require("./beautifer"));
-
-var _beautifier = _interopRequireDefault(require("../../extends/sub-customCodeEditor/beautifier"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+var _beautifer = _interopRequireWildcard(require("../../beautifer"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
@@ -6099,7 +6060,7 @@ var dataManagement = function dataManagement(self, options) {
     var convertData = apos.schemas.findFieldset(self.$form, 'data').find('textarea');
 
     if (convertData.length > 0) {
-      convertData.val((0, _beautifier["default"])(JSONfn.stringify({
+      convertData.val((0, _beautifer["default"])(JSONfn.stringify({
         data: self.rowData,
         columns: self.columnData
       }), _beautifer.beautifyOptions));
@@ -6150,7 +6111,7 @@ var dataManagement = function dataManagement(self, options) {
 var _default = dataManagement;
 exports["default"] = _default;
 
-},{"../../extends/sub-customCodeEditor/beautifier":25,"./beautifer":26}],29:[function(require,module,exports){
+},{"../../beautifer":25}],28:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6191,7 +6152,7 @@ var downloads = function downloads(self, options) {
 var _default = downloads;
 exports["default"] = _default;
 
-},{}],30:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6225,7 +6186,7 @@ var events = function events(self, options) {
 var _default = events;
 exports["default"] = _default;
 
-},{}],31:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6265,7 +6226,7 @@ var helpers = function helpers(self, options) {
 var _default = helpers;
 exports["default"] = _default;
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6290,7 +6251,7 @@ var links = function links(self, options) {
 var _default = links;
 exports["default"] = _default;
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6474,7 +6435,7 @@ var load = function load(self, options) {
 var _default = load;
 exports["default"] = _default;
 
-},{}],34:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6816,7 +6777,7 @@ var modal = function modal(self, options) {
 var _default = modal;
 exports["default"] = _default;
 
-},{}],35:[function(require,module,exports){
+},{}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6873,7 +6834,7 @@ var options = function options(self, _options) {
 var _default = options;
 exports["default"] = _default;
 
-},{}],36:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6936,7 +6897,7 @@ var routes = function routes(self, options) {
 var _default = routes;
 exports["default"] = _default;
 
-},{}],37:[function(require,module,exports){
+},{}],36:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6954,6 +6915,19 @@ function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 
 var table = function table(self, options) {
   self.initTable = function () {
+    var customColumn = self.tabulator.options.columns ? self.columnData.map(function (val, i, arr) {
+      var field = self.tabulator.options.columns.filter(function (columnVal) {
+        return columnVal.field === val.field;
+      });
+
+      if (field.length > 0 && val.field === field[0].field) {
+        return Object.assign({}, val, field[0]);
+      }
+
+      return val;
+    }) : self.columnData;
+    self.columnData = _toConsumableArray(customColumn); // Init table
+
     if (self.tabulator.table && self.tabulator.table.getData().length > 0) {
       if (self.tabulator.options.ajaxURL) {
         self.tabulator.setData();
@@ -6983,18 +6957,6 @@ var table = function table(self, options) {
               self.resetAjaxOptions();
             }
 
-            var customColumn = self.tabulator.options.columns ? self.columnData.map(function (val, i, arr) {
-              var field = self.tabulator.options.columns.filter(function (columnVal) {
-                return columnVal.field === val.field;
-              });
-
-              if (val.field === field[0].field) {
-                return Object.assign({}, val, field[0]);
-              }
-
-              return val;
-            }) : self.columnData;
-            self.columnData = _toConsumableArray(customColumn);
             self.tabulator.options = Object.assign({}, self.tabulator.options, {
               // Always make the autoColumns: false for `title` to be visible
               autoColumns: false,
@@ -7105,7 +7067,7 @@ var table = function table(self, options) {
 var _default = table;
 exports["default"] = _default;
 
-},{}],38:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 "use strict";
 
 var _table = _interopRequireDefault(require("./sub-utils/table"));
@@ -7298,4 +7260,4 @@ apos.define('dynamic-table-utils', {
   }
 });
 
-},{"./sub-utils/callbacks":27,"./sub-utils/data-management":28,"./sub-utils/downloads":29,"./sub-utils/events":30,"./sub-utils/helpers":31,"./sub-utils/links":32,"./sub-utils/load":33,"./sub-utils/modal":34,"./sub-utils/options":35,"./sub-utils/routes":36,"./sub-utils/table":37}]},{},[38]);
+},{"./sub-utils/callbacks":26,"./sub-utils/data-management":27,"./sub-utils/downloads":28,"./sub-utils/events":29,"./sub-utils/helpers":30,"./sub-utils/links":31,"./sub-utils/load":32,"./sub-utils/modal":33,"./sub-utils/options":34,"./sub-utils/routes":35,"./sub-utils/table":36}]},{},[37]);

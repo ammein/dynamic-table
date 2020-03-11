@@ -37,7 +37,7 @@ let events = function (self, options) {
                     value = self.tabulator.convertJSONFunction(value);
 
                     // Restart Table
-                    self.tabulator.restartTable(JSONfn.parse(value));
+                    self.tabulator.restartTable(JSONfn.parse(value), true);
 
                 } catch (e) {
                     // Only allow if the format is wrong.

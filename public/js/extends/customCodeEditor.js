@@ -6038,6 +6038,41 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
 };
 }).call(this,require("timers").setImmediate,require("timers").clearImmediate)
 },{"process/browser.js":25,"timers":26}],27:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports["default"] = exports.beautifyOptions = void 0;
+
+var _jsBeautify = _interopRequireDefault(require("js-beautify"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+
+var beautifyOptions = {
+  'indent_size': '4',
+  'indent_char': ' ',
+  'max_preserve_newlines': '5',
+  'preserve_newlines': true,
+  'keep_array_indentation': false,
+  'break_chained_methods': false,
+  'indent_scripts': 'normal',
+  'brace_style': 'collapse',
+  'space_before_conditional': true,
+  'unescape_strings': false,
+  'jslint_happy': true,
+  'end_with_newline': false,
+  'wrap_line_length': '0',
+  'indent_inner_html': false,
+  'comma_first': false,
+  'e4x': false,
+  'indent_empty_lines': false
+};
+exports.beautifyOptions = beautifyOptions;
+var _default = _jsBeautify["default"];
+exports["default"] = _default;
+
+},{"js-beautify":1}],28:[function(require,module,exports){
 (function (setImmediate){
 "use strict";
 
@@ -6135,8 +6170,14 @@ apos.define('custom-code-editor', {
       var editor = ace.edit($fieldInput);
 
       self.tabulator.restartTable = function (callbackObj) {
+        var hardReload = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : false;
+
         // Restart Table
-        apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
+        if (hardReload) {
+          apos.dynamicTableUtils.hardReloadTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
+        } else {
+          apos.dynamicTableUtils.restartTable(Object.assign({}, apos.dynamicTableUtils.tabulator.options, callbackObj));
+        }
       };
 
       (0, _events["default"])(self, options);
@@ -6148,42 +6189,7 @@ apos.define('custom-code-editor', {
 });
 
 }).call(this,require("timers").setImmediate)
-},{"./sub-customCodeEditor/cache":29,"./sub-customCodeEditor/events":30,"./sub-customCodeEditor/insertCode":31,"./sub-customCodeEditor/strings":32,"timers":26}],28:[function(require,module,exports){
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = exports.beautifyOptions = void 0;
-
-var _jsBeautify = _interopRequireDefault(require("js-beautify"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-
-var beautifyOptions = {
-  'indent_size': '4',
-  'indent_char': ' ',
-  'max_preserve_newlines': '5',
-  'preserve_newlines': true,
-  'keep_array_indentation': false,
-  'break_chained_methods': false,
-  'indent_scripts': 'normal',
-  'brace_style': 'collapse',
-  'space_before_conditional': true,
-  'unescape_strings': false,
-  'jslint_happy': true,
-  'end_with_newline': false,
-  'wrap_line_length': '0',
-  'indent_inner_html': false,
-  'comma_first': false,
-  'e4x': false,
-  'indent_empty_lines': false
-};
-exports.beautifyOptions = beautifyOptions;
-var _default = _jsBeautify["default"];
-exports["default"] = _default;
-
-},{"js-beautify":1}],29:[function(require,module,exports){
+},{"./sub-customCodeEditor/cache":29,"./sub-customCodeEditor/events":30,"./sub-customCodeEditor/insertCode":31,"./sub-customCodeEditor/strings":32,"timers":26}],29:[function(require,module,exports){
 "use strict";
 
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
@@ -6193,7 +6199,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _beautifier = _interopRequireWildcard(require("./beautifier"));
+var _beautifer = _interopRequireWildcard(require("../../beautifer"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
@@ -6241,7 +6247,7 @@ var cache = function cache(self, options) {
     self.tabulator.cache[editorType] = [];
     self.tabulator.originalCache[editorType] = []; // Beautify it
 
-    string = (0, _beautifier["default"])(string, _beautifier.beautifyOptions);
+    string = (0, _beautifer["default"])(string, _beautifer.beautifyOptions);
     var JSONFuncObj = JSONfn.parse(self.tabulator.convertJSONFunction(string));
 
     for (var key in JSONFuncObj) {
@@ -6256,7 +6262,7 @@ var cache = function cache(self, options) {
 var _default = cache;
 exports["default"] = _default;
 
-},{"./beautifier":28}],30:[function(require,module,exports){
+},{"../../beautifer":27}],30:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6299,7 +6305,7 @@ var events = function events(self, options) {
         try {
           value = self.tabulator.convertJSONFunction(value); // Restart Table
 
-          self.tabulator.restartTable(JSONfn.parse(value));
+          self.tabulator.restartTable(JSONfn.parse(value), true);
         } catch (e) {
           // Only allow if the format is wrong.
           if (e.name === 'SyntaxError') {
@@ -6346,7 +6352,7 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports["default"] = void 0;
 
-var _beautifier = _interopRequireWildcard(require("./beautifier"));
+var _beautifer = _interopRequireWildcard(require("../../beautifer"));
 
 function _getRequireWildcardCache() { if (typeof WeakMap !== "function") return null; var cache = new WeakMap(); _getRequireWildcardCache = function _getRequireWildcardCache() { return cache; }; return cache; }
 
@@ -6376,10 +6382,10 @@ var insertCode = function insertCode(self, options, object) {
 
     if (object[type] && Object.getOwnPropertyNames(JSONfn.parse(object[type].code)).length > 0 && !reset) {
       existsObject = Object.assign({}, existsObject, self.originalOptions, JSONfn.parse(object[type].code));
-      var strings = (0, _beautifier["default"])(self.tabulator.convertToString(JSONfn.parse(object[type].code)), _beautifier.beautifyOptions);
+      var strings = (0, _beautifer["default"])(self.tabulator.convertToString(JSONfn.parse(object[type].code)), _beautifer.beautifyOptions);
       self[type].editor.setValue(strings);
     } else {
-      self[type].editor.setValue((0, _beautifier["default"])(self.tabulator.convertToString(self.originalOptions), _beautifier.beautifyOptions));
+      self[type].editor.setValue((0, _beautifer["default"])(self.tabulator.convertToString(self.originalOptions), _beautifer.beautifyOptions));
       apos.dynamicTableUtils.tabulator.options = Object.assign({}, apos.dynamicTableUtils.tabulator.options, self.originalOptions);
     }
 
@@ -6394,7 +6400,7 @@ var insertCode = function insertCode(self, options, object) {
   self.tabulator.setValue = function ($form, types, reset) {
     var existsObject = {};
     types.forEach(function (val, i, arr) {
-      var strings = (0, _beautifier["default"])(apos.dynamicTableUtils.tabulator.callbackStrings(val), _beautifier.beautifyOptions); // Set Worker to be false to disable error highlighting
+      var strings = (0, _beautifer["default"])(apos.dynamicTableUtils.tabulator.callbackStrings(val), _beautifer.beautifyOptions); // Set Worker to be false to disable error highlighting
 
       self[val].editor.session.setUseWorker(false); // Store to cache for comparison check
 
@@ -6439,7 +6445,7 @@ var insertCode = function insertCode(self, options, object) {
               } // Apply to editor string value
 
 
-              self[val].editor.session.setValue((0, _beautifier["default"])(self.tabulator.convertToString(editorStringObj), _beautifier.beautifyOptions));
+              self[val].editor.session.setValue((0, _beautifer["default"])(self.tabulator.convertToString(editorStringObj), _beautifer.beautifyOptions));
             }
           }
         };
@@ -6465,7 +6471,7 @@ var insertCode = function insertCode(self, options, object) {
 var _default = insertCode;
 exports["default"] = _default;
 
-},{"./beautifier":28}],32:[function(require,module,exports){
+},{"../../beautifer":27}],32:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -6569,4 +6575,4 @@ var strings = function strings(self, options) {
 var _default = strings;
 exports["default"] = _default;
 
-},{}]},{},[27]);
+},{}]},{},[28]);

@@ -1,4 +1,4 @@
-import beautifyJS, { beautifyOptions } from './beautifier';
+import beautifyJS, { beautifyOptions } from '../../beautifer';
 /* global JSONfn */
 let insertCode = function (self, options, object) {
     self.tabulator.optionsValue = function ($form, type, options = {}, reset = false) {

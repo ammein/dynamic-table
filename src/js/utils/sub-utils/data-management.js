@@ -1,6 +1,5 @@
 /* global JSONfn */
-import beautify, { beautifyOptions } from './beautifer';
-import beautifyJS from '../../extends/sub-customCodeEditor/beautifier';
+import beautifyJS, { beautifyOptions } from '../../beautifer';
 let dataManagement = function(self, options) {
     self.executeRow = function (value) {
         let isNaN = window.isNaN(value);

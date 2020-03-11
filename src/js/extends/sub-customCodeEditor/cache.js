@@ -1,4 +1,4 @@
-import beautifyJS, { beautifyOptions } from './beautifier';
+import beautifyJS, { beautifyOptions } from '../../beautifer';
 /* global JSONfn  */
 let cache = function (self, options) {
     // To check and compare with cache. If changes detected, replace the value. Also return with new object on changes
