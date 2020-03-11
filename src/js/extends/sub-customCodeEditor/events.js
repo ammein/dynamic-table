@@ -16,7 +16,7 @@ let events = function (self, options) {
                     value = self.tabulator.cacheCheck(editorType, JSONfn.parse(value));
 
                     // Restart Table
-                    self.tabulator.restartTable(value);
+                    self.tabulator.restartTable(value, true);
 
                 } catch (e) {
                     // Only allow if the format is wrong.
