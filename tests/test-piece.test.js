@@ -12,7 +12,38 @@ var newTable = {
     slug: "table1"
 }
 
-describe('Dynamic Table: Routes Test', function () {
+var newTableData = {
+    title: "Table Data",
+    slug: "tabledata",
+    adjustRow: [],
+    adjustColumn: [],
+    row: 3,
+    column: 2,
+    data: {
+        data: [
+            ["untitled", "untitled"],
+            ["untitled", "untitled"],
+            ["untitled", "untitled"]
+        ],
+        columns: [
+            {
+                title: "Header 1",
+                field: "header1",
+                cellClick: "function(e, cell) {↵ console.log('cell click ')}"
+            },
+            {
+                title: "Header 2",
+                field: "header2"
+            }
+        ]
+    },
+    tabulatorOptions: {
+        code: `{"layout":"fitColumns","autoColumns":false,"responsiveLayout":true,"paginationSize":6,"pagination":"local"}`,
+        type: "javascript"
+    }
+}
+
+describe('Dynamic Table: Pieces Test', function () {
     // Apostrophe took some time to load
     // Ends everything at 50 seconds
     this.timeout(50000);
@@ -107,5 +138,54 @@ describe('Dynamic Table: Routes Test', function () {
                 done();
             })
         });
+    });
+
+    it('should insert new table with all the data', function(done) {
+        var table = _.assign(apos.modules['dynamic-table'].newInstance(), newTableData);
+
+        apos.modules['dynamic-table'].insert(apos.tasks.getReq(), table, function (err, result) {
+            id = result._id;
+            assert(!err);
+            done();
+        })
+    });
+
+    it('should make sure that it is a published all pieces', function(done) {
+        return apos.docs.db.update({}, {
+            $set : {
+                pubslished: true,
+                trash: false
+            }
+        }, {
+            multi: true
+        }, function(err, count){
+            assert(!err);
+            done();
+        })
+    });
+
+    it('should have all the data saved to document', function(done) {
+        return apos.modules["dynamic-table"].find({ "_id" : id}).toObject(function(err, piece) {
+            expect(piece).toMatchObject(expect.objectContaining(newTableData));
+            assert(!err);
+            done();
+        })
+    });
+
+    it('should remove all the pieces successfully', function(done){
+        return apos.docs.db.remove({ "_id" : id },function(err, result) {
+            assert(!err);
+            expect(result.result).toMatchObject({
+                n: 1,
+                ok: 1
+            })
+            return apos.modules['dynamic-table'].find({
+                    "_id": id
+                }).toObject(function (errPiece, piece) {
+                    expect(piece).toBeFalsy();
+                    assert(!errPiece);
+                    done();
+                })
+        })
     })
 })
