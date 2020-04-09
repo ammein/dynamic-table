@@ -43,6 +43,8 @@ var newTableData = {
     }
 }
 
+var wrongTableData = _.assign({}, newTableData, {row: 4});
+
 describe('Dynamic Table: Pieces Test', function () {
     // Apostrophe took some time to load
     // Ends everything at 50 seconds
@@ -172,6 +174,14 @@ describe('Dynamic Table: Pieces Test', function () {
         })
     });
 
+    it('should not expected to be the same as saved piece', function (done) {
+        return apos.modules["dynamic-table"].find({ "_id": id }).toObject(function(err, piece) {
+            expect(piece).not.toMatchObject(expect.objectContaining(wrongTableData));
+            assert(!err);
+            done();
+        })
+    })
+
     it('should remove all the pieces successfully', function(done){
         return apos.docs.db.remove({ "_id" : id },function(err, result) {
             assert(!err);
@@ -187,5 +197,5 @@ describe('Dynamic Table: Pieces Test', function () {
                     done();
                 })
         })
-    })
+    });
 })
