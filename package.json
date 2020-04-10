@@ -7,10 +7,13 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "mocha ./tests/mocha/**/*.test.js",
-    "test-chrome": "mocha --inspect ./tests/mocha/**/*.test.js",
+    "test": "mocha ./tests/test/**/*.test.js",
+    "test-chrome": "mocha --inspect ./tests/test/**/*.test.js",
     "nightwatch-local": "nightwatch --config tests/nightwatch.conf.js -e local",
-    "nightwatch": "nightwatch --config tests/nightwatch.conf.js -e chrome,firefox,edge"
+    "nightwatch": "nightwatch --config tests/nightwatch.conf.js -e chrome,firefox,edge",
+    "nightwatch-runall": "/bin/bash tests/run-all || bash tests/run-all",
+    "dump": "mongodump -d dynamic-table",
+    "restore": "mongorestore --noIndexRestore mongodump/ --drop"
   },
   "repository": {
     "type": "git",
