@@ -7,8 +7,8 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "mocha ./tests/test/**/*.test.js",
-    "test-chrome": "mocha --inspect ./tests/test/**/*.test.js",
+    "test": "mocha ./test/**/*.test.js",
+    "test-chrome": "mocha --inspect ./test/**/*.test.js",
     "nightwatch-local": "nightwatch --config tests/nightwatch.conf.js -e local",
     "nightwatch": "nightwatch --config tests/nightwatch.conf.js -e chrome,firefox,edge",
     "nightwatch-runall": "/bin/bash tests/run-all || bash tests/run-all",
