@@ -1,6 +1,9 @@
 #!/bin/bash
 DIR="apostrophe-test"
-MYDIR='node_modules/dynamic-table'
+MODULE_NAME='dynamic-table'
+MYDIR="node_modules/$MODULE_NAME"
+FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackFields.js" "sub-modules")
+TESTCOPY=("tests" "nightwatch.conf.js")
 
 copy_module (){
     if [ "$(ls -A $MYDIR && du $MYDIR)" ];then
@@ -8,12 +11,22 @@ copy_module (){
     else
         mkdir "$MYDIR"
     fi
-    cp -r ../lib "$MYDIR"
-    cp -r ../views "$MYDIR"
-    cp -r ../public "$MYDIR"
-    cp ../index.js "$MYDIR"
-    cp ../package.json "$MYDIR"
-    echo "Your custom-code-editor copied to $MYDIR"
+
+    if [[ "$(declare -p FILESTOCOPY)" =~ "declare -a" ]];then
+        echo "Running Loop"
+        for files in ${!FILESTOCOPY[@]}; do
+            echo "Copying ${FILESTOCOPY[$files]} to $MYDIR directory"
+            cp -r ../${FILESTOCOPY[$files]} "$MYDIR"
+        done
+    fi
+
+    if [[ "$(declare -p TESTCOPY)" =~ "declare -a" ]];then
+        for files in ${!TESTCOPY[@]}; do
+            echo "Copying ${TESTCOPY[$files]} to $DIR directory"
+            cp -r ../${TESTCOPY[$files]} "$DIR"
+        done
+    fi
+    echo "Your $MODULE_NAME copied to $MYDIR"
 }
 
 # Checking Apostrophe CLI installed in a system
@@ -61,5 +74,9 @@ fi
 # Running Test
 echo "** running test from"
 echo $PWD
-./node_modules/.bin/nightwatch tests/scenarios/* --config tests/nightwatch.conf.js -e local --port=4445 &&
+echo "*******************************\n\n"
+echo "Starting App\n\n"
+cd "$DIR" && node app &&
+echo "\n\nBegin Test\n\n"
+./node_modules/.bin/nightwatch "$DIR"/tests/scenarios/* --config "$DIR"/tests/nightwatch.conf.js -e local --port=4444 &&
 echo "TEST ENDED"

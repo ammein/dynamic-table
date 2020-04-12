@@ -2,7 +2,7 @@ var path = require('path');
 
 var apos = require('apostrophe')({
     shortName: 'apostrophe-test',
-    baseUrl: "http://localhost:4445",
+    baseUrl: "http://localhost:4444",
     root: module,
 
     // See lib/modules for basic project-level configuration of our modules

@@ -9,13 +9,14 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
         "tests/simple-nightwatch/",
         "tests/scenarios" // we use '/test' as the name of our test directory by default. So 'test/e2e' for 'e2e'.
     ],
-    "output_folder": "./node_modules/nightwatch/reports", // reports (test outcome) output by Nightwatch
+    "output_folder": "tests/reports", // reports (test outcome) output by Nightwatch
+    "globals_path": "server.js",
     "selenium": {
         "start_process": true,
         "server_path": seleniumServer.path,
         "log_path": "",
         "host": "127.0.0.1",
-        "port": 4445,
+        "port": 4444,
         "cli_args": {
             "webdriver.chrome.driver": chromedriver.path
         }
@@ -41,7 +42,8 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
             "username": "${SAUCE_USERNAME}", // if you want to use Saucelabs remember to
             "access_key": "${SAUCE_ACCESS_KEY}", // export your environment variables (see readme)
             "globals": {
-                "waitForConditionTimeout": 10000 // wait for content on the page before continuing
+                "waitForConditionTimeout": 10000, // wait for content on the page before continuing
+                 "asyncHookTimeout": 10000
             }
         },
         "local": {
@@ -54,7 +56,9 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
                 "path": SCREENSHOT_PATH
             }, // this allows us to control the
             "globals": {
-                "waitForConditionTimeout": 15000 // on localhost sometimes internet is slow so wait...
+                "waitForConditionTimeout": 50000, // on localhost sometimes internet is slow so wait...
+                "apos_address": "localhost",
+                "apos_port": 3000
             },
             "desiredCapabilities": {
                 "browserName": "chrome",
