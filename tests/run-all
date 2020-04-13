@@ -4,6 +4,7 @@ MODULE_NAME='dynamic-table'
 MYDIR="node_modules/$MODULE_NAME"
 FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackFields.js" "sub-modules")
 TESTCOPY=("tests")
+PAGES=("lib/modules/apostrophe-pages/views/pages/home.html")
 TEMPSERVER="server.js"
 
 copy_module (){
@@ -27,20 +28,33 @@ copy_module (){
             cp -r ../${TESTCOPY[$files]} .
         done
     fi
+
+    if [[ "$(declare -p PAGES)" =~ "declare -a" ]];then
+        for files in ${!PAGES[@]}; do
+            echo "Copying ${PAGES[$files]} to $DIR directory"
+            cp -r ../tests/apos/${PAGES[$files]} ${PAGES[$files]}
+        done
+    fi
+
     echo "Your $MODULE_NAME copied to $MYDIR"
 }
 
 temp_nighwatch(){
+    printf "\n\n********************************\n\n"
     echo "Copying temporary server.js onto apostrophe-nightwatch-tools due to bug issue"
     cp -r ../tests/"$TEMPSERVER" node_modules/apostrophe-nightwatch-tools
+    printf "********************************\n\n"
 }
 
 checking_mongodump(){
+    printf "\n\n********************************\n\n"
     if [ "$(ls -A mongodump && du mongodump)" ];then
         echo "mongodump folder already created"
     else
+        printf "Creating new folder called mongodump"
         mkdir mongodump/
     fi
+    printf "********************************\n\n"
 }
 
 # Checking Apostrophe CLI installed in a system
@@ -60,7 +74,7 @@ if [ "$(ls -A $DIR && du $DIR)" ];then
     echo "apostrophe-test folder already existed"
     printf "\n\nCopy app.js to testing directory\n"
     printf "*******************************\n"
-    cp -v tests/apos/app.js /"$DIR" &&
+    cp -v tests/apos/app.js "$DIR" &&
     printf "*******************************\n\n"
     cd "$DIR"
     printf "Re-installed Packaged to keep updated \n"
@@ -83,9 +97,9 @@ else
     echo "Installing packages"
     npm install
     printf "******************************\n\n"
-    printf "Installing package:\n\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
+    printf "Installing package:\n\n-env2\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
     printf "*******************************\n\n"
-    npm install --save-dev nightwatch apostrophe-nightwatch-tools chromedriver@80.0.2 geckodriver selenium-server && npm install --save apostrophe-workflow
+    npm install --save-dev env2 nightwatch apostrophe-nightwatch-tools chromedriver@80.0.2 geckodriver selenium-server && npm install --save apostrophe-workflow
     printf "Copy our module to $PWD inside node_modules to test\n\n"
     copy_module
     temp_nighwatch
@@ -95,7 +109,7 @@ fi
 # Running Test
 echo "** running test from"
 echo $PWD
-echo "*******************************\n\n"
-echo "\n\nBegin Test\n\n"
+printf "*******************************\n\n"
+printf "\n\nBegin Test\n\n"
 ./node_modules/.bin/nightwatch ./tests/scenarios/ --config ./tests/nightwatch.conf.js -e local &&
 echo "TEST ENDED"

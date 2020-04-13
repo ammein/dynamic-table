@@ -24,6 +24,6 @@ module.exports = Object.assign(
         }
     },
     // Execute various steps found in the module
-    steps.main(),
+    steps.navigateToHome(),
     steps.login()
 );

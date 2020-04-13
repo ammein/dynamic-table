@@ -23,6 +23,15 @@ var apos = require('apostrophe')({
         // `views/` folder of the project
         'dynamic-table': {},
         'dynamic-table-widgets': {},
+        'apostrophe-workflow': {
+            // IMPORTANT: if you follow the examples below,
+            // be sure to set this so the templates work
+            alias: 'workflow',
+            // Recommended to save database space. You can still
+            // export explicitly between locales
+            replicateAcrossLocales: false
+        },
+        'apostrophe-workflow-modified-documents': {},
 
         'apostrophe-templates': {
             viewsFolderFallback: path.join(__dirname, 'views')
