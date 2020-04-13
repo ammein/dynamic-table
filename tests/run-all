@@ -39,19 +39,27 @@ copy_module (){
     echo "Your $MODULE_NAME copied to $MYDIR"
 }
 
+add_user(){
+    printf "\n\n******************************"
+    echo "Enter demo password for demo test:"
+    printf "******************************\n"
+    printf "Password: demo\n\n"
+    node app apostrophe-users:add admin
+}
+
 temp_nighwatch(){
-    printf "\n\n********************************\n\n"
+    printf "\n\n********************************\n"
     echo "Copying temporary server.js onto apostrophe-nightwatch-tools due to bug issue"
     cp -r ../tests/"$TEMPSERVER" node_modules/apostrophe-nightwatch-tools
     printf "********************************\n\n"
 }
 
 checking_mongodump(){
-    printf "\n\n********************************\n\n"
+    printf "\n\n********************************\n"
     if [ "$(ls -A mongodump && du mongodump)" ];then
         echo "mongodump folder already created"
     else
-        printf "Creating new folder called mongodump"
+        echo "Creating new folder called mongodump"
         mkdir mongodump/
     fi
     printf "********************************\n\n"
@@ -101,6 +109,7 @@ else
     printf "*******************************\n\n"
     npm install --save-dev env2 nightwatch apostrophe-nightwatch-tools chromedriver@80.0.2 geckodriver selenium-server && npm install --save apostrophe-workflow
     printf "Copy our module to $PWD inside node_modules to test\n\n"
+    add_user
     copy_module
     temp_nighwatch
     checking_mongodump
