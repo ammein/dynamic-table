@@ -10,7 +10,7 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
         "tests/scenarios" // we use '/test' as the name of our test directory by default. So 'test/e2e' for 'e2e'.
     ],
     "output_folder": "tests/reports", // reports (test outcome) output by Nightwatch
-    "globals_path": "server.js",
+    "globals_path": "setup.js",
     "selenium": {
         "start_process": true,
         "server_path": seleniumServer.path,

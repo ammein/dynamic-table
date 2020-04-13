@@ -24,10 +24,11 @@ exports.create = (address, port, ver) => {
             }
 
 
+
             shell.env["DISMISS_NOTIFICATIONS"] = 1;
             shell.env["ADDRESS"] = address;
             shell.env["PORT"] = port;
-            server = shell.exec(`node apostrophe-test/app`, {
+            server = shell.exec(`node ${exe}`, {
                 async: true,
             });
             onceCb = once(cb);
@@ -43,6 +44,7 @@ exports.create = (address, port, ver) => {
             });
         },
         stop(cb) {
+            var pid = server.pid;
             server.kill();
             // We found it very difficult to kill the child process, not just the shell,
             // created by shell.exec by any other means in a mac *and* Linux env. -Tom and Paul
@@ -53,6 +55,10 @@ exports.create = (address, port, ver) => {
             try {
                 if (process.platform.match(/darwin|bsd/)) {
                     shell.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | while IFS= read -r -d '' pid; do kill -9 "$pid"; done`);
+                } else if (process.platform.match(/win32/)) {
+                    // Source help: https://stackoverflow.com/a/6204329/9716958
+                    // Execution command line for Windows platform to kill all processes including child processes on current port number.
+                    shell.exec(`FOR /F "tokens=5 delims= " %P IN ('netstat -a -n -o ^| grep LISTEN ^| findstr :${port}') DO TaskKill.exe /F /T /PID %P`);
                 } else {
                     shell.exec(`lsof -i tcp:${port} | grep LISTEN | awk '{print $2}' | xargs -r kill -9`);
                 }
@@ -77,7 +83,7 @@ exports.create = (address, port, ver) => {
                 exe = 'app';
             }
             console.log('running task: ', args);
-            return shell.exec(`node apostrophe-test/app ${args}`, {
+            return shell.exec(`node ${exe} ${args}`, {
                 async: false
             });
         }

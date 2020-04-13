@@ -3,7 +3,8 @@ DIR="apostrophe-test"
 MODULE_NAME='dynamic-table'
 MYDIR="node_modules/$MODULE_NAME"
 FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackFields.js" "sub-modules")
-TESTCOPY=("tests" "nightwatch.conf.js")
+TESTCOPY=("tests")
+TEMPSERVER="server.js"
 
 copy_module (){
     if [ "$(ls -A $MYDIR && du $MYDIR)" ];then
@@ -23,10 +24,23 @@ copy_module (){
     if [[ "$(declare -p TESTCOPY)" =~ "declare -a" ]];then
         for files in ${!TESTCOPY[@]}; do
             echo "Copying ${TESTCOPY[$files]} to $DIR directory"
-            cp -r ../${TESTCOPY[$files]} "$DIR"
+            cp -r ../${TESTCOPY[$files]} .
         done
     fi
     echo "Your $MODULE_NAME copied to $MYDIR"
+}
+
+temp_nighwatch(){
+    echo "Copying temporary server.js onto apostrophe-nightwatch-tools due to bug issue"
+    cp -r ../tests/"$TEMPSERVER" node_modules/apostrophe-nightwatch-tools
+}
+
+checking_mongodump(){
+    if [ "$(ls -A mongodump && du mongodump)" ];then
+        echo "mongodump folder already created"
+    else
+        mkdir mongodump/
+    fi
 }
 
 # Checking Apostrophe CLI installed in a system
@@ -54,7 +68,8 @@ if [ "$(ls -A $DIR && du $DIR)" ];then
     printf "\nPackage Installed."
     echo "Copy our module to $PWD inside node_modules to test"
     copy_module
-    cd ..
+    temp_nighwatch
+    checking_mongodump
 else
     echo "Creating apostrophe-test folder"
     apostrophe create-project "$DIR"
@@ -65,18 +80,22 @@ else
     cd "$DIR"
     echo "Entering current directory $PWD"
     echo "Apostrophe Boilerplate created"
+    echo "Installing packages"
     npm install
+    printf "******************************\n\n"
+    printf "Installing package:\n\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
+    printf "*******************************\n\n"
+    npm install --save-dev nightwatch apostrophe-nightwatch-tools chromedriver@80.0.2 geckodriver selenium-server && npm install --save apostrophe-workflow
     printf "Copy our module to $PWD inside node_modules to test\n\n"
     copy_module
-    cd ..
+    temp_nighwatch
+    checking_mongodump
 fi
 
 # Running Test
 echo "** running test from"
 echo $PWD
 echo "*******************************\n\n"
-echo "Starting App\n\n"
-cd "$DIR" && node app &&
 echo "\n\nBegin Test\n\n"
-./node_modules/.bin/nightwatch "$DIR"/tests/scenarios/* --config "$DIR"/tests/nightwatch.conf.js -e local --port=4444 &&
+./node_modules/.bin/nightwatch ./tests/scenarios/ --config ./tests/nightwatch.conf.js -e local &&
 echo "TEST ENDED"

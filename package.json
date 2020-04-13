@@ -9,7 +9,6 @@
   "scripts": {
     "test": "mocha ./test/**/*.test.js",
     "test-chrome": "mocha --inspect ./test/**/*.test.js",
-    "nightwatch-local": "nightwatch --config tests/nightwatch.conf.js -e local --port=3000",
     "nightwatch": "nightwatch --config tests/nightwatch.conf.js -e chrome,firefox,edge",
     "nightwatch-runall": "/bin/bash tests/run-all || bash tests/run-all",
     "dump": "mongodump -d dynamic-table",
