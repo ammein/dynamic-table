@@ -10,7 +10,7 @@
 
   
     <system-err>
-      [0;31m  TimeoutError: done() callback timeout of 10000ms was reached while executing &#34;before&#34;. Make sure to call the done() callback when the operation finishes.[0m
+      [0;31m  TimeoutError: done() callback timeout of 50000ms was reached while executing &#34;before&#34;. Make sure to call the done() callback when the operation finishes.[0m
 [0;90m   [0m
     </system-err>
   
@@ -18,7 +18,7 @@
   
     
     <testcase
-      name="[1] main" classname="scenarios.article.spec">
+      name="[1] navigate to home page" classname="scenarios.article.spec">
       <skipped />
     </testcase>
     

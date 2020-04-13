@@ -103,11 +103,11 @@ else
     echo "Entering current directory $PWD"
     echo "Apostrophe Boilerplate created"
     echo "Installing packages"
-    npm install
+    npm install --save apostrophe-workflow && npm install
     printf "******************************\n\n"
     printf "Installing package:\n\n-env2\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
     printf "*******************************\n\n"
-    npm install --save-dev env2 nightwatch apostrophe-nightwatch-tools chromedriver@80.0.2 geckodriver selenium-server && npm install --save apostrophe-workflow
+    npm install --save-dev env2 nightwatch apostrophe-nightwatch-tools chromedriver@80.0.2 geckodriver selenium-server
     printf "Copy our module to $PWD inside node_modules to test\n\n"
     add_user
     copy_module
