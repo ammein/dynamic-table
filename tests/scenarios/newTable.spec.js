@@ -25,11 +25,11 @@ module.exports = Object.assign(
     // Execute various steps found in the module
     steps.navigateToHome(),
     steps.login(),
-    steps.switchToDraftMode(),
     {
         'Create new table with default options' : (client) => {
             client.openAdminBarItem('dynamic-table');
             client.waitForModal('dynamic-table-manage-modal');
+            client.clickWhenReady('[data-apos-create-dynamic-tables]')
         }
     }
 );
