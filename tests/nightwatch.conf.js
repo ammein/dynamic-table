@@ -56,7 +56,9 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
             }, // this allows us to control the
             "globals": {
                 "apos_address": "localhost",
-                "apos_port": 3000
+                "apos_port": 3111,
+                "username": "admin",
+                "password": "demo"
             },
             "desiredCapabilities": {
                 "browserName": "chrome",

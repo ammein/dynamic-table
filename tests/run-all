@@ -55,6 +55,8 @@ checking_mongodump(){
     else
         echo "Creating new folder called mongodump"
         mkdir mongodump/
+        echo "Create apostrophe-test dump"
+        mongodump -d apostrophe-test -o mongodump/
     fi
     printf "********************************\n\n"
 }
@@ -95,7 +97,7 @@ else
     printf "*******************************\n"
     cp -v tests/apos/app.js "$DIR" &&
     printf "*******************************\n\n"
-    cd "$DIR"
+    cd "$DIR" &&
     echo "Entering current directory $PWD"
     echo "Apostrophe Boilerplate created"
     echo "Installing existing packages"

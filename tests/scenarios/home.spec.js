@@ -1,5 +1,4 @@
-// tests/scenarios/article.spec.js
-
+// Test login apostrophe-test
 const server = require('apostrophe-nightwatch-tools/server');
 const steps = require('apostrophe-nightwatch-tools/steps');
 

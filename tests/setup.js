@@ -17,5 +17,5 @@ module.exports = {
 
     // controls the timeout time for async hooks. Expects the done() callback to be invoked within this time
     // or an error is thrown
-    asyncHookTimeout: 20000
+    asyncHookTimeout: 50000
 };
