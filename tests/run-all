@@ -7,6 +7,7 @@ TESTCOPY=("tests")
 PAGES=("lib/modules/apostrophe-pages/views/pages/home.html")
 
 copy_module (){
+    echo "Copy our module to $PWD inside node_modules to test"
     if [ "$(ls -A $MYDIR && du $MYDIR)" ];then
         echo "$MYDIR file already created"
     else
@@ -34,15 +35,16 @@ copy_module (){
             cp -r ../tests/apos/${PAGES[$files]} ${PAGES[$files]}
         done
     fi
-
     echo "Your $MODULE_NAME copied to $MYDIR"
 }
 
 add_user(){
-    printf "\n\n******************************\n"
-    echo "Enter demo password for demo test:"
-    printf "******************************\n"
-    printf "Password: demo\n\n"
+    clear
+    echo "Adding new user"
+    echo "Use demo password"
+    echo "*****************************"
+    echo "Password : demo"
+    echo "*****************************"
     node app apostrophe-users:add admin admin
 }
 
@@ -60,11 +62,11 @@ checking_mongodump(){
 # Checking Apostrophe CLI installed in a system
 if [ "$(apostrophe --version)" ];then
     echo "Apostrophe CLI existed"
-    printf "*************************\n\n"
+    echo "*************************"
 else
     echo "Installing Apostrophe CLI"
-    npm i apostrophe-cli -g
-    printf "*************************\n\n"
+    npm i apostrophe-cli -g &&
+    printf "*************************"
 fi
 # init
 # Look for apostrophe-test directory
@@ -72,21 +74,23 @@ fi
 # script $(du $DIR) check file size existed
 if [ "$(ls -A $DIR && du $DIR)" ];then
     echo "apostrophe-test folder already existed"
+    echo "Deleting existing test folder"
+    rm -r -f -v "$DIR"/tests &&
+    clear
     printf "\n\nCopy app.js to testing directory\n"
     printf "*******************************\n"
     cp -v tests/apos/app.js "$DIR" &&
     printf "*******************************\n\n"
-    cd "$DIR"
-    printf "Re-installed Packaged to keep updated \n"
-    npm install
+    cd "$DIR" &&
+    printf "Re-installing Packages to keep updated \n"
+    npm install &&
     printf "\nPackage Installed."
-    echo "Copy our module to $PWD inside node_modules to test"
+    clear
     copy_module
-    temp_nighwatch
     checking_mongodump
 else
     echo "Creating apostrophe-test folder"
-    apostrophe create-project "$DIR"
+    apostrophe create-project "$DIR" &&
     printf "\n\nCopy app.js to testing directory\n"
     printf "*******************************\n"
     cp -v tests/apos/app.js "$DIR" &&
@@ -94,23 +98,21 @@ else
     cd "$DIR"
     echo "Entering current directory $PWD"
     echo "Apostrophe Boilerplate created"
-    echo "Installing packages"
+    echo "Installing existing packages"
     npm install --save apostrophe-workflow && npm install
     printf "******************************\n\n"
-    printf "Installing package:\n\n-env2\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
+    printf "Installing packages:\n\n-env2\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
     printf "*******************************\n\n"
     npm install --save-dev env2 nightwatch https://github.com/apostrophecms/apostrophe-nightwatch-tools.git chromedriver@80.0.2 geckodriver selenium-server
-    printf "Copy our module to $PWD inside node_modules to test\n\n"
-    add_user
     copy_module
-    temp_nighwatch
     checking_mongodump
+    add_user
 fi
 
 # Running Test
 echo "** running test from"
 echo $PWD
-printf "*******************************\n\n"
-printf "\n\nBegin Test\n\n"
-./node_modules/.bin/nightwatch ./tests/scenarios/ --config ./tests/nightwatch.conf.js -e local &&
+echo "*******************************"
+echo "Begin Test"
+node_modules/.bin/nightwatch --config ./tests/nightwatch.conf.js -e local &&
 echo "TEST ENDED"
