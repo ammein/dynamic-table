@@ -25,7 +25,7 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
         "tests/commands"
     ],
     "test_workers": {
-        "enabled": true,
+        "enabled": false, // Make it false because ApostropheCMS cannot run in parallel. Should be one by one test
         "workers": "auto"
     }, // perform tests in parallel where possible
     "test_settings": {
@@ -55,7 +55,6 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
                 "path": SCREENSHOT_PATH
             }, // this allows us to control the
             "globals": {
-                "waitForConditionTimeout": 50000, // on localhost sometimes internet is slow so wait...
                 "apos_address": "localhost",
                 "apos_port": 3000
             },
