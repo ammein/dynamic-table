@@ -9,9 +9,8 @@
   "scripts": {
     "test": "mocha ./test/**/*.test.js",
     "test-chrome": "mocha --inspect ./test/**/*.test.js",
-    "nightwatch": "nightwatch --config tests/nightwatch.conf.js -e chrome,firefox,edge",
-    "nightwatch-runall": "/bin/bash tests/run-all || bash tests/run-all",
-    "nightwatch-runall-clean": "set CLEAN='yes' && /bin/bash tests/run-all || bash tests/run-all",
+    "nightwatch": "/bin/bash tests/check-os || bash tests/check-os",
+    "nightwatch-runall-windows": "/bin/bash tests/run-all || bash tests/run-all",
     "dump": "mongodump -d dynamic-table",
     "restore": "mongorestore --noIndexRestore mongodump/ --drop"
   },

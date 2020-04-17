@@ -52,14 +52,11 @@ module.exports = Object.assign(
             client.waitForElementVisible(slugInput);
             client.expect.element(slugInput).to.have.value.which.contains("default-table");
             client.addRow(client.Keys.NUMPAD3);
-            client.getAttribute(tableTab, 'class', function (result) {
-                console.log("See Result after active: ", result.value)
-            })
             client.click(columnInput, function(){
-                client.pause(5000);
+                client.pause(500);
                 client.expect.element(columnInput).to.be.enabled;
             })
-            client.setValue(columnInput, ['', client.Keys.NUMPAD2]);
+            client.addColumn(client.Keys.NUMPAD2);
 
             // Make sure all those value is inserted
             client.assert.value(rowInput, "3");

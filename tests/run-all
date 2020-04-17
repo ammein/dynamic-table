@@ -4,7 +4,8 @@ MODULE_NAME='dynamic-table'
 MYDIR="node_modules/$MODULE_NAME"
 FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackFields.js" "sub-modules")
 TESTCOPY=("tests")
-PAGES=("lib/modules/apostrophe-pages/views/pages/home.html" "lib/modules/dynamic-table/index.js")
+# Must use escape \ character for Windows Platform
+MODULESCOPY=("lib\\modules\\apostrophe-pages\\views\\pages\\home.html" "lib\\modules\\dynamic-table\\index.js")
 
 copy_module (){
     echo "Copy our module to $PWD inside node_modules to test"
@@ -29,15 +30,20 @@ copy_module (){
         done
     fi
 
-    if [[ "$(declare -p PAGES)" =~ "declare -a" ]];then
-        for files in ${!PAGES[@]}; do
-            echo "Copying ${PAGES[$files]} to $DIR directory"
-            if [ "$(ls -A ${PAGES[$files]} && du ${PAGES[$files]})" ];then
-                echo "${PAGES[$files]} directory exists"
+    if [[ "$(declare -p MODULESCOPY)" =~ "declare -a" ]];then
+        for files in ${!MODULESCOPY[@]}; do
+            echo "Copying ${MODULESCOPY[$files]} to $DIR directory"
+            if [ "$(ls -A ${MODULESCOPY[$files]} && du ${MODULESCOPY[$files]})" ];then
+                echo "${MODULESCOPY[$files]} directory exists"
+                cp -r "..\\tests\\apos\\${MODULESCOPY[$files]}" ".\\${MODULESCOPY[$files]}"
             else
-                mkdir ${PAGES[$files]}
+                # Double slashes parameter issue reference: https://superuser.com/a/1490175
+                printf "\n\n\n"
+                echo "********************************************"
+                echo "Press 'F' to copy the file, NOT DIRECTORY!"
+                echo "********************************************"
+                xcopy "..\\tests\\apos\\${MODULESCOPY[$files]}" ".\\${MODULESCOPY[$files]}" //F //Y
             fi
-            cp -r ../tests/apos/${PAGES[$files]} ${PAGES[$files]}
         done
     fi
     echo "Your $MODULE_NAME copied to $MYDIR"
