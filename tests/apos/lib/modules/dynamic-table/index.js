@@ -10,7 +10,8 @@ module.exports = {
                 type: "dynamic-tables"
             }, (tables, callback)=> {
                 console.log("Removing Tables from dynamic-table documents for testing");
-                return apos.docs.db.remove({ type: "dynamic-tables" }, callback);
+                const { type } = tables;
+                return apos.docs.db.remove({ type }, {multi: true}, callback);
             }, callback);
         }
     }

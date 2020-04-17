@@ -29,20 +29,12 @@ module.exports = Object.assign(
     {
         'Create new table with default options' : (client) => {
             var settingsTab = '[data-apos-open-group="settings"]';
-            var tableTab = '[data-apos-open-group="table"]';
             var titleInput = 'input[name=title]';
             var slugInput = 'input[name=slug]';
             var rowInput = 'input[name=row]';
             var columnInput = 'input[name=column]';
-            var workflowButton = '[data-apos-dropdown-name="workflow"]';
-            var commitButton = '[data-apos-workflow-commit]';
-            var saveButton = '[data-apos-save]';
-            var cancelButton = '[data-apos-cancel]';
-            client.openAdminBarItem('dynamic-table');
-            client.waitForModal('dynamic-table-manager-modal');
-            client.clickInModal('dynamic-table-manager-modal','[data-apos-create-dynamic-tables]');
-            // Wait for editor modal to appear
-            client.waitForModal('dynamic-table-editor-modal');
+            client.openDynamicTable();
+            client.addNewTable();
             // Make sure that div.dynamic-table-area is available in that modal
             client.assert.visible('div.dynamic-table-area');
             // Set title to be Default Table
@@ -50,7 +42,7 @@ module.exports = Object.assign(
             // Make sure that the slug is automatically created based on title inputs
             client.clickInModal('dynamic-table-editor-modal', settingsTab);
             client.waitForElementVisible(slugInput);
-            client.expect.element(slugInput).to.have.value.which.contains("default-table");
+            client.expect.element(slugInput).to.have.value.which.equal("default-table");
             client.addRow(client.Keys.NUMPAD3);
             client.click(columnInput, function(){
                 client.pause(500);
@@ -63,12 +55,7 @@ module.exports = Object.assign(
             client.assert.value(columnInput, "2");
 
             // Save and close modal. Make sure there is no modal appear
-            client.clickInModal('dynamic-table-editor-modal', workflowButton);
-            client.clickInModal('dynamic-table-editor-modal', commitButton);
-            client.clickInModal('apostrophe-workflow-commit-modal', saveButton);
-            // client.clickInModal('apostrophe-workflow-export-modal', cancelButton);
-            client.clickInModal('dynamic-table-manager-modal', cancelButton);
-            client.waitForNoModals();
+            client.saveTableAndClose();
         }
     }
 );
