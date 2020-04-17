@@ -3,7 +3,6 @@ exports.command = function addRow(num) {
     var rowInput = 'input[name=row]';
     var self = this;
     return self.getAttribute(tableTab, 'class', function (result) {
-        console.log(result)
         if (result.value.match(/apos-active/)) {
             return self
                 .setValue(rowInput, num);

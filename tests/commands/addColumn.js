@@ -3,7 +3,6 @@ exports.command = function addColumn(num) {
     var columnInput = 'input[name=column]';
     var self = this;
     return self.getAttribute(tableTab, 'class', function (result) {
-        console.log(result)
         if (result.value.match(/apos-active/)) {
             return self
                 .setValue(columnInput, num);
