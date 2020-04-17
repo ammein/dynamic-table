@@ -4,7 +4,7 @@ MODULE_NAME='dynamic-table'
 MYDIR="node_modules/$MODULE_NAME"
 FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackFields.js" "sub-modules")
 TESTCOPY=("tests")
-PAGES=("lib/modules/apostrophe-pages/views/pages/home.html")
+PAGES=("lib/modules/apostrophe-pages/views/pages/home.html" "lib/modules/dynamic-table/index.js")
 
 copy_module (){
     echo "Copy our module to $PWD inside node_modules to test"
@@ -32,6 +32,11 @@ copy_module (){
     if [[ "$(declare -p PAGES)" =~ "declare -a" ]];then
         for files in ${!PAGES[@]}; do
             echo "Copying ${PAGES[$files]} to $DIR directory"
+            if [ "$(ls -A ${PAGES[$files]} && du ${PAGES[$files]})" ];then
+                echo "${PAGES[$files]} directory exists"
+            else
+                mkdir ${PAGES[$files]}
+            fi
             cp -r ../tests/apos/${PAGES[$files]} ${PAGES[$files]}
         done
     fi

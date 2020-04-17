@@ -11,6 +11,7 @@ module.exports = Object.assign(
             client.resizeWindow(1200, 800);
             if (!this._server) {
                 this._server = server.create(apos_address, apos_port);
+                this._server.task('dynamic-table:delete');
                 this._server.start(done);
             }
         },
@@ -27,8 +28,8 @@ module.exports = Object.assign(
     steps.login(),
     {
         'Create new table with default options' : (client) => {
-            var settingsTab = '[data-apos-open-group="settings"]'
-            var tableTab = '[data-apos-open-group="table"]'
+            var settingsTab = '[data-apos-open-group="settings"]';
+            var tableTab = '[data-apos-open-group="table"]';
             var titleInput = 'input[name=title]';
             var slugInput = 'input[name=slug]';
             var rowInput = 'input[name=row]';
@@ -50,10 +51,10 @@ module.exports = Object.assign(
             client.clickInModal('dynamic-table-editor-modal', settingsTab);
             client.waitForElementVisible(slugInput);
             client.expect.element(slugInput).to.have.value.which.contains("default-table");
-            // Insert row value
-            client.clickInModal('dynamic-table-editor-modal', tableTab);
-            client.waitForElementVisible(rowInput);
-            client.setValue(rowInput, ['', client.Keys.NUMPAD3]);
+            client.addRow(client.Keys.NUMPAD3);
+            client.getAttribute(tableTab, 'class', function (result) {
+                console.log("See Result after active: ", result.value)
+            })
             client.click(columnInput, function(){
                 client.pause(5000);
                 client.expect.element(columnInput).to.be.enabled;
