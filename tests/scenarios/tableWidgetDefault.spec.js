@@ -1,4 +1,4 @@
-// Test login apostrophe-test
+// Test Create new table with default options
 const server = require('apostrophe-nightwatch-tools/server');
 const steps = require('apostrophe-nightwatch-tools/steps');
 
@@ -20,9 +20,13 @@ module.exports = Object.assign(
                 console.log('STOPPING FROM AFTER');
                 this._server.stop(done);
             });
-        }
+        },
     },
-    // Execute various steps found in the module
     steps.navigateToHome(),
-    steps.login()
+    steps.login(),
+    {
+        'Create new widget from previous created piece' : function(client) {
+
+        }
+    }
 );

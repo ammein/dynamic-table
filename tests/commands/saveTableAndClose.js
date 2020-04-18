@@ -4,6 +4,7 @@ exports.command = function saveTableAndClose() {
     var saveButton = '[data-apos-save]';
     var cancelButton = '[data-apos-cancel]';
     return this
+            .categoryScreenshot('addTable.png')
             .clickInModal('dynamic-table-editor-modal', workflowButton)
             .clickInModal('dynamic-table-editor-modal', commitButton)
             .clickInModal('apostrophe-workflow-commit-modal', saveButton)
