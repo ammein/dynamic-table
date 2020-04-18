@@ -6,6 +6,8 @@ FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackF
 TESTCOPY=("tests")
 # Must use escape \ character for Windows Platform
 MODULESCOPY=("lib\\modules\\apostrophe-pages\\views\\pages\\home.html" "lib\\modules\\dynamic-table\\index.js")
+NPMSAVE=("apostrophe-workflow")
+NPMSAVEDEV=("env2" "nightwatch" "https://github.com/apostrophecms/apostrophe-nightwatch-tools.git" "chromedriver@80.0.2" "geckodriver" "selenium-server")
 
 copy_module (){
     echo "Copy our module to $PWD inside node_modules to test"
@@ -47,6 +49,27 @@ copy_module (){
         done
     fi
     echo "Your $MODULE_NAME copied to $MYDIR"
+}
+
+install_packages(){
+    clear
+    echo "Installing Save Package(s)"
+    echo "**********************************"
+    for package in ${!NPMSAVE[@]}; do
+        tput cup 0 5
+        echo "${NPMSAVE[$package]}"
+    done
+    echo "**********************************"
+    npm install --save ${NPMSAVE[@]}
+
+    echo "Installing Save Dev Package(s)"
+    echo "**********************************"
+    for package in ${!NPMSAVEDEV[@]}; do
+        tput cup 0 5
+        echo "${NPMSAVEDEV[$package]}"
+    done
+    echo "**********************************"
+    npm install --save-dev ${NPMSAVEDEV[@]}
 }
 
 add_user(){
@@ -111,12 +134,8 @@ else
     cd "$DIR" &&
     echo "Entering current directory $PWD"
     echo "Apostrophe Boilerplate created"
-    echo "Installing existing packages"
-    npm install --save apostrophe-workflow && npm install
-    printf "******************************\n\n"
-    printf "Installing packages:\n\n-env2\n-nightwatch\n-apostrophe-nightwatch-tools\n-chromedriver@80.0.2\n-geckodriver\n-selenium-server\n-apostrophe-workflow\n\n\n"
-    printf "*******************************\n\n"
-    npm install --save-dev env2 nightwatch https://github.com/apostrophecms/apostrophe-nightwatch-tools.git chromedriver@80.0.2 geckodriver selenium-server
+    install_packages
+    npm install
     copy_module
     checking_mongodump
     add_user
