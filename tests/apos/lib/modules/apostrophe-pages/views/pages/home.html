@@ -16,11 +16,18 @@
   </h3>
   <p>This is a very bare bones Apostrophe project. Now, get to work and make a real website!</p>
 </div>
-<div>
+<div class="dynamic-table">
   {{
     apos.area(data.page, 'widgetsArea', {
       widgets: {
-        test: {},
+        'apostrophe-rich-text': {
+          toolbar: [ 'Styles', 'Bold', 'Italic', 'Blockquote', 'Link', 'Anchor', 'Unlink', 'BulletedList' ],
+          styles: [
+            { name: 'Title', element: 'h3' },
+            { value: 'h5', label: 'Subtitle' },
+            { name: 'Paragraph', element: 'p' }
+          ]
+        },
         "dynamic-table":{}
       }
     })

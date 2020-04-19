@@ -27,7 +27,9 @@ module.exports = Object.assign(
     // Execute various steps found in the module
     steps.navigateToHome(),
     steps.login(),
-    mySteps.createTable('Default Table', 3 , 2, function(data) { 
-        console.log("Value: ", data);
+    mySteps.createTable('Default Table', 3 , 2, function(client, data, done) { 
+        console.log("Value: ", JSON.parse(data));
+        client.assert.ok(typeof data === "string");
+        done();
     })
 );

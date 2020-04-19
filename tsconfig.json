@@ -9,10 +9,11 @@
         ]
     },
     "exclude": [
-        "node_modules"
+        "node_modules",
+        "tests/**/*.spec.js",
+        "test/**/*"
     ],
     "include": [
-        "lib/modules/my-theme/public/js/**/*",
-        "src/**"
+        "src/**/*"
     ]
 }

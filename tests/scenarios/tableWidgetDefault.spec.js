@@ -1,6 +1,7 @@
 // Test Create new table with default options
 const server = require('apostrophe-nightwatch-tools/server');
 const steps = require('apostrophe-nightwatch-tools/steps');
+const mySteps = require('../steps');
 
 module.exports = Object.assign(
     {
@@ -24,9 +25,5 @@ module.exports = Object.assign(
     },
     steps.navigateToHome(),
     steps.login(),
-    {
-        'Create new widget from previous created piece' : function(client) {
-
-        }
-    }
+    mySteps.tableWidget('.dynamic-table', 'dynamic-table', 'Default Table')
 );

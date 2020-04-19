@@ -1,10 +1,11 @@
 let counter = 0;
-module.exports = (title, row, column, returnCallback) => {
+module.exports = (title, row, column, performCallback) => {
     counter++
     return {
         [`[${counter}] Create New Dynamic Table Piece`] : function(client) {
             const columnInput = '[name=column]';
             const rowInput = '[name=row]';
+            var data = "";
             client.openDynamicTable();
             client.addNewTable();
             // Make sure that div.dynamic-table-area is available in that modal
@@ -25,8 +26,13 @@ module.exports = (title, row, column, returnCallback) => {
             }
 
             client.getValue('[data-apos-modal-current="dynamic-table-editor-modal"] [name=data]', function (result) {
-                returnCallback(result.value)
+                data = result.value;
             })
+
+            // Pass the callback to do client perform anything on data changes
+            client.perform(function(client, done) {
+                performCallback(client, data, done);
+            });
             // Save and close modal. Make sure there is no modal appear
             client.saveTableAndClose();
         }
