@@ -8,12 +8,12 @@
             "dom"
         ]
     },
-    "exclude": [
-        "node_modules",
-        "tests/**/*.spec.js",
-        "test/**/*"
-    ],
     "include": [
-        "src/**/*"
+        "./src/**/*"
+    ],
+    "files.problemExclude": [
+        "node_modules",
+        "tests",
+        "test"
     ]
 }

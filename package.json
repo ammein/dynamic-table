@@ -25,7 +25,6 @@
   },
   "homepage": "https://github.com/ammein/dynamic-table#readme",
   "dependencies": {
-    "apostrophe-workflow": "^2.33.0",
     "js-beautify": "^1.10.3",
     "jsonfn": "^0.31.0",
     "lodash": "^4.17.15"
@@ -35,6 +34,7 @@
     "@babel/core": "^7.7.7",
     "@babel/preset-env": "^7.7.7",
     "@babel/register": "^7.7.7",
+    "apostrophe": "^2.106.0",
     "async": "^3.1.1",
     "babel-core": "^6.26.3",
     "babel-preset-env": "^1.7.0",
