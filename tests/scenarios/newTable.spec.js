@@ -32,14 +32,18 @@ module.exports = Object.assign(
         row: 3,
         column: 2
     }, function(client, data, done) { 
-        console.log("Value: ", JSON.parse(data));
+        console.log("Data Result: \n", JSON.parse(data));
         client.assert.ok(typeof data === "string");
-        // Checking Data on Tabulator
-        client.execute(function(data){
-            return apos.dynamicTableUtils.getTableData() === JSON.stringify(data)
-        }, [data], function(result){
-            client.assert.ok(result.value);
-        })
+        // Checking Data on Tabulator to be the same as value on input field
+        client
+            .perform(function () {
+                console.log("Checking Data on Tabulator to be the same with value on input[name='data'] field");
+            })
+            .execute(function(data){
+                return JSONfn.stringify(apos.dynamicTableUtils.getTableData()) === JSONfn.stringify(JSONfn.parse(data))
+            }, [data], function(result){
+                client.assert.ok(result.value);
+            })
         done();
     })
 );
