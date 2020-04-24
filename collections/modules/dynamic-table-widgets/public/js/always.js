@@ -53,7 +53,7 @@ apos.define('dynamic-table-widgets', {
       return returnObject;
     };
 
-    self.updateOptions = function (myOptions) {
+    self.updateOptions = function (myOptions, id) {
       var allOptions = {};
 
       for (var _i = 0, _Object$keys = Object.keys(myOptions); _i < _Object$keys.length; _i++) {
@@ -100,30 +100,32 @@ apos.define('dynamic-table-widgets', {
         }
       }
 
-      self.tabulator.options = Object.assign({}, self.tabulator.options, self.options.tabulatorOptions, allOptions);
+      self.tabulator[id].options = Object.assign({}, self.tabulator[id].options, self.options.tabulatorOptions, allOptions);
     };
 
     self.initTable = function (tableDOM, myOptions) {
-      if (self.tabulator.table) {
-        self.tabulator.table.destroy();
-        self.tabulator.table = null;
+      var id = tableDOM.get(0).id;
+
+      if (self.tabulator[id].table) {
+        self.tabulator[id].table.destroy();
+        self.tabulator[id].table = null;
       }
 
-      self.updateOptions(typeof myOptions === 'string' ? JSONfn.parse(myOptions) : myOptions);
+      self.updateOptions(typeof myOptions === 'string' ? JSONfn.parse(myOptions) : myOptions, id);
       var table = null;
 
-      if (self.tabulator.options['data']) {
-        table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator.options);
-        table.setData(self.tabulator.options['data']);
+      if (self.tabulator[id].options['data']) {
+        table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator[id].options);
+        table.setData(self.tabulator[id].options['data']);
       } else {
-        table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator.options);
+        table = new Tabulator(document.getElementById(tableDOM.get(0).id), self.tabulator[id].options);
       }
 
-      self.tabulator.table = table;
+      self.tabulator[id].table = table;
     };
 
     self.play = function ($widget, data, options) {
-      self.tabulator = {
+      self.tabulator[data._id] = {
         options: {}
       };
       var table, tableOptions; // Always set data based on saves piece
