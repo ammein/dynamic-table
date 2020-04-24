@@ -6425,7 +6425,9 @@ var load = function load(self, options) {
 
       for (var key in columns) {
         if (columns.hasOwnProperty(key)) {
-          return val = columns[key];
+          if (val === columns[key].field) {
+            return columns[key];
+          }
         }
       }
     });

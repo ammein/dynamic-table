@@ -146,7 +146,9 @@ let load = function (self, options) {
                 let columns = self.tabulator.table.getColumnDefinitions();
                 for (let key in columns) {
                     if (columns.hasOwnProperty(key)) {
-                        return val = columns[key];
+                        if (val === columns[key].field) {
+                            return columns[key];
+                        }
                     }
                 }
             })
