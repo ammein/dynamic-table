@@ -125,9 +125,9 @@ apos.define('dynamic-table-widgets', {
     };
 
     self.play = function ($widget, data, options) {
-      self.tabulator[data._id] = {
+      self.tabulator = _defineProperty({}, data._id, {
         options: {}
-      };
+      });
       var table, tableOptions; // Always set data based on saves piece
 
       table = $widget.find('table#' + data._id);
