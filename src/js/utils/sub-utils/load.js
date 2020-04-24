@@ -142,7 +142,14 @@ let load = function (self, options) {
             // Only merge that is unique array value
             .reduce((init, next) => init = _.union(next), [])
             // Produce array of object
-            .map(val => val = { title: val })
+            .map(val => {
+                let columns = self.tabulator.table.getColumnDefinitions();
+                for (let key in columns) {
+                    if (columns.hasOwnProperty(key)) {
+                        return val = columns[key];
+                    }
+                }
+            })
 
         return {
             data: tableData,

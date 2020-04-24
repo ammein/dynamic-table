@@ -27,9 +27,19 @@ module.exports = Object.assign(
     // Execute various steps found in the module
     steps.navigateToHome(),
     steps.login(),
-    mySteps.createTable('Default Table', 3 , 2, function(client, data, done) { 
+    mySteps.createTable({
+        title: "Default Table",
+        row: 3,
+        column: 2
+    }, function(client, data, done) { 
         console.log("Value: ", JSON.parse(data));
         client.assert.ok(typeof data === "string");
+        // Checking Data on Tabulator
+        client.execute(function(data){
+            return apos.dynamicTableUtils.getTableData() === JSON.stringify(data)
+        }, [data], function(result){
+            client.assert.ok(result.value);
+        })
         done();
     })
 );

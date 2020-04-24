@@ -6421,9 +6421,13 @@ var load = function load(self, options) {
       return init = _.union(next);
     }, []) // Produce array of object
     .map(function (val) {
-      return val = {
-        title: val
-      };
+      var columns = self.tabulator.table.getColumnDefinitions();
+
+      for (var key in columns) {
+        if (columns.hasOwnProperty(key)) {
+          return val = columns[key];
+        }
+      }
     });
     return {
       data: tableData,
