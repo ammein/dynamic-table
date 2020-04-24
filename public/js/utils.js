@@ -6171,6 +6171,13 @@ var events = function events(self, options) {
         }, function (err) {
           if (err) {
             return apos.utils.warn('Unable to remove widget location.');
+          } // Delete Browser widget options table
+
+
+          if (apos.dynamicTableWidget) {
+            delete apos.dynamicTableWidget.tabulator[pieceId];
+          } else if (apos.dynamicTableLean) {
+            delete apos.dynamicTableLean[pieceId];
           }
 
           return apos.utils.log('Successful remove widget location.');
