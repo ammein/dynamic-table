@@ -26,11 +26,6 @@ module.exports = (options, performCallback) => {
                             client.getValue('[data-apos-modal-current="dynamic-table-editor-modal"] [name=data]', function (result) {
                                 data = result.value;
                             })
-
-                            // Pass the callback to do client perform anything on data changes
-                            client.perform(function (client, done) {
-                                performCallback(client, data, done);
-                            });
                             break;
                     
                         default:
@@ -39,6 +34,11 @@ module.exports = (options, performCallback) => {
                     }
                 }
             }
+            // Pass the callback to do client perform anything on data changes
+            client
+                .perform(function (client, done) {
+                    performCallback(client, data, done);
+                });
             // Save and close modal. Make sure there is no modal appear
             client.saveTableAndClose();
         }

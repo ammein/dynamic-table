@@ -11,7 +11,25 @@ module.exports = {
             }, (tables, callback)=> {
                 console.log("Removing Tables from dynamic-table documents for testing");
                 const { type } = tables;
-                return apos.docs.db.remove({ type }, {multi: true}, callback);
+                return apos.docs.db.remove({ type }, {multi: true}, function(err) {
+                    if (err) {
+                        callback(err);
+                    }
+
+                    return apos.docs.db.update({
+                                "widgetsArea.items": {
+                                    $elemMatch: {
+                                        type: "dynamic-table"
+                                    }
+                                }
+                            }, {
+                                $set : {
+                                    "widgetsArea.items" : []
+                                }
+                            }, {
+                                multi: true
+                            }, callback);
+                });
             }, callback);
         }
     }

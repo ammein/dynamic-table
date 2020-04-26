@@ -53,6 +53,7 @@ module.exports = (mainSelector ,pieceName, tableTitle) => {
             client.expect.element(`[data-query*="${tableTitle}"]`).to.be.visible;
             client.getLocationInView('css selector', `[data-query*="${tableTitle}"]`);
             client.categoryScreenshot(`Table Widget (${tableTitle}).png`);
+            client.commitTable();
         }
     }
 }

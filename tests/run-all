@@ -52,7 +52,6 @@ copy_module (){
 }
 
 install_packages(){
-    clear
     echo "Installing Save Package(s)"
     echo "**********************************"
     for package in ${!NPMSAVE[@]}; do
