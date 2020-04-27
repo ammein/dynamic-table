@@ -21,6 +21,7 @@ var apos = require('apostrophe')({
 
         // If a template is not found somewhere else, serve it from the top-level
         // `views/` folder of the project
+        "custom-code-editor":{},
         'dynamic-table': {},
         'dynamic-table-widgets': {},
         'apostrophe-workflow': {

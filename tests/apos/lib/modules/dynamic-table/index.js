@@ -13,22 +13,38 @@ module.exports = {
                 const { type } = tables;
                 return apos.docs.db.remove({ type }, {multi: true}, function(err) {
                     if (err) {
-                        callback(err);
+                        return callback(err);
                     }
 
-                    return apos.docs.db.update({
-                                "widgetsArea.items": {
-                                    $elemMatch: {
-                                        type: "dynamic-table"
+                    var key = "widgetsArea.items"
+
+                    var query = {
+                        [key]: {
+                            $elemMatch: {
+                                type: "dynamic-table"
+                            }
+                        }
+                    };
+                    return apos.docs.db.find(query, {
+                                [key] : 1
+                            }).toArray(function(err, result) {
+                                if (err){
+                                    return callback(err);
+                                }
+
+                                const dupResult = [...result];
+                                dupResult.map(function(val, i, arr) {
+                                    return val.type !== "dynamic-table";
+                                });
+
+                                return apos.docs.db.update(query, {
+                                    $set: {
+                                        [key] : dupResult
                                     }
-                                }
-                            }, {
-                                $set : {
-                                    "widgetsArea.items" : []
-                                }
-                            }, {
-                                multi: true
-                            }, callback);
+                                }, {
+                                    multi: true
+                                }, callback)
+                            })
                 });
             }, callback);
         }

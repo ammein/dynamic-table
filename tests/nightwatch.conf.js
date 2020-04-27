@@ -6,7 +6,8 @@ const SCREENSHOT_PATH = "./node_modules/nightwatch/screenshots/" + PKG.version +
 
 const config = { // we use a nightwatch.conf.js file so we can include comments and helper functions
     "src_folders": [
-        "tests/scenarios/"
+        // "tests/scenarios/"
+        "tests/scenarios/4-addNewCallback.spec.js"
     ],
     "output_folder": "tests/reports", // reports (test outcome) output by Nightwatch
     "globals_path": "setup.js",
