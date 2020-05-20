@@ -1,5 +1,5 @@
 exports.command = function insertCallback(options, checkboxName) {
-    var checkbox = `input[name='callbacks'][value='${checkboxName}']`;
+    var checkbox = `input[name="callbacks"][value="${checkboxName}"]`;
     var self = this;
     return self
         .waitForModal('dynamic-table-editor-modal')
@@ -13,8 +13,8 @@ exports.command = function insertCallback(options, checkboxName) {
             }
         }, [checkbox], function(result){
             if(result.value) {
-                console.log(`Click checkbox name '${checkboxName}'`)
-                self.waitForElementReady(checkbox);
+                console.log(`Click checkbox name '${checkboxName}'`);
+                self.pause(2000);
                 self.clickInModal('dynamic-table-editor-modal', checkbox);
                 return;
             } else {
