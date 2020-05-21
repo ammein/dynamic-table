@@ -3,6 +3,20 @@ exports.command = function insertCallback(options, checkboxName) {
     var self = this;
     return self
         .waitForModal('dynamic-table-editor-modal')
+        .execute(function(){
+            var callbackTab = Array.prototype.slice.call(document.querySelectorAll("[data-apos-modal-current='dynamic-table-editor-modal'] [data-apos-form] .apos-schema-tabs div")).filter((val, i, arr) => {
+                return val.textContent.match(/Tabulator Callback/g)
+            })[0];
+
+            if(callbackTab.className.match(/apos-active/g)) {
+                return true;
+            } else{
+                callbackTab.click();
+                return true
+            }
+        },[], function(result){
+            console.log("Tabulator Callback Tab Successfully clicked");
+        })
         .execute(function(checkbox){
             var checked = document.querySelector(`[data-apos-modal-current='dynamic-table-editor-modal'] ${checkbox}`).checked;
 
@@ -14,12 +28,11 @@ exports.command = function insertCallback(options, checkboxName) {
         }, [checkbox], function(result){
             if(result.value) {
                 console.log(`Click checkbox name '${checkboxName}'`);
-                self.pause(2000);
-                self.clickInModal('dynamic-table-editor-modal', checkbox);
-                return;
+                self
+                    .pause(250)
+                    .click('xpath',`//input[@value="${checkboxName}"][@name="callbacks"][not(@disabled)]`)
             } else {
                 console.log(`Checkbox name '${checkboxName}' is already active`);
-                return;
             }
         })
         .execute(function(options, checkboxName) {
