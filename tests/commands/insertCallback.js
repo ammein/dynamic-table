@@ -1,3 +1,6 @@
+function capitalizeFirst(s) {
+    return s.charAt(0).toUpperCase() + s.substr(1);
+}
 exports.command = function insertCallback(options, checkboxName) {
     var checkbox = `input[name="callbacks"][value="${checkboxName}"]`;
     var self = this;
@@ -26,11 +29,11 @@ exports.command = function insertCallback(options, checkboxName) {
                 return true;
             }
         }, [checkbox], function(result){
+            var capitalizeCheckboxName = capitalizeFirst(checkboxName);
             if(result.value) {
                 console.log(`Click checkbox name '${checkboxName}'`);
                 self
-                    .pause(250)
-                    .click('xpath',`//input[@value="${checkboxName}"][@name="callbacks"][not(@disabled)]`)
+                    .click('xpath', `//div[contains(normalize-space(label),'${capitalizeCheckboxName} Callback')][not(@disabled)]/label/input[@name='callbacks'][not(@disabled)]/following-sibling::span`)
             } else {
                 console.log(`Checkbox name '${checkboxName}' is already active`);
             }
@@ -55,6 +58,7 @@ exports.command = function insertCallback(options, checkboxName) {
                 success: JSONfn.stringify(callback) !== JSONfn.stringify(options)
             }
         }, [options, checkboxName] , function(result){
+            self.pause();
             self.assert.ok(result.value.success);
             console.log("New Callback : \n", result.value.newCallback)
         });
