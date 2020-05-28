@@ -34,9 +34,19 @@ exports.command = function insertCallback(options, checkboxName) {
                 console.log(`Click checkbox name '${checkboxName}'`);
                 self
                     .click('xpath', `//div[contains(normalize-space(label),'${capitalizeCheckboxName} Callback')][not(@disabled)]/label/input[@name='callbacks'][not(@disabled)]/following-sibling::span`)
+                    // //fieldset[@data-name='tableCallback'][not(../@data-apos-workflow-live-field)]
             } else {
                 console.log(`Checkbox name '${checkboxName}' is already active`);
             }
+        })
+        .execute(function(checkboxName) {
+            var fieldsetCallback = document.querySelector(`fieldset.apos-hidden[data-name='${checkboxName}Callback']`);
+
+            if (fieldsetCallback){
+                
+            }
+        }, [checkboxName], function(result){
+
         })
         .execute(function(options, checkboxName) {
             var callback = JSONfn.parse(apos.customCodeEditor.tabulator.convertJSONFunction(apos.customCodeEditor[checkboxName + "Callback"].editor.session.getValue()));

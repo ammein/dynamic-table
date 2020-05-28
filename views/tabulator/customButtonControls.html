@@ -4,7 +4,8 @@
 {{ buttons.minor('', {action: 'reloadTable', icon: 'refresh'}) }}
 
 {{ dropdowns.base({
-    label : 'Upload',
+    name: 'upload',
+    label: 'Upload',
     items: [
         { label: 'CSV', action: 'loadCSV' },
         { label: 'JSON', action: 'loadJSON' },
@@ -18,7 +19,8 @@
 
 {% if apos.dynamicTable.checkSchema({ type: 'custom-code-editor' } ,data.schema) %}
     {{ dropdowns.base({
-        label : 'Download',
+        name: 'download',
+        label: 'Download',
         items: [
             { label: 'CSV', action: 'downloadCSV' },
             { label: 'JSON', action: 'downloadJSON' },
@@ -33,7 +35,8 @@
     }) }}
 
     {{ dropdowns.base({
-        label : 'Reset',
+        name: 'reset',
+        label: 'Reset',
         items: [
             { label: 'Callbacks', action: 'resetCallbacks' },
             { label: 'Options', action: 'resetOptions' }
