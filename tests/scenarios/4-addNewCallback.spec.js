@@ -39,7 +39,7 @@ module.exports = Object.assign(
         var resultCb = JSONfn.parse(result.callbackResult);
         var myCb = {
             table: {
-                tableBuilding: function () {
+                tableErrorBuilding: function () {
                     console.log('Table is building');
                 }
             }
