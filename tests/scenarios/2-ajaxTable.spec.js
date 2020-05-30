@@ -30,7 +30,7 @@ module.exports = Object.assign(
     mySteps.createTable({
         title: "Ajax Table",
         ajaxURL: ajaxURL
-    }, function(client, data, done) {
+    }, function(client, result, done) {
         var ajaxResult = [
             {
                 userId: 1,

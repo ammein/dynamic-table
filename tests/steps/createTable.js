@@ -1,4 +1,5 @@
 let counter = 0;
+const JSONfn = require("jsonfn").JSONfn;
 module.exports = (options, performCallback, edit = false) => {
     counter++
     return {
@@ -6,6 +7,7 @@ module.exports = (options, performCallback, edit = false) => {
             const columnInput = '[name=column]';
             const rowInput = '[name=row]';
             var data = "";
+            var callbackResult = {};
             client.openDynamicTable();
 
             if (edit) {
@@ -22,22 +24,25 @@ module.exports = (options, performCallback, edit = false) => {
             // Loop through Options
             for (let key in options){
                 if (options.hasOwnProperty(key)){
-                    switch (key) {
-                        case "column":
-                            client.click(columnInput, function () {
-                                client.pause(500);
-                                client.expect.element(columnInput).to.be.enabled;
-                            })
-                            client.resetValueInModal('dynamic-table-editor-modal', `[name="${key}"]`, options[key]);
+                    // Make sure filter to those options that is not included in callbacks
+                    if (key !== "callbacks") {
+                        switch (key) {
+                            case "column":
+                                client.click(columnInput, function () {
+                                    client.pause(500);
+                                    client.expect.element(columnInput).to.be.enabled;
+                                })
+                                client.resetValueInModal('dynamic-table-editor-modal', `[name="${key}"]`, options[key]);
 
-                            client.getValue('[data-apos-modal-current="dynamic-table-editor-modal"] [name=data]', function (result) {
-                                data = result.value;
-                            })
-                            break;
-                    
-                        default:
-                            client.resetValueInModal('dynamic-table-editor-modal', `[name="${key}"]`, options[key]);
-                            break;
+                                client.getValue('[data-apos-modal-current="dynamic-table-editor-modal"] [name=data]', function (result) {
+                                    data = result.value;
+                                })
+                                break;
+
+                            default:
+                                client.resetValueInModal('dynamic-table-editor-modal', `[name="${key}"]`, options[key]);
+                                break;
+                        }
                     }
                 }
             }
@@ -46,7 +51,10 @@ module.exports = (options, performCallback, edit = false) => {
             if (options.callbacks) {
                 for (let key in options.callbacks) {
                     if (options.callbacks.hasOwnProperty(key)){
-                        client.insertCallback(options.callbacks[key], key);
+                        client.insertCallback(options.callbacks[key], key, function(result, done){
+                            callbackResult = Object.assign({}, callbackResult, result);
+                            done();
+                        })
                     }
                 }
             }
@@ -54,7 +62,11 @@ module.exports = (options, performCallback, edit = false) => {
             // Pass the callback to do client perform anything on data changes
             client
                 .perform(function (client, done) {
-                    performCallback(client, data, done);
+                    performCallback(client, {
+                        data: data,
+                        callbackResult: JSONfn.stringify(callbackResult),
+                        originalCallback: JSONfn.stringify(options.callbacks)
+                    }, done);
                 });
             // Save and close modal. Make sure there is no modal appear
             client.saveTableAndClose();

@@ -23,6 +23,7 @@ var apos = require('apostrophe')({
         // `views/` folder of the project
         "custom-code-editor":{},
         'dynamic-table': {},
+        'test-piece': {},
         'dynamic-table-widgets': {},
         'apostrophe-workflow': {
             // IMPORTANT: if you follow the examples below,

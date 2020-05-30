@@ -31,9 +31,9 @@ module.exports = Object.assign(
         title: "Default Table",
         row: 3,
         column: 2
-    }, function(client, data, done) { 
+    }, function(client, result, done) { 
         console.log("Data Result: \n", JSON.parse(data));
-        client.assert.ok(typeof data === "string");
+        client.assert.ok(typeof result.data === "string");
         // Checking Data on Tabulator to be the same as value on input field
         client
             .perform(function () {
@@ -41,7 +41,7 @@ module.exports = Object.assign(
             })
             .execute(function(data){
                 return JSONfn.stringify(apos.dynamicTableUtils.getTableData()) === JSONfn.stringify(JSONfn.parse(data))
-            }, [data], function(result){
+            }, [result.data], function(result){
                 client.assert.ok(result.value);
             })
         done();

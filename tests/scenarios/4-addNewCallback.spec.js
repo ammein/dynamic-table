@@ -2,7 +2,8 @@
 const server = require('apostrophe-nightwatch-tools/server');
 const steps = require('apostrophe-nightwatch-tools/steps');
 const mySteps = require('../steps');
-
+const JSONfn = require('jsonfn').JSONfn;
+const utils = require('../utils');
 module.exports = Object.assign(
     {
         before: (client, done) => {
@@ -34,7 +35,16 @@ module.exports = Object.assign(
                 }
             }
         }
-    }, function(client, data, done) {
+    }, function(client, result, done) {
+        var resultCb = JSONfn.parse(result.callbackResult);
+        var myCb = {
+            table: {
+                tableBuilding: function () {
+                    console.log('Table is building');
+                }
+            }
+        }
+        utils.inspectCallback(client ,myCb, resultCb);
         done();
     }, true)
 );

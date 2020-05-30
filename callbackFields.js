@@ -252,7 +252,7 @@ let addFields = [{
     ];
 
 let myArrangeFields = {
-    name: 'callbacks',
+    name: 'allCallbacks',
     label: 'Tabulator Callbacks',
     fields: addFields.map(val => val.name)
 }

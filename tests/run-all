@@ -5,8 +5,8 @@ MYDIR="node_modules/$MODULE_NAME"
 FILESTOCOPY=("collections" "views" "public" "index.js" "package.json" "callbackFields.js" "sub-modules")
 TESTCOPY=("tests")
 # Must use escape \ character for Windows Platform
-MODULESCOPY=("lib\\modules\\apostrophe-pages\\views\\pages\\home.html" "lib\\modules\\dynamic-table\\index.js")
-NPMSAVE=("apostrophe-workflow" "custom-code-editor")
+MODULESCOPY=("lib\\modules\\apostrophe-pages\\views\\pages\\home.html" "lib\\modules\\dynamic-table\\index.js" "\\lib\\modules\\test-piece\\index.js")
+NPMSAVE=("apostrophe-workflow" "custom-code-editor" "jsonfn")
 NPMSAVEDEV=("env2" "nightwatch" "https://github.com/apostrophecms/apostrophe-nightwatch-tools.git" "chromedriver" "geckodriver" "selenium-server")
 
 copy_module (){
