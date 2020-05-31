@@ -8,6 +8,7 @@ module.exports = (options, performCallback, edit = false) => {
             const rowInput = '[name=row]';
             var data = "";
             var callbackResult = {};
+            var optionsResult = {};
             client.openDynamicTable();
 
             if (edit) {
@@ -25,7 +26,7 @@ module.exports = (options, performCallback, edit = false) => {
             for (let key in options){
                 if (options.hasOwnProperty(key)){
                     // Make sure filter to those options that is not included in callbacks
-                    if (key !== "callbacks") {
+                    if (key !== "callbacks" && key !== "load") {
                         switch (key) {
                             case "column":
                                 client.click(columnInput, function () {
@@ -59,13 +60,44 @@ module.exports = (options, performCallback, edit = false) => {
                 }
             }
 
+            if (options.load) {
+                client.clickModalDropdown("dynamic-table-editor-modal", "upload", "[data-apos-loadcsv]");
+                client.setValue("input[type='file']", options.load, function(result){
+                    if(result !== 0){
+                        console.log(result);
+                    }
+                });
+                client.execute(function(){
+                    var getData = apos.dynamicTableUtils.getTableData()
+                    return {
+                        success: Object.getOwnPropertyNames(getData).length > 0,
+                        data: JSONfn.stringify(getData)
+                    }
+                }, [], function(result){
+                    client.assert.ok(result.value.success, "getTableData() test");
+                    data = result.value.data;
+                })
+            }
+
+            if(options.options) {
+                for(let key in options.options){
+                    if (options.options.hasOwnProperty(key)){
+                        client.tabulatorOptions(options.options[key], key, function(result, done){
+                            optionsResult = Object.assign({}, optionsResult, result)               
+                            done();
+                        })
+                    }
+                }
+            }
+
             // Pass the callback to do client perform anything on data changes
             client
                 .perform(function (client, done) {
                     performCallback(client, {
                         data: data,
                         callbackResult: JSONfn.stringify(callbackResult),
-                        originalCallback: JSONfn.stringify(options.callbacks)
+                        originalCallback: JSONfn.stringify(options.callbacks),
+                        optionsResult: JSONfn.stringify(optionsResult)
                     }, done);
                 });
             // Save and close modal. Make sure there is no modal appear

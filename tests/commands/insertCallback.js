@@ -1,36 +1,13 @@
 const JSONfn = require("jsonfn").JSONfn;
 exports.command = function insertCallback(options, checkboxName, callback) {
-    var checkbox = `input[name="callbacks"][value="${checkboxName}"]`;
     var self = this;
     var callbackReturn = {}
     return self
-        .execute(function(){
-            var callbackTab = Array.prototype.slice.call(document.querySelectorAll("[data-apos-modal-current='dynamic-table-editor-modal'] [data-apos-form] .apos-schema-tabs div")).filter((val, i, arr) => {
-                return val.textContent.match(/Tabulator Callback/g)
-            })[0];
-
-            if(callbackTab.className.match(/apos-active/g)) {
-                return true;
-            } else{
-                callbackTab.click();
-                return true;
-            }
-        },[], function(result){
-            console.log("Tabulator Callback Tab is active");
-        })
-        .execute(function(checkbox){
-            var checked = document.querySelector(`[data-apos-modal-current='dynamic-table-editor-modal'] ${checkbox}`).checked;
-
-            if(checked) {
-                return false;
-            } else {
-                return true;
-            }
-        }, [checkbox], function(result){
-            if(result.value) {
+        .clickTabInModal("dynamic-table-editor-modal", "Tabulator Callback")
+        .checkboxInModal("dynamic-table-editor-modal", "callbacks", checkboxName, function (result) {
+            if (result.value) {
                 console.log(`Checkbox name '${checkboxName}' is not active`);
-                self.click('xpath', `//input[@value='${checkboxName}'][not(@disabled)]/following-sibling::span`)
-                    
+                self.click('xpath', `//input[@value='${checkboxName}'][not(@disabled)]/following-sibling::span`);
             } else {
                 console.log(`Checkbox name '${checkboxName}' is already active`);
             }
