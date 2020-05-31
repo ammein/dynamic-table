@@ -4,6 +4,13 @@ const steps = require('apostrophe-nightwatch-tools/steps');
 const mySteps = require('../steps');
 const JSONfn = require('jsonfn').JSONfn;
 const utils = require('../utils');
+let myCallback = {
+    table: {
+        tableBuilding: function () {
+            console.log('Table is building');
+        }
+    }
+};
 module.exports = Object.assign(
     {
         before: (client, done) => {
@@ -28,23 +35,9 @@ module.exports = Object.assign(
     steps.login(),
     mySteps.createTable({
         title: "Default Table",
-        callbacks : {
-            table: {
-                tableBuilding: function () {
-                    console.log('Table is building');
-                }
-            }
-        }
+        callbacks : myCallback
     }, function(client, result, done) {
-        var resultCb = JSONfn.parse(result.callbackResult);
-        var myCb = {
-            table: {
-                tableErrorBuilding: function () {
-                    console.log('Table is building');
-                }
-            }
-        }
-        utils.inspectCallback(client ,myCb, resultCb);
+        utils.inspectCallback(client, Object.assign({}, myCallback), JSONfn.parse(result.callbackResult));
         done();
     }, true)
 );

@@ -1,28 +1,16 @@
 const JSONfn = require('jsonfn').JSONfn;
-module.exports = function(client, originalCallback, resultCallback) {
-    console.log("Running Inspection on Callback")
-    for (let key in resultCallback) {
-        if (resultCallback.hasOwnProperty(key) && originalCallback.hasOwnProperty(key)) {
-            for (let innerKey in resultCallback[key]) {
-                if (resultCallback[key].hasOwnProperty(innerKey) && originalCallback[key].hasOwnProperty(innerKey)) {
-                    console.log(`Callback inspect on ${JSONfn.stringify(resultCallback[key][innerKey])} & ${JSONfn.stringify(originalCallback[key][innerKey])}`)
-                    client.assert.ok(JSONfn.stringify(resultCallback[key][innerKey]) === JSONfn.stringify(originalCallback[key][innerKey]));
+module.exports = function(client, inspectCallback, resultCallback) {
+    for (let key in inspectCallback) {
+        if (resultCallback.hasOwnProperty(key) && inspectCallback.hasOwnProperty(key)) {
+            for (let innerKey in inspectCallback[key]) {
+                if (resultCallback[key].hasOwnProperty(innerKey) && inspectCallback[key].hasOwnProperty(innerKey)) {
+                    client.assert.ok(JSONfn.stringify(inspectCallback[key][innerKey]) === JSONfn.stringify(resultCallback[key][innerKey]), `Compares two callback value for '${key}':\n\n ${innerKey} : ${inspectCallback[key][innerKey]} \n-------------------- WITH --------------------\n ${innerKey} : ${resultCallback[key][innerKey]}\n\n`);
                 } else {
-                    var matchInnerKey = Object.getOwnPropertyNames(resultCallback[key]).filter(function(val) {
-                        return val === innerKey;
-                    })
-                    if (matchInnerKey.length === 0) {
-                        throw new Error(`\nKey for "${innerKey}" is not found on:\n\n${JSONfn.stringify(originalCallback[key])}`);
-                    }
+                    throw new Error(`\nKey for "${innerKey}" is not found on:\n\n${JSONfn.stringify(resultCallback[key])}\n\n`);
                 }
             }
         } else {
-            var matchKey = Object.getOwnPropertyNames(resultCallback).filter(function (val) {
-                return val === key;
-            })
-            if (matchKey.length === 0) {
-                throw new Error(`\nKey for "${key}" is not found on:\n\n${JSONfn.stringify(originalCallback)}`);
-            }
+            throw new Error(`\nKey for "${key}" is not found on:\n\n${JSONfn.stringify(resultCallback)}\n\n`);
         }
     }
 }

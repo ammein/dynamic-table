@@ -32,7 +32,7 @@ module.exports = Object.assign(
         row: 3,
         column: 2
     }, function(client, result, done) { 
-        console.log("Data Result: \n", JSON.parse(data));
+        console.log("Data Result: \n", JSON.parse(result.data));
         client.assert.ok(typeof result.data === "string");
         // Checking Data on Tabulator to be the same as value on input field
         client

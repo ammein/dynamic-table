@@ -63,7 +63,6 @@ exports.command = function insertCallback(options, checkboxName, callback) {
             }
         }, [JSONfn.stringify(options), checkboxName] , function(result){
             self.assert.ok(result.value.success);
-            console.log("New Callback Value: ", result.value.callback)
             callbackReturn = Object.assign({}, {
                 [checkboxName] : JSONfn.parse(result.value.callback)
             })
