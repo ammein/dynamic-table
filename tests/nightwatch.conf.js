@@ -8,6 +8,7 @@ const config = { // we use a nightwatch.conf.js file so we can include comments 
     "src_folders": [
         "tests/scenarios/"
         // "tests/scenarios/4-addNewCallback.spec.js"
+        // "tests/scenarios/6-addOptions.spec.js"
     ],
     "output_folder": "tests/reports", // reports (test outcome) output by Nightwatch
     "globals_path": "setup.js",

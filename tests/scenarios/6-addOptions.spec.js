@@ -5,7 +5,8 @@ const mySteps = require('../steps');
 const JSONfn = require('jsonfn').JSONfn;
 const utils = require('../utils');
 let myOptions = {
-    autoColumns: true
+    autoColumns: false,
+    responsiveLayout: false
 }
 module.exports = Object.assign({
         before: (client, done) => {
@@ -33,10 +34,12 @@ module.exports = Object.assign({
     steps.login(),
     mySteps.createTable({
         title: "Load CSV Table",
+        row: 3,
+        column: 4,
         options: myOptions
     }, function (client, result, done) {
         console.log(result.optionsResult);
-        utils.inspectOptions(client, myOptions, result.optionsResult);
+        utils.inspectOptions(client, myOptions, JSONfn.parse(result.optionsResult));
         done();
     })
 );

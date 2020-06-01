@@ -1,7 +1,7 @@
 exports.command = function checkboxInModal(modalName, groupName, checkboxName, callback) {
     var checkbox = "input[name=\"" + groupName + "\"][value=\"" + checkboxName + "\"]";
     return this
-        .waitForElementReady(`[data-apos-modal-current='${modalName}'] ${checkbox}`)
+        .waitForModal(modalName)
         .execute(function (modalName, checkbox) {
             var checked = document.querySelector(`[data-apos-modal-current='${modalName}'] ${checkbox}`).checked;
 
