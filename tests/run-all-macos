@@ -5,6 +5,7 @@ VARIABLE="Env File Found"
 echo "VARIABLE: $VARIABLE"
 
 copy_module (){
+    tput reset
     echo "Copy our module to $PWD inside node_modules to test"
     if [ "$(ls -A $MYDIR && du $MYDIR)" ];then
         echo "$MYDIR file already created"
@@ -30,27 +31,17 @@ copy_module (){
     if [[ "$(declare -p MODULESCOPY)" =~ "declare -a" ]];then
         for files in ${!MODULESCOPY[@]}; do
             echo "Copying ${MODULESCOPY[$files]} to $DIR directory"
-            if [ "$(ls -A ${MODULESCOPY[$files]} && du ${MODULESCOPY[$files]})" ];then
-                echo "${MODULESCOPY[$files]} directory exists"
-                cp -r "..\\tests\\apos\\${MODULESCOPY[$files]//\//\\}" ".\\${MODULESCOPY[$files]//\//\\}"
-            else
-                # Double slashes parameter issue reference: https://superuser.com/a/1490175
-                printf "\n\n\n"
-                echo "********************************************"
-                echo "Press 'F' to copy the file, NOT DIRECTORY!"
-                echo "********************************************"
-                xcopy "..\\tests\\apos\\${MODULESCOPY[$files]//\//\\}" ".\\${MODULESCOPY[$files]//\//\\}" //F //Y
-            fi
+            cp -r "../tests/apos/${MODULESCOPY[$files]//\\//}" "./${MODULESCOPY[$files]//\\//}"
         done
     fi
     echo "Your $MODULE_NAME copied to $MYDIR"
 }
 
 install_packages(){
+    tput reset
     echo "Installing Save Package(s)"
     echo "**********************************"
     for package in ${!NPMSAVE[@]}; do
-        tput cup 0 5
         echo "${NPMSAVE[$package]}"
     done
     echo "**********************************"
@@ -59,7 +50,6 @@ install_packages(){
     echo "Installing Save Dev Package(s)"
     echo "**********************************"
     for package in ${!NPMSAVEDEV[@]}; do
-        tput cup 0 5
         echo "${NPMSAVEDEV[$package]}"
     done
     echo "**********************************"
@@ -67,7 +57,7 @@ install_packages(){
 }
 
 add_user(){
-    clear
+    tput reset
     echo "Adding new user"
     echo "Use demo password"
     echo "*****************************"
@@ -77,6 +67,7 @@ add_user(){
 }
 
 checking_mongodump(){
+    tput reset
     printf "\n\n********************************\n"
     if [ "$(ls -A mongodump && du mongodump)" ];then
         echo "mongodump folder already created"
@@ -106,7 +97,6 @@ if [ "$(ls -A $DIR && du $DIR)" ];then
     echo "apostrophe-test folder already existed"
     echo "Deleting existing test folder"
     rm -r -f -v "$DIR"/tests &&
-    clear
     printf "\n\nCopy app.js to testing directory\n"
     printf "*******************************\n"
     cp -v tests/apos/app.js "$DIR" &&
@@ -115,7 +105,6 @@ if [ "$(ls -A $DIR && du $DIR)" ];then
     printf "Re-installing Packages to keep updated \n"
     npm install &&
     printf "\nPackage Installed."
-    clear
     copy_module
     checking_mongodump
 else

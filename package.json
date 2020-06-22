@@ -11,6 +11,7 @@
     "test-chrome": "mocha --inspect ./test/**/*.test.js",
     "nightwatch": "/bin/bash tests/check-os || bash tests/check-os",
     "nightwatch-runall-windows": "/bin/bash tests/run-all || bash tests/run-all",
+    "nightwatch-runall-mac": "/bin/bash tests/run-all-macos || bash tests/run-all-macos",
     "dump": "mongodump -d dynamic-table",
     "restore": "mongorestore --noIndexRestore mongodump/ --drop"
   },
