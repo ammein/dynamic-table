@@ -33,7 +33,7 @@ module.exports = Object.assign({
     steps.navigateToHome(),
     steps.login(),
     mySteps.createTable({
-        title: "Load CSV Table",
+        title: "Options Table",
         row: 3,
         column: 4,
         options: myOptions

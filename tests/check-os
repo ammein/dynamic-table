@@ -1,5 +1,4 @@
 #!/bin/bash
-
 if [ "$(wmic os get version)" ];then 
     echo "Running on Windows" 
     npm run nightwatch-runall-windows 

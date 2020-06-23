@@ -29,9 +29,17 @@ copy_module (){
     fi
 
     if [[ "$(declare -p MODULESCOPY)" =~ "declare -a" ]];then
+        count=1
         for files in ${!MODULESCOPY[@]}; do
             echo "Copying ${MODULESCOPY[$files]} to $DIR directory"
-            cp -r "../tests/apos/${MODULESCOPY[$files]//\\//}" "./${MODULESCOPY[$files]//\\//}"
+            if [ "$(ls -A ${MODULESCOPY[$files]} && du ${MODULESCOPY[$files]})" ];then
+                echo "${MODULESCOPY[$files]} directory exists"
+                cp -r "../tests/apos/${MODULESCOPY[$files]//\\//}" "./${MODULESCOPY[$files]//\\//}"
+            else
+                echo "Directory not exists. Creating new"
+                rsync -azv "../tests/apos/${MODULESCOPY[$count]//\\//}" "./${MODULESCOPY[$count]//\\//}"
+                count=$(( $count + 1 ))
+            fi
         done
     fi
     echo "Your $MODULE_NAME copied to $MYDIR"
