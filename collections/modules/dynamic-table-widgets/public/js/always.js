@@ -89,7 +89,7 @@ apos.define('dynamic-table-widgets', {
 
             case property === 'tabulatorOptions' && myOptions[property].code.length > 0:
               try {
-                allOptions = _objectSpread({}, allOptions, {}, JSONfn.parse(myOptions[property].code));
+                allOptions = _objectSpread(_objectSpread({}, allOptions), JSONfn.parse(myOptions[property].code));
               } catch (e) {
                 // Leave the error alone
                 apos.utils.warn('Error Init Ajax Table', e);
