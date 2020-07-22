@@ -46,6 +46,15 @@ let routes = function(self, options) {
             return callback(data.message);
         })
     }
+
+    self.checkPermissions = function(query, callback) {
+        return $.get('/modules/' + self.options.apiModuleName + '/check-permissions', query, function(data) {
+            if (data.status === 'success') {
+                return callback(data);
+            }
+            return callback(data);
+        })
+    }
 }
 
 export default routes;

@@ -82,6 +82,40 @@ module.exports = function(self, options) {
         })
     })
 
+    self.route('get', 'check-permissions', function(req, res) {
+        switch (req.query.permission) {
+            case 'download':
+                if (self.apos.permissions.can(req, 'edit-downloadDynamicTable')) {
+                    return res.send({
+                        status: 'success',
+                        message: 'Permission granted to download dynamic-table data from table ' + req.query.table.id
+                    })
+                }
+                return res.send({
+                    status: 'error',
+                    message: 'You have no permission to download. Contact your admin to request permission.'
+                })
+
+            case 'upload':
+                if (self.apos.permissions.can(req, 'edit-uploadDynamicTable')) {
+                    return res.send({
+                        status: 'success',
+                        message: 'Permission granted to upload dynamic-table data from table ' + req.query.table.id
+                    })
+                }
+                return res.send({
+                    status: 'error',
+                    message: 'You have no permission to upload. Contact your admin to request permission.'
+                })
+
+            default:
+                return res.send({
+                    status: 'error',
+                    message: 'You have no permission on your action. Please contact your admin to request permission.'
+                })
+        }
+    })
+
     self.routes.resetCallbacks = function (req, callback) {
         if (!req.body.id) {
             // eslint-disable-next-line standard/no-callback-literal

@@ -13,7 +13,11 @@
     "nightwatch-runall-windows": "/bin/bash tests/run-all || bash tests/run-all",
     "nightwatch-runall-mac": "/bin/bash tests/run-all-macos || bash tests/run-all-macos",
     "dump": "mongodump -d dynamic-table",
-    "restore": "mongorestore --noIndexRestore mongodump/ --drop"
+    "restore": "mongorestore --noIndexRestore mongodump/ --drop",
+    "preinstall": "npx npm-force-resolutions"
+  },
+  "resolutions": {
+    "graceful-fs": "4.2.3"
   },
   "repository": {
     "type": "git",

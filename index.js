@@ -10,6 +10,7 @@ module.exports = {
     seo: false,
     openGraph: false,
     searchable : false,
+    permissionsFields: true,
     moogBundle : {
         modules: ['dynamic-table-schemas', 'dynamic-table-widgets'],
         directory: 'collections/modules'
@@ -172,6 +173,16 @@ module.exports = {
 
         fs.readdirSync(self.pathSubModules).filter((file)=>{
             require(path.join(self.pathSubModules,file))(self, options);
+        });
+
+        self.apos.permissions.add({
+            value: 'edit-downloadDynamicTable',
+            label: 'Download Dynamic Table'
+        });
+
+        self.apos.permissions.add({
+            value: 'edit-uploadDynamicTable',
+            label: 'Upload Dynamic Table'
         });
     }
 }
